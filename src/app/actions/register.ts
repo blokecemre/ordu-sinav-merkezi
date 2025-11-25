@@ -25,7 +25,7 @@ export async function registerUser(formData: FormData) {
 
     if (!validatedFields.success) {
         return {
-            message: validatedFields.error.errors[0].message,
+            message: validatedFields.error.issues[0].message,
             success: false
         }
     }
