@@ -50,7 +50,8 @@ export async function registerUser(formData: FormData) {
         return { message: "Kayıt başarılı! Giriş yapabilirsiniz.", success: true }
     } catch (e) {
         if (e instanceof z.ZodError) {
-            return { message: (e as any).errors[0].message, success: false }
+            const firstError = e.errors[0];
+            return { message: firstError ? firstError.message : "Geçersiz veri girişi", success: false }
         }
         console.error(e)
         return { message: "Bir hata oluştu.", success: false }
