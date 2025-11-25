@@ -13,17 +13,26 @@ const RegisterSchema = z.object({
 })
 
 export async function registerUser(formData: FormData) {
-    try {
-        const rawData = {
-            username: formData.get("username"),
-            password: formData.get("password"),
-            name: formData.get("name"),
-            surname: formData.get("surname"),
-            role: formData.get("role"),
+    const rawData = {
+        username: formData.get("username"),
+        password: formData.get("password"),
+        name: formData.get("name"),
+        surname: formData.get("surname"),
+        role: formData.get("role"),
+    }
+
+    const validatedFields = RegisterSchema.safeParse(rawData)
+
+    if (!validatedFields.success) {
+        return {
+            message: validatedFields.error.errors[0].message,
+            success: false
         }
+    }
 
-        const validatedData = RegisterSchema.parse(rawData)
+    const validatedData = validatedFields.data
 
+    try {
         // Check if username already exists
         const existingUser = await prisma.user.findUnique({
             where: { username: validatedData.username }
@@ -49,10 +58,6 @@ export async function registerUser(formData: FormData) {
 
         return { message: "Kayıt başarılı! Giriş yapabilirsiniz.", success: true }
     } catch (e) {
-        if (e instanceof z.ZodError) {
-            const firstError = e.errors[0];
-            return { message: firstError ? firstError.message : "Geçersiz veri girişi", success: false }
-        }
         console.error(e)
         return { message: "Bir hata oluştu.", success: false }
     }
