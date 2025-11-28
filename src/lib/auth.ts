@@ -19,31 +19,43 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Şifre", type: "password" }
             },
             async authorize(credentials) {
+                console.log("Login attempt for:", credentials?.username);
+                console.log("DB URL Prefix:", process.env.DATABASE_URL?.substring(0, 20));
+
                 if (!credentials?.username || !credentials?.password) {
                     return null
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: {
-                        username: credentials.username
+                try {
+                    const user = await prisma.user.findUnique({
+                        where: {
+                            username: credentials.username
+                        }
+                    })
+
+                    console.log("User found in DB:", !!user);
+
+                    if (!user) {
+                        console.log("User not found");
+                        return null
                     }
-                })
 
-                if (!user) {
-                    return null
-                }
+                    const isPasswordValid = await compare(credentials.password, user.password)
+                    console.log("Password valid:", isPasswordValid);
 
-                const isPasswordValid = await compare(credentials.password, user.password)
+                    if (!isPasswordValid) {
+                        return null
+                    }
 
-                if (!isPasswordValid) {
-                    return null
-                }
-
-                return {
-                    id: user.id,
-                    name: user.name + " " + user.surname,
-                    email: user.username, // Using username as email for NextAuth compatibility if needed, or just custom fields
-                    role: user.role,
+                    return {
+                        id: user.id,
+                        name: user.name + " " + user.surname,
+                        email: user.username,
+                        role: user.role,
+                    }
+                } catch (error) {
+                    console.error("Login error:", error);
+                    return null;
                 }
             }
         })
