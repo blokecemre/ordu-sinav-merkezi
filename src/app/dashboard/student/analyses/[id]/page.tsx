@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 
@@ -34,7 +35,7 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
             </div>
 
             <article className="prose prose-blue max-w-none dark:prose-invert">
-                <ReactMarkdown>{analysis.content}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{analysis.content}</ReactMarkdown>
             </article>
         </div>
     )
