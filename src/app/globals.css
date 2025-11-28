@@ -1,5 +1,30 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+/* Custom Markdown Table Styles */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose th,
+.prose td {
+  padding: 0.75em;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  background-color: var(--muted);
+  font-weight: 600;
+}
+
+.prose tr:nth-child(even) {
+  background-color: var(--muted);
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -116,6 +141,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
