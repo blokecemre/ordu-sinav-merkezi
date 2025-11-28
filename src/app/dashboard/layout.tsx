@@ -46,7 +46,8 @@ export default function DashboardLayout({
         // Student items
         ...(session?.user?.role === "STUDENT" ? [
             { href: "/dashboard/student/results", label: "Sonuçlarım", icon: FileText },
-            { href: "/dashboard/student/analysis", label: "Analiz", icon: BookOpen },
+            { href: "/dashboard/student/analyses", label: "Analizler", icon: BookOpen },
+            { href: "/dashboard/student/analysis", label: "Gelişim Grafiği", icon: TrendingUp },
         ] : []),
     ]
 
