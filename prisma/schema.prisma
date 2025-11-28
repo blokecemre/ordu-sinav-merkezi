@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  // Forced rebuild for postgres
 }
 
 datasource db {
