@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { redirect } from "next/navigation"
+import Link from "next/link"
 
 async function getTeacherAnalytics(teacherId: string) {
     // Get all students assigned to this teacher
@@ -131,20 +132,22 @@ export default async function TeacherAnalysisPage() {
                     ) : (
                         <div className="space-y-4">
                             {analytics.topPerformers.map((student, index) => (
-                                <div key={student.id} className="flex items-center justify-between border-b pb-4 last:border-b-0">
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold">
-                                            {index + 1}
+                                <div key={student.id} className="border-b pb-4 last:border-b-0">
+                                    <Link href={`/dashboard/teacher/students/${student.id}`} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg transition-colors cursor-pointer">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold">
+                                                {index + 1}
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-blue-600 hover:underline">{student.name}</p>
+                                                <p className="text-sm text-muted-foreground">{student.examCount} sınav</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="font-medium">{student.name}</p>
-                                            <p className="text-sm text-muted-foreground">{student.examCount} sınav</p>
+                                        <div className="text-right">
+                                            <p className="font-bold text-lg">{student.averageScore.toFixed(2)}</p>
+                                            <p className="text-sm text-muted-foreground">{student.averageNet.toFixed(2)} net</p>
                                         </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-lg">{student.averageScore.toFixed(2)}</p>
-                                        <p className="text-sm text-muted-foreground">{student.averageNet.toFixed(2)} net</p>
-                                    </div>
+                                    </Link>
                                 </div>
                             ))}
                         </div>
