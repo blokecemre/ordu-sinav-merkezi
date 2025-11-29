@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -20,19 +20,58 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { createExamAndUploadResults } from "@/app/actions/exam"
-import { Upload, FileSpreadsheet, Loader2 } from "lucide-react"
-import * as XLSX from "xlsx"
+import { Checkbox } from "@/components/ui/checkbox"
+import { createExamWithAssignments, getAllStudents } from "@/app/actions/exam"
+import { Upload, Loader2, Search } from "lucide-react"
 import { toast } from "sonner"
+
+type Student = {
+    id: string
+    name: string
+    surname: string
+    username: string
+}
 
 export function UploadExamDialog() {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [file, setFile] = useState<File | null>(null)
+    const [students, setStudents] = useState<Student[]>([])
+    const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set())
+    const [searchQuery, setSearchQuery] = useState("")
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0])
+    useEffect(() => {
+        if (open) {
+            loadStudents()
+        }
+    }, [open])
+
+    const loadStudents = async () => {
+        const result = await getAllStudents()
+        if (result.success) {
+            setStudents(result.students)
+        }
+    }
+
+    const filteredStudents = students.filter(student => {
+        const fullName = `${student.name} ${student.surname} ${student.username}`.toLowerCase()
+        return fullName.includes(searchQuery.toLowerCase())
+    })
+
+    const toggleStudent = (studentId: string) => {
+        const newSelected = new Set(selectedStudents)
+        if (newSelected.has(studentId)) {
+            newSelected.delete(studentId)
+        } else {
+            newSelected.add(studentId)
+        }
+        setSelectedStudents(newSelected)
+    }
+
+    const toggleAll = () => {
+        if (selectedStudents.size === filteredStudents.length) {
+            setSelectedStudents(new Set())
+        } else {
+            setSelectedStudents(new Set(filteredStudents.map(s => s.id)))
         }
     }
 
@@ -41,56 +80,39 @@ export function UploadExamDialog() {
         const formData = new FormData(e.currentTarget)
         const pdfFile = formData.get("pdfFile") as File
 
-        if (!file && (!pdfFile || pdfFile.size === 0)) {
-            toast.error("Lütfen en az bir dosya (Excel veya PDF) seçin.")
+        if (!pdfFile || pdfFile.size === 0) {
+            toast.error("Lütfen PDF dosyası seçin.")
+            return
+        }
+
+        if (selectedStudents.size === 0) {
+            toast.error("Lütfen en az bir öğrenci seçin.")
             return
         }
 
         // Vercel Serverless Function Payload Limit is 4.5MB
-        const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
+        const MAX_FILE_SIZE = 4.5 * 1024 * 1024
 
-        if (pdfFile && pdfFile.size > MAX_FILE_SIZE) {
-            toast.error(`PDF dosyası çok büyük (${(pdfFile.size / 1024 / 1024).toFixed(2)}MB). Vercel limiti 4.5MB'dır. Lütfen dosyanızı sıkıştırın.`);
-            return;
+        if (pdfFile.size > MAX_FILE_SIZE) {
+            toast.error(`PDF dosyası çok büyük (${(pdfFile.size / 1024 / 1024).toFixed(2)}MB). Vercel limiti 4.5MB'dır. Lütfen dosyanızı sıkıştırın.`)
+            return
         }
 
         setLoading(true)
 
         try {
-            let resultsData: any[] = []
-
-            if (file) {
-                // Parse Excel file
-                const data = await file.arrayBuffer()
-                const workbook = XLSX.read(data)
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-                const jsonData = XLSX.utils.sheet_to_json(worksheet)
-
-                // Transform data to expected format
-                // Expected Excel columns: username, score, net, ...details
-                resultsData = jsonData.map((row: any) => ({
-                    username: row.username?.toString(),
-                    totalScore: Number(row.score || 0),
-                    totalNet: Number(row.net || 0),
-                    details: row // Store all row data as details for now
-                })).filter(r => r.username) // Filter out empty rows
-            }
-
-            const result = await createExamAndUploadResults(formData, resultsData)
+            const result = await createExamWithAssignments(formData, Array.from(selectedStudents))
 
             if (result.success) {
-                if (result.notFoundUsernames && result.notFoundUsernames.length > 0) {
-                    toast.warning(result.message, { duration: 10000 })
-                } else {
-                    toast.success(result.message)
-                }
+                toast.success(result.message)
                 setOpen(false)
+                setSelectedStudents(new Set())
             } else {
                 toast.error(result.message)
             }
         } catch (error) {
             console.error(error)
-            toast.error("Dosya işlenirken bir hata oluştu.")
+            toast.error("İşlem sırasında bir hata oluştu.")
         } finally {
             setLoading(false)
         }
@@ -103,15 +125,11 @@ export function UploadExamDialog() {
                     <Upload className="mr-2 h-4 w-4" /> Sınav Yükle
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Yeni Sınav ve Sonuç Yükle</DialogTitle>
+                    <DialogTitle>Yeni Sınav Yükle</DialogTitle>
                     <DialogDescription>
-                        Sınav bilgilerini girin ve sonuç Excel dosyasını yükleyin.
-                        <br />
-                        <span className="text-xs text-muted-foreground">
-                            Excel formatı: username, score, net sütunlarını içermelidir.
-                        </span>
+                        Sınav bilgilerini girin, PDF dosyasını yükleyin ve öğrencileri seçin.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
@@ -147,7 +165,7 @@ export function UploadExamDialog() {
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="pdfFile" className="text-right">
-                            Sonuç Dosyası (PDF)
+                            PDF Dosyası
                         </Label>
                         <div className="col-span-3">
                             <Input
@@ -155,22 +173,54 @@ export function UploadExamDialog() {
                                 name="pdfFile"
                                 type="file"
                                 accept=".pdf"
+                                required
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="file" className="text-right">
-                            Excel Dosyası
-                        </Label>
-                        <div className="col-span-3">
+
+                    <div className="border-t pt-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <Label>Öğrenci Seçimi ({selectedStudents.size} seçili)</Label>
+                            <Button type="button" variant="outline" size="sm" onClick={toggleAll}>
+                                {selectedStudents.size === filteredStudents.length ? "Tümünü Kaldır" : "Tümünü Seç"}
+                            </Button>
+                        </div>
+
+                        <div className="relative mb-2">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
-                                id="file"
-                                type="file"
-                                accept=".xlsx, .xls"
-                                onChange={handleFileChange}
+                                placeholder="Öğrenci ara..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-8"
                             />
                         </div>
+
+                        <div className="border rounded-md max-h-[200px] overflow-y-auto p-2">
+                            {filteredStudents.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-4">
+                                    Öğrenci bulunamadı
+                                </p>
+                            ) : (
+                                filteredStudents.map((student) => (
+                                    <div key={student.id} className="flex items-center space-x-2 py-2 hover:bg-accent rounded px-2">
+                                        <Checkbox
+                                            id={student.id}
+                                            checked={selectedStudents.has(student.id)}
+                                            onCheckedChange={() => toggleStudent(student.id)}
+                                        />
+                                        <label
+                                            htmlFor={student.id}
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
+                                        >
+                                            {student.name} {student.surname} ({student.username})
+                                        </label>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
+
                     <DialogFooter>
                         <Button type="submit" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

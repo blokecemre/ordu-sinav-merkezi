@@ -41,12 +41,32 @@ async function getAllExamsWithPDFs() {
     })
 }
 
+async function getAssignedExams(userId: string) {
+    const assignments = await prisma.examAssignment.findMany({
+        where: { studentId: userId },
+        include: {
+            exam: {
+                select: {
+                    id: true,
+                    name: true,
+                    date: true,
+                    type: true,
+                    pdfName: true,
+                }
+            }
+        },
+        orderBy: { exam: { date: "desc" } }
+    })
+
+    return assignments.map(a => a.exam)
+}
+
 export default async function StudentDashboard() {
     const session = await getServerSession(authOptions)
     if (!session) return null
 
     const stats = await getStudentStats(session.user.id)
-    const allExams = await getAllExamsWithPDFs()
+    const assignedExams = await getAssignedExams(session.user.id)
 
     return (
         <div className="space-y-6">
@@ -116,9 +136,9 @@ export default async function StudentDashboard() {
             </div>
 
             <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Tüm Sınavlar</h2>
+                <h2 className="text-xl font-semibold">Sınavlarım</h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {allExams.map((exam) => (
+                    {assignedExams.map((exam) => (
                         <Card key={exam.id} className="hover:shadow-md transition-shadow">
                             <CardHeader>
                                 <CardTitle className="text-lg">{exam.name}</CardTitle>

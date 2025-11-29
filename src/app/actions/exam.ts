@@ -10,17 +10,7 @@ const ExamSchema = z.object({
     type: z.string(),
 })
 
-// Type for parsed Excel data
-type ExamResultData = {
-    username: string
-    totalScore: number
-    totalNet: number
-    details: any // JSON object
-}
-
-
-
-export async function createExamAndUploadResults(formData: FormData, resultsData: ExamResultData[]) {
+export async function createExamWithAssignments(formData: FormData, studentIds: string[]) {
     try {
         const rawData = {
             name: formData.get("name"),
@@ -42,9 +32,7 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
 
         const validatedData = ExamSchema.parse(rawData)
 
-        const notFoundUsernames: string[] = []
-
-        // Transaction to create exam and results
+        // Transaction to create exam and assignments
         await prisma.$transaction(async (tx) => {
             // 1. Create Exam
             const exam = await tx.exam.create({
@@ -58,42 +46,24 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
                 }
             })
 
-            // 2. Process Results
-            for (const result of resultsData) {
-                // Find student by username
-                const student = await tx.user.findUnique({
-                    where: { username: result.username }
+            // 2. Create Assignments for selected students
+            if (studentIds.length > 0) {
+                await tx.examAssignment.createMany({
+                    data: studentIds.map(studentId => ({
+                        examId: exam.id,
+                        studentId: studentId,
+                    }))
                 })
-
-                if (student) {
-                    await tx.result.create({
-                        data: {
-                            examId: exam.id,
-                            studentId: student.id,
-                            totalScore: result.totalScore,
-                            totalNet: result.totalNet,
-                            details: JSON.stringify(result.details)
-                        }
-                    })
-                } else {
-                    notFoundUsernames.push(result.username)
-                    // Log warning: Student not found for username
-                    console.warn(`Student not found for username: ${result.username}`)
-                }
             }
         })
 
         revalidatePath("/dashboard/admin/exams")
+        revalidatePath("/dashboard/student")
 
-        if (notFoundUsernames.length > 0) {
-            return {
-                message: `Sınav yüklendi ancak ${notFoundUsernames.length} öğrenci bulunamadı: ${notFoundUsernames.join(", ")}`,
-                success: true,
-                notFoundUsernames
-            }
+        return {
+            message: `Sınav başarıyla yüklendi ve ${studentIds.length} öğrenciye atandı.`,
+            success: true
         }
-
-        return { message: "Sınav ve sonuçlar başarıyla yüklendi.", success: true }
     } catch (e) {
         console.error(e)
         return { message: "İşlem sırasında bir hata oluştu.", success: false }
@@ -109,5 +79,27 @@ export async function deleteExam(examId: string) {
         return { message: "Sınav silindi.", success: true }
     } catch (e) {
         return { message: "Silme işlemi başarısız.", success: false }
+    }
+}
+
+export async function getAllStudents() {
+    try {
+        const students = await prisma.user.findMany({
+            where: { role: "STUDENT" },
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                username: true,
+            },
+            orderBy: [
+                { surname: "asc" },
+                { name: "asc" }
+            ]
+        })
+        return { students, success: true }
+    } catch (e) {
+        console.error(e)
+        return { students: [], success: false }
     }
 }
