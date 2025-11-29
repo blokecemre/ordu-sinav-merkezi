@@ -46,6 +46,14 @@ export function UploadExamDialog() {
             return
         }
 
+        // Vercel Serverless Function Payload Limit is 4.5MB
+        const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
+
+        if (pdfFile && pdfFile.size > MAX_FILE_SIZE) {
+            toast.error(`PDF dosyası çok büyük (${(pdfFile.size / 1024 / 1024).toFixed(2)}MB). Vercel limiti 4.5MB'dır. Lütfen dosyanızı sıkıştırın.`);
+            return;
+        }
+
         setLoading(true)
 
         try {
