@@ -89,7 +89,7 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const [selectedRole, setSelectedRole] = useState<"STUDENT" | "TEACHER">("STUDENT")
+    const [selectedRole, setSelectedRole] = useState<"STUDENT" | "TEACHER" | null>(null)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -173,162 +173,170 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {/* Column 1: User Info */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">
-                                    {selectedRole === "TEACHER" ? "Öğretmen Bilgileri" : "Öğrenci Bilgileri"}
-                                </h3>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Ad <span className="text-red-500">*</span></Label>
-                                    <Input id="name" name="name" required disabled={loading} />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="surname">Soyad <span className="text-red-500">*</span></Label>
-                                    <Input id="surname" name="surname" required disabled={loading} />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="username">Kullanıcı Adı <span className="text-red-500">*</span></Label>
-                                    <Input id="username" name="username" required disabled={loading} />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="password">Şifre <span className="text-red-500">*</span></Label>
-                                    <Input id="password" name="password" type="password" required disabled={loading} />
-                                </div>
-
-                                {selectedRole === "STUDENT" && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
-                                        <Select name="classLevel" required>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seçiniz..." />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
-                                                    <SelectItem key={level} value={level.toString()}>
-                                                        {level}. Sınıf
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                )}
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
-                                    <Input id="school" name="school" required disabled={loading} />
-                                </div>
-
-                                {selectedRole === "STUDENT" && (
-                                    <>
-                                    </>
-                                )}
-
-                                {selectedRole === "TEACHER" && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="phone">Cep Telefonu <span className="text-red-500">*</span></Label>
-                                        <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
-                                    </div>
-                                )}
+                        {!selectedRole ? (
+                            <div className="text-center py-12 text-gray-500">
+                                <p>Lütfen kayıt olmak istediğiniz üyelik tipini seçiniz.</p>
                             </div>
-
-                            {/* Column 2: Parent Info (Only for Students) or Empty for Teacher */}
-                            <div className="space-y-4">
-                                {selectedRole === "STUDENT" ? (
-                                    <>
-                                        <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
+                        ) : (
+                            <>
+                                <div className="grid md:grid-cols-3 gap-8">
+                                    {/* Column 1: User Info */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">
+                                            {selectedRole === "TEACHER" ? "Öğretmen Bilgileri" : "Öğrenci Bilgileri"}
+                                        </h3>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
-                                            <Input id="parentName" name="parentName" required disabled={loading} />
+                                            <Label htmlFor="name">Ad <span className="text-red-500">*</span></Label>
+                                            <Input id="name" name="name" required disabled={loading} />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
-                                            <Input id="parentSurname" name="parentSurname" required disabled={loading} />
+                                            <Label htmlFor="surname">Soyad <span className="text-red-500">*</span></Label>
+                                            <Input id="surname" name="surname" required disabled={loading} />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
-                                            <Input id="city" name="city" required disabled={loading} />
+                                            <Label htmlFor="username">Kullanıcı Adı <span className="text-red-500">*</span></Label>
+                                            <Input id="username" name="username" required disabled={loading} />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
-                                            <Input id="district" name="district" required disabled={loading} />
+                                            <Label htmlFor="password">Şifre <span className="text-red-500">*</span></Label>
+                                            <Input id="password" name="password" type="password" required disabled={loading} />
                                         </div>
+
+                                        {selectedRole === "STUDENT" && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
+                                                <Select name="classLevel" required>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Seçiniz..." />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
+                                                            <SelectItem key={level} value={level.toString()}>
+                                                                {level}. Sınıf
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        )}
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="phone">Veli Telefon Numarası <span className="text-red-500">*</span></Label>
-                                            <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                            <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
+                                            <Input id="school" name="school" required disabled={loading} />
                                         </div>
-                                    </>
-                                ) : (
-                                    <div className="hidden md:block"></div> // Spacer for teacher layout
-                                )}
-                            </div>
 
-                            {/* Column 3: General Info */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-pink-600 border-b pb-2">Genel Bilgiler</h3>
+                                        {selectedRole === "STUDENT" && (
+                                            <>
+                                            </>
+                                        )}
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="referenceSource">Bizi nereden duydunuz?</Label>
-                                    <Select name="referenceSource">
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Seçiniz..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="sosyal_medya">Sosyal Medya</SelectItem>
-                                            <SelectItem value="arkadas">Arkadaş Tavsiyesi</SelectItem>
-                                            <SelectItem value="reklam">Reklam</SelectItem>
-                                            <SelectItem value="diger">Diğer</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                        {selectedRole === "TEACHER" && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone">Cep Telefonu <span className="text-red-500">*</span></Label>
+                                                <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                            </div>
+                                        )}
+                                    </div>
 
-                                <div className="pt-4">
-                                    <div className="flex items-start space-x-2">
-                                        <Checkbox id="kvkkConsent" name="kvkkConsent" required />
-                                        <div className="grid gap-1.5 leading-none">
-                                            <label
-                                                htmlFor="kvkkConsent"
-                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <span className="text-blue-600 hover:underline cursor-pointer">
-                                                            KVKK Aydınlatma Metnini
-                                                        </span>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                                                        <DialogHeader>
-                                                            <DialogTitle>KVKK Aydınlatma Metni</DialogTitle>
-                                                            <DialogDescription>
-                                                                Lütfen aşağıdaki metni dikkatlice okuyunuz.
-                                                            </DialogDescription>
-                                                        </DialogHeader>
-                                                        <div className="whitespace-pre-wrap text-sm">
-                                                            {KVKK_TEXT}
-                                                        </div>
-                                                    </DialogContent>
-                                                </Dialog>
-                                                {" "}okudum onaylıyorum. <span className="text-red-500">*</span>
-                                            </label>
+                                    {/* Column 2: Parent Info (Only for Students) or Empty for Teacher */}
+                                    <div className="space-y-4">
+                                        {selectedRole === "STUDENT" ? (
+                                            <>
+                                                <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
+                                                    <Input id="parentName" name="parentName" required disabled={loading} />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
+                                                    <Input id="parentSurname" name="parentSurname" required disabled={loading} />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
+                                                    <Input id="city" name="city" required disabled={loading} />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
+                                                    <Input id="district" name="district" required disabled={loading} />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="phone">Veli Telefon Numarası <span className="text-red-500">*</span></Label>
+                                                    <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="hidden md:block"></div> // Spacer for teacher layout
+                                        )}
+                                    </div>
+
+                                    {/* Column 3: General Info */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-semibold text-pink-600 border-b pb-2">Genel Bilgiler</h3>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="referenceSource">Bizi nereden duydunuz?</Label>
+                                            <Select name="referenceSource">
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Seçiniz..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="sosyal_medya">Sosyal Medya</SelectItem>
+                                                    <SelectItem value="arkadas">Arkadaş Tavsiyesi</SelectItem>
+                                                    <SelectItem value="reklam">Reklam</SelectItem>
+                                                    <SelectItem value="diger">Diğer</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="pt-4">
+                                            <div className="flex items-start space-x-2">
+                                                <Checkbox id="kvkkConsent" name="kvkkConsent" required />
+                                                <div className="grid gap-1.5 leading-none">
+                                                    <label
+                                                        htmlFor="kvkkConsent"
+                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                    >
+                                                        <Dialog>
+                                                            <DialogTrigger asChild>
+                                                                <span className="text-blue-600 hover:underline cursor-pointer">
+                                                                    KVKK Aydınlatma Metnini
+                                                                </span>
+                                                            </DialogTrigger>
+                                                            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                                                                <DialogHeader>
+                                                                    <DialogTitle>KVKK Aydınlatma Metni</DialogTitle>
+                                                                    <DialogDescription>
+                                                                        Lütfen aşağıdaki metni dikkatlice okuyunuz.
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+                                                                <div className="whitespace-pre-wrap text-sm">
+                                                                    {KVKK_TEXT}
+                                                                </div>
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                        {" "}okudum onaylıyorum. <span className="text-red-500">*</span>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <Button type="submit" className="w-full mt-6" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Üye Ol
-                        </Button>
+                                <Button type="submit" className="w-full mt-6" disabled={loading}>
+                                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Üye Ol
+                                </Button>
+                            </>
+                        )}
 
                         <div className="text-center text-sm text-gray-600">
                             Zaten hesabınız var mı?{" "}
