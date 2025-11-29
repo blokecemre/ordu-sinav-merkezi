@@ -38,29 +38,35 @@ export function UploadExamDialog() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!file) {
-            toast.error("Lütfen bir Excel dosyası seçin.")
+        const formData = new FormData(e.currentTarget)
+        const pdfFile = formData.get("pdfFile") as File
+
+        if (!file && (!pdfFile || pdfFile.size === 0)) {
+            toast.error("Lütfen en az bir dosya (Excel veya PDF) seçin.")
             return
         }
 
         setLoading(true)
-        const formData = new FormData(e.currentTarget)
 
         try {
-            // Parse Excel file
-            const data = await file.arrayBuffer()
-            const workbook = XLSX.read(data)
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-            const jsonData = XLSX.utils.sheet_to_json(worksheet)
+            let resultsData: any[] = []
 
-            // Transform data to expected format
-            // Expected Excel columns: username, score, net, ...details
-            const resultsData = jsonData.map((row: any) => ({
-                username: row.username?.toString(),
-                totalScore: Number(row.score || 0),
-                totalNet: Number(row.net || 0),
-                details: row // Store all row data as details for now
-            })).filter(r => r.username) // Filter out empty rows
+            if (file) {
+                // Parse Excel file
+                const data = await file.arrayBuffer()
+                const workbook = XLSX.read(data)
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+                const jsonData = XLSX.utils.sheet_to_json(worksheet)
+
+                // Transform data to expected format
+                // Expected Excel columns: username, score, net, ...details
+                resultsData = jsonData.map((row: any) => ({
+                    username: row.username?.toString(),
+                    totalScore: Number(row.score || 0),
+                    totalNet: Number(row.net || 0),
+                    details: row // Store all row data as details for now
+                })).filter(r => r.username) // Filter out empty rows
+            }
 
             const result = await createExamAndUploadResults(formData, resultsData)
 
@@ -150,7 +156,6 @@ export function UploadExamDialog() {
                                 type="file"
                                 accept=".xlsx, .xls"
                                 onChange={handleFileChange}
-                                required
                             />
                         </div>
                     </div>
