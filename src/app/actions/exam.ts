@@ -29,13 +29,13 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
         }
 
         const pdfFile = formData.get("pdfFile") as File | null
-        let pdfData: Buffer | null = null
+        let pdfData: Uint8Array | null = null
         let pdfName: string | null = null
         let pdfMimeType: string | null = null
 
         if (pdfFile && pdfFile.size > 0) {
             const bytes = await pdfFile.arrayBuffer()
-            pdfData = Buffer.from(bytes)
+            pdfData = new Uint8Array(bytes)
             pdfName = pdfFile.name
             pdfMimeType = pdfFile.type
         }
