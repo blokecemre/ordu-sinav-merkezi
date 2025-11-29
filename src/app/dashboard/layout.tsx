@@ -37,18 +37,16 @@ export default function DashboardLayout({
             { href: "/dashboard/admin/exams", label: "Sınavlar", icon: FileText },
             { href: "/dashboard/admin/analyses", label: "Analiz", icon: TrendingUp }, // Added Analiz for Admin
             { href: "/dashboard/admin/assignments", label: "Atamalar", icon: Users } // Added Atamalar for Admin
-        ] : []),
         // Teacher items
         ...(session?.user?.role === "TEACHER" ? [
-            { href: "/dashboard/teacher/students", label: "Öğrencilerim", icon: Users },
-            { href: "/dashboard/teacher/analysis", label: "Analiz", icon: BookOpen }, // Added for TEACHER
-        ] : []),
-        // Student items
-        ...(session?.user?.role === "STUDENT" ? [
-            { href: "/dashboard/student/analyses", label: "Analizler", icon: BookOpen },
-            { href: "/dashboard/student/analysis", label: "Gelişim Grafiği", icon: TrendingUp },
-        ] : []),
-    ]
+                { href: "/dashboard/teacher/students", label: "Öğrencilerim", icon: Users },
+            ] : []),
+            // Student items
+            ...(session?.user?.role === "STUDENT" ? [
+                { href: "/dashboard/student/analyses", label: "Analizler", icon: BookOpen },
+                { href: "/dashboard/student/analysis", label: "Gelişim Grafiği", icon: TrendingUp },
+            ] : []),
+        ]
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
