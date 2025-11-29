@@ -9,6 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { AddUserDialog } from "@/components/admin/AddUserDialog"
+import { UserDetailDialog } from "@/components/admin/UserDetailDialog"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
@@ -53,6 +54,9 @@ export default async function UsersPage() {
                                 </TableCell>
                                 <TableCell>
                                     {format(new Date(user.createdAt), "d MMMM yyyy", { locale: tr })}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <UserDetailDialog user={user} />
                                 </TableCell>
                             </TableRow>
                         ))}
