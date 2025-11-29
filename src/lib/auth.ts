@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { compare } from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-    secret: process.env.NEXTAUTH_SECRET || "temporary-secret-key-change-me-in-prod",
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt",
     },
