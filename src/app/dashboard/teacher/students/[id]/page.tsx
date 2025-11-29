@@ -12,7 +12,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { FileText } from "lucide-react"
+import { FileText, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -33,6 +35,11 @@ export default async function StudentDetailPage({ params }: PageProps) {
         where: { studentId: id },
         include: { exam: true },
         orderBy: { exam: { date: "asc" } }
+    })
+
+    const analyses = await prisma.analysis.findMany({
+        where: { studentId: id },
+        orderBy: { createdAt: "desc" }
     })
 
     const chartData = results.map(result => ({
@@ -100,6 +107,46 @@ export default async function StudentDetailPage({ params }: PageProps) {
                                     </TableCell>
                                 </TableRow>
                             ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <h2 className="text-xl font-semibold">Analiz Raporları</h2>
+                <div className="rounded-md border bg-white">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Rapor Başlığı</TableHead>
+                                <TableHead>Tarih</TableHead>
+                                <TableHead className="text-right">İşlemler</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {analyses.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
+                                        Henüz analiz raporu bulunmuyor.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                analyses.map((analysis) => (
+                                    <TableRow key={analysis.id}>
+                                        <TableCell className="font-medium">{analysis.title}</TableCell>
+                                        <TableCell>
+                                            {format(new Date(analysis.createdAt), "d MMMM yyyy", { locale: tr })}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Link href={`/dashboard/teacher/students/${id}/analysis/${analysis.id}`}>
+                                                <Button variant="ghost" size="sm">
+                                                    Görüntüle <ArrowRight className="ml-2 w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </div>
