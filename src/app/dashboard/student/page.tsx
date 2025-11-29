@@ -25,11 +25,28 @@ async function getStudentStats(userId: string) {
     return { totalExams, averageScore, averageNet, recentResults: results.slice(0, 5) }
 }
 
+async function getAllExamsWithPDFs() {
+    return await prisma.exam.findMany({
+        where: {
+            pdfName: { not: null }
+        },
+        orderBy: { date: "desc" },
+        select: {
+            id: true,
+            name: true,
+            date: true,
+            type: true,
+            pdfName: true,
+        }
+    })
+}
+
 export default async function StudentDashboard() {
     const session = await getServerSession(authOptions)
     if (!session) return null
 
     const stats = await getStudentStats(session.user.id)
+    const allExams = await getAllExamsWithPDFs()
 
     return (
         <div className="space-y-6">
@@ -88,6 +105,35 @@ export default async function StudentDashboard() {
                                 {result.exam.pdfName && (
                                     <div className="mt-4 pt-4 border-t">
                                         <a href={`/api/exam/${result.exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
+                                            <FileText className="w-4 h-4 mr-1" /> Sınav PDF'ini İndir
+                                        </a>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <h2 className="text-xl font-semibold">Tüm Sınavlar</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {allExams.map((exam) => (
+                        <Card key={exam.id} className="hover:shadow-md transition-shadow">
+                            <CardHeader>
+                                <CardTitle className="text-lg">{exam.name}</CardTitle>
+                                <p className="text-sm text-muted-foreground">
+                                    {format(new Date(exam.date), "d MMMM yyyy", { locale: tr })}
+                                </p>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-sm font-medium text-gray-500">Tür</span>
+                                    <span className="text-sm font-bold">{exam.type}</span>
+                                </div>
+                                {exam.pdfName && (
+                                    <div className="mt-4 pt-4 border-t">
+                                        <a href={`/api/exam/${exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
                                             <FileText className="w-4 h-4 mr-1" /> Sınav PDF'ini İndir
                                         </a>
                                     </div>
