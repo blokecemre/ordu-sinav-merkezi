@@ -98,7 +98,9 @@ export default function RegisterPage() {
         setLoading(true)
 
         const formData = new FormData(e.currentTarget)
-        formData.set("role", selectedRole)
+        if (selectedRole) {
+            formData.set("role", selectedRole)
+        }
 
         try {
             const result = await registerUser(formData)
