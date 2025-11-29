@@ -79,7 +79,11 @@ export function UploadExamDialog() {
             const result = await createExamAndUploadResults(formData, resultsData)
 
             if (result.success) {
-                toast.success(result.message)
+                if (result.notFoundUsernames && result.notFoundUsernames.length > 0) {
+                    toast.warning(result.message, { duration: 10000 })
+                } else {
+                    toast.success(result.message)
+                }
                 setOpen(false)
             } else {
                 toast.error(result.message)

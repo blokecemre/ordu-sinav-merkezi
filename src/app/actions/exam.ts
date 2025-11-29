@@ -42,6 +42,8 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
 
         const validatedData = ExamSchema.parse(rawData)
 
+        const notFoundUsernames: string[] = []
+
         // Transaction to create exam and results
         await prisma.$transaction(async (tx) => {
             // 1. Create Exam
@@ -74,6 +76,7 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
                         }
                     })
                 } else {
+                    notFoundUsernames.push(result.username)
                     // Log warning: Student not found for username
                     console.warn(`Student not found for username: ${result.username}`)
                 }
@@ -81,6 +84,15 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
         })
 
         revalidatePath("/dashboard/admin/exams")
+
+        if (notFoundUsernames.length > 0) {
+            return {
+                message: `Sınav yüklendi ancak ${notFoundUsernames.length} öğrenci bulunamadı: ${notFoundUsernames.join(", ")}`,
+                success: true,
+                notFoundUsernames
+            }
+        }
+
         return { message: "Sınav ve sonuçlar başarıyla yüklendi.", success: true }
     } catch (e) {
         console.error(e)
