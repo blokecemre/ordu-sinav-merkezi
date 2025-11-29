@@ -19,7 +19,12 @@ import { deleteExam } from "@/app/actions/exam"
 export default async function ExamsPage() {
     const exams = await prisma.exam.findMany({
         orderBy: { date: "desc" },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            date: true,
+            type: true,
+            pdfName: true,
             _count: {
                 select: { results: true }
             }
@@ -57,8 +62,8 @@ export default async function ExamsPage() {
                                 </TableCell>
                                 <TableCell>{exam._count.results}</TableCell>
                                 <TableCell>
-                                    {exam.pdfUrl ? (
-                                        <a href={exam.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                    {exam.pdfName ? (
+                                        <a href={`/api/exam/${exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
                                             PDF İndir
                                         </a>
                                     ) : (

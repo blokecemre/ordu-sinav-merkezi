@@ -51,7 +51,9 @@ model Exam {
   name      String
   date      DateTime
   type      String   // TYT, AYT, LGS, etc.
-  pdfUrl    String?  // New field for PDF file path
+  pdfData   Bytes?   // Binary data for PDF
+  pdfName   String?  // Original filename
+  pdfMimeType String? // Mime type (e.g. application/pdf)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

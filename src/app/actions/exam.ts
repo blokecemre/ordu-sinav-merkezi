@@ -18,7 +18,7 @@ type ExamResultData = {
     details: any // JSON object
 }
 
-import { saveFile } from "@/lib/upload"
+
 
 export async function createExamAndUploadResults(formData: FormData, resultsData: ExamResultData[]) {
     try {
@@ -29,10 +29,15 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
         }
 
         const pdfFile = formData.get("pdfFile") as File | null
-        let pdfUrl = null
+        let pdfData: Buffer | null = null
+        let pdfName: string | null = null
+        let pdfMimeType: string | null = null
 
         if (pdfFile && pdfFile.size > 0) {
-            pdfUrl = await saveFile(pdfFile, "exams")
+            const bytes = await pdfFile.arrayBuffer()
+            pdfData = Buffer.from(bytes)
+            pdfName = pdfFile.name
+            pdfMimeType = pdfFile.type
         }
 
         const validatedData = ExamSchema.parse(rawData)
@@ -45,7 +50,9 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
                     name: validatedData.name,
                     date: new Date(validatedData.date),
                     type: validatedData.type,
-                    pdfUrl: pdfUrl,
+                    pdfData: pdfData,
+                    pdfName: pdfName,
+                    pdfMimeType: pdfMimeType,
                 }
             })
 
