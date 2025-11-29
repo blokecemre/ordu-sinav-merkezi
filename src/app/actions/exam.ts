@@ -50,7 +50,7 @@ export async function createExamAndUploadResults(formData: FormData, resultsData
                     name: validatedData.name,
                     date: new Date(validatedData.date),
                     type: validatedData.type,
-                    pdfData: pdfData,
+                    pdfData: pdfData as any,
                     pdfName: pdfName,
                     pdfMimeType: pdfMimeType,
                 }
