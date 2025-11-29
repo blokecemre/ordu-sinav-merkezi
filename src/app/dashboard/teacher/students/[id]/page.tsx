@@ -12,6 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { FileText } from "lucide-react"
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -64,6 +65,7 @@ export default async function StudentDetailPage({ params }: PageProps) {
                                 <TableHead>Tür</TableHead>
                                 <TableHead>Puan</TableHead>
                                 <TableHead>Net</TableHead>
+                                <TableHead className="text-right">Sonuç Dosyası</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -81,6 +83,20 @@ export default async function StudentDetailPage({ params }: PageProps) {
                                     </TableCell>
                                     <TableCell className="font-bold text-green-600">
                                         {result.totalNet.toFixed(2)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {result.exam.pdfName ? (
+                                            <a
+                                                href={`/api/exam/${result.exam.id}/pdf`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center text-sm text-blue-600 hover:underline"
+                                            >
+                                                <FileText className="w-4 h-4 mr-1" /> İndir
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-sm">-</span>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
