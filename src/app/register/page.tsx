@@ -225,32 +225,6 @@ export default function RegisterPage() {
 
                                 {selectedRole === "STUDENT" && (
                                     <>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="session">Seans <span className="text-red-500">*</span></Label>
-                                            <Select name="session" required>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seçiniz..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="sabah">Sabah</SelectItem>
-                                                    <SelectItem value="oglen">Öğlen</SelectItem>
-                                                    <SelectItem value="aksam">Akşam</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="examCenter">Sınav Merkezi <span className="text-red-500">*</span></Label>
-                                            <Select name="examCenter" required>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seçiniz..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="merkez">Merkez Şube</SelectItem>
-                                                    <SelectItem value="sube1">Şube 1</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
                                     </>
                                 )}
 
