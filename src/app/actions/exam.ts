@@ -10,7 +10,17 @@ const ExamSchema = z.object({
     type: z.string(),
 })
 
-export async function createExamWithAssignments(formData: FormData, studentIds: string[]) {
+type StudentResult = {
+    studentId: string
+    totalScore: number
+    totalNet: number
+}
+
+export async function createExamWithAssignments(
+    formData: FormData,
+    studentIds: string[],
+    results: StudentResult[] = []
+) {
     try {
         const rawData = {
             name: formData.get("name"),
@@ -32,7 +42,7 @@ export async function createExamWithAssignments(formData: FormData, studentIds: 
 
         const validatedData = ExamSchema.parse(rawData)
 
-        // Transaction to create exam and assignments
+        // Transaction to create exam, assignments, and results
         await prisma.$transaction(async (tx) => {
             // 1. Create Exam
             const exam = await tx.exam.create({
@@ -55,13 +65,26 @@ export async function createExamWithAssignments(formData: FormData, studentIds: 
                     }))
                 })
             }
+
+            // 3. Create Results if provided
+            if (results.length > 0) {
+                await tx.result.createMany({
+                    data: results.map(result => ({
+                        examId: exam.id,
+                        studentId: result.studentId,
+                        totalScore: result.totalScore,
+                        totalNet: result.totalNet,
+                        details: JSON.stringify({}), // Empty details for now
+                    }))
+                })
+            }
         })
 
         revalidatePath("/dashboard/admin/exams")
         revalidatePath("/dashboard/student")
 
         return {
-            message: `Sınav başarıyla yüklendi ve ${studentIds.length} öğrenciye atandı.`,
+            message: `Sınav başarıyla yüklendi. ${studentIds.length} öğrenciye atandı${results.length > 0 ? ` ve ${results.length} sonuç kaydedildi` : ''}.`,
             success: true
         }
     } catch (e) {
