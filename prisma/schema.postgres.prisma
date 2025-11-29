@@ -23,6 +23,19 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Extended Profile Info
+  classLevel      String?
+  school          String?
+  session         String?
+  examCenter      String?
+  parentName      String?
+  parentSurname   String?
+  city            String?
+  district        String?
+  phone           String?
+  referenceSource String?
+  kvkkConsent     Boolean  @default(false)
+
   // Relations
   studentResults Result[]
   analyses      Analysis[] // New relation

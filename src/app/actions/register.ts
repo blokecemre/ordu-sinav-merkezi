@@ -10,6 +10,20 @@ const RegisterSchema = z.object({
     name: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
     surname: z.string().min(2, "Soyad en az 2 karakter olmalıdır"),
     role: z.enum(["STUDENT", "TEACHER"]),
+    // New fields
+    classLevel: z.string().optional(),
+    school: z.string().optional(),
+    session: z.string().optional(),
+    examCenter: z.string().optional(),
+    parentName: z.string().optional(),
+    parentSurname: z.string().optional(),
+    city: z.string().optional(),
+    district: z.string().optional(),
+    phone: z.string().optional(),
+    referenceSource: z.string().optional(),
+    kvkkConsent: z.string().transform((val) => val === "on" || val === "true").refine((val) => val === true, {
+        message: "KVKK aydınlatma metnini onaylamanız gerekmektedir.",
+    }),
 })
 
 export async function registerUser(formData: FormData) {
@@ -19,6 +33,17 @@ export async function registerUser(formData: FormData) {
         name: formData.get("name"),
         surname: formData.get("surname"),
         role: formData.get("role"),
+        classLevel: formData.get("classLevel"),
+        school: formData.get("school"),
+        session: formData.get("session"),
+        examCenter: formData.get("examCenter"),
+        parentName: formData.get("parentName"),
+        parentSurname: formData.get("parentSurname"),
+        city: formData.get("city"),
+        district: formData.get("district"),
+        phone: formData.get("phone"),
+        referenceSource: formData.get("referenceSource"),
+        kvkkConsent: formData.get("kvkkConsent"),
     }
 
     const validatedFields = RegisterSchema.safeParse(rawData)
@@ -53,6 +78,18 @@ export async function registerUser(formData: FormData) {
                 name: validatedData.name,
                 surname: validatedData.surname,
                 role: validatedData.role,
+                // New fields
+                classLevel: validatedData.classLevel,
+                school: validatedData.school,
+                session: validatedData.session,
+                examCenter: validatedData.examCenter,
+                parentName: validatedData.parentName,
+                parentSurname: validatedData.parentSurname,
+                city: validatedData.city,
+                district: validatedData.district,
+                phone: validatedData.phone,
+                referenceSource: validatedData.referenceSource,
+                kvkkConsent: validatedData.kvkkConsent,
             }
         })
 
