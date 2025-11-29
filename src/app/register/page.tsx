@@ -174,9 +174,11 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
-                            {/* Column 1: Student Info */}
+                            {/* Column 1: User Info */}
                             <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">Öğrenci Bilgileri</h3>
+                                <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">
+                                    {selectedRole === "TEACHER" ? "Öğretmen Bilgileri" : "Öğrenci Bilgileri"}
+                                </h3>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Ad <span className="text-red-500">*</span></Label>
@@ -199,28 +201,30 @@ export default function RegisterPage() {
                                 </div>
 
                                 {selectedRole === "STUDENT" && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
+                                        <Select name="classLevel" required>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seçiniz..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
+                                                    <SelectItem key={level} value={level.toString()}>
+                                                        {level}. Sınıf
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
+                                    <Input id="school" name="school" required disabled={loading} />
+                                </div>
+
+                                {selectedRole === "STUDENT" && (
                                     <>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
-                                            <Select name="classLevel" required>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seçiniz..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
-                                                        <SelectItem key={level} value={level.toString()}>
-                                                            {level}. Sınıf
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
-                                            <Input id="school" name="school" required disabled={loading} />
-                                        </div>
-
                                         <div className="space-y-2">
                                             <Label htmlFor="session">Seans <span className="text-red-500">*</span></Label>
                                             <Select name="session" required>
@@ -249,39 +253,50 @@ export default function RegisterPage() {
                                         </div>
                                     </>
                                 )}
-                            </div>
 
-                            {/* Column 2: Parent Info (Only for Students) */}
-                            {selectedRole === "STUDENT" && (
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
-
+                                {selectedRole === "TEACHER" && (
                                     <div className="space-y-2">
-                                        <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
-                                        <Input id="parentName" name="parentName" required disabled={loading} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
-                                        <Input id="parentSurname" name="parentSurname" required disabled={loading} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
-                                        <Input id="city" name="city" required disabled={loading} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
-                                        <Input id="district" name="district" required disabled={loading} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="phone">Telefon Numarası <span className="text-red-500">*</span></Label>
+                                        <Label htmlFor="phone">Cep Telefonu <span className="text-red-500">*</span></Label>
                                         <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
+
+                            {/* Column 2: Parent Info (Only for Students) or Empty for Teacher */}
+                            <div className="space-y-4">
+                                {selectedRole === "STUDENT" ? (
+                                    <>
+                                        <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
+                                            <Input id="parentName" name="parentName" required disabled={loading} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
+                                            <Input id="parentSurname" name="parentSurname" required disabled={loading} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
+                                            <Input id="city" name="city" required disabled={loading} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
+                                            <Input id="district" name="district" required disabled={loading} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="phone">Veli Telefon Numarası <span className="text-red-500">*</span></Label>
+                                            <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="hidden md:block"></div> // Spacer for teacher layout
+                                )}
+                            </div>
 
                             {/* Column 3: General Info */}
                             <div className="space-y-4">
