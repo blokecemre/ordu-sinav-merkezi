@@ -41,6 +41,7 @@ export default function DashboardLayout({
         // Teacher items
         ...(session?.user?.role === "TEACHER" ? [
             { href: "/dashboard/teacher/students", label: "Öğrencilerim", icon: Users },
+            { href: "/dashboard/teacher/analysis", label: "Analiz", icon: BookOpen },
         ] : []),
         // Student items
         ...(session?.user?.role === "STUDENT" ? [
