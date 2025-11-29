@@ -56,8 +56,8 @@ export default async function StudentResultsPage() {
                                     {result.totalNet.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    {result.exam.pdfUrl ? (
-                                        <a href={result.exam.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                    {result.exam.pdfName ? (
+                                        <a href={`/api/exam/${result.exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
                                             PDF İndir
                                         </a>
                                     ) : (

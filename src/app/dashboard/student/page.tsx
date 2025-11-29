@@ -85,9 +85,9 @@ export default async function StudentDashboard() {
                                     <span className="text-sm font-medium text-gray-500">Net</span>
                                     <span className="text-lg font-bold text-green-600">{result.totalNet.toFixed(2)}</span>
                                 </div>
-                                {result.exam.pdfUrl && (
+                                {result.exam.pdfName && (
                                     <div className="mt-4 pt-4 border-t">
-                                        <a href={result.exam.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
+                                        <a href={`/api/exam/${result.exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
                                             <FileText className="w-4 h-4 mr-1" /> Sınav PDF'ini İndir
                                         </a>
                                     </div>
