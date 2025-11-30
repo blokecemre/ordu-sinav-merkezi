@@ -19,25 +19,38 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Şifre", type: "password" }
             },
             async authorize(credentials) {
-                console.log("Login attempt for:", credentials?.username);
+                const username = credentials?.username?.trim();
+                const password = credentials?.password?.trim();
 
-                if (!credentials?.username || !credentials?.password) {
+                console.log("Login attempt for:", username);
+
+                if (!username || !password) {
                     return null
                 }
 
                 try {
                     // Retry logic for DB connection issues
                     let user = null;
-                    let retries = 5; // Increased retries
+                    let retries = 3; // Keep it reasonable
                     let lastError = null;
 
                     while (retries > 0) {
                         try {
-                            console.log(`[Auth] Attempting DB fetch for user: ${credentials.username} (Retries left: ${retries})`);
+                            console.log(`[Auth] Attempting DB connection/fetch for user: ${username} (Retries left: ${retries})`);
+
+                            // Explicit connection check
+                            try {
+                                await prisma.$queryRaw`SELECT 1`;
+                                console.log("[Auth] DB Connection verified");
+                            } catch (connError) {
+                                console.error("[Auth] DB Connection check failed:", connError);
+                                throw connError; // Trigger retry
+                            }
+
                             const start = Date.now();
                             user = await prisma.user.findUnique({
                                 where: {
-                                    username: credentials.username
+                                    username: username
                                 }
                             })
                             console.log(`[Auth] DB fetch took ${Date.now() - start}ms`);
@@ -47,7 +60,7 @@ export const authOptions: NextAuthOptions = {
                             console.error(`[Auth] DB Error (Attempts left: ${retries - 1}):`, dbError);
                             retries--;
                             if (retries === 0) break; // Stop retrying
-                            await new Promise(resolve => setTimeout(resolve, 1000)); // Increased wait to 1000ms
+                            await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait to 2000ms
                         }
                     }
 
@@ -64,7 +77,7 @@ export const authOptions: NextAuthOptions = {
                         return null
                     }
 
-                    const isPasswordValid = await compare(credentials.password, user.password)
+                    const isPasswordValid = await compare(password, user.password)
                     console.log("[Auth] Password valid:", isPasswordValid);
 
                     if (!isPasswordValid) {
