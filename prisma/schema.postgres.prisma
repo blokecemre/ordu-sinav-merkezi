@@ -113,3 +113,14 @@ model ExamAssignment {
 
   @@unique([examId, studentId])
 }
+
+model AnswerKey {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  pdfData     Bytes    // Binary data for PDF
+  pdfName     String   // Original filename
+  pdfMimeType String   // Mime type (e.g. application/pdf)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
