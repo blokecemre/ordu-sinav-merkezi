@@ -1,41 +1,37 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { BarChart2, ArrowLeft, Mail, Phone, MapPin } from "lucide-react"
 import { SiteHeader } from "@/components/SiteHeader"
+import { Card } from "@/components/ui/card"
+import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { getSettings } from "@/app/actions/settings"
 
-export default function IletisimPage() {
+export default async function ContactPage() {
+    const settingsResult = await getSettings()
+    const settings = settingsResult.success ? settingsResult.data : {}
+
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Header */}
+        <div className="min-h-screen flex flex-col bg-gray-50">
             <SiteHeader />
 
-            {/* Main Content */}
-            <main className="flex-1 bg-gray-50">
-                <div className="container mx-auto px-4 py-12">
-                    {/* Hero */}
-                    <div className="text-center mb-12">
-                        <Mail className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">İletişim</h1>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Bize ulaşın, sorularınızı yanıtlayalım
+            <main className="flex-1 container mx-auto px-4 py-12">
+                <div className="max-w-4xl mx-auto space-y-8">
+                    <div className="text-center space-y-4">
+                        <h1 className="text-4xl font-bold text-gray-900">İletişim</h1>
+                        <p className="text-xl text-gray-600">
+                            Sorularınız için bize ulaşın veya kurumumuzu ziyaret edin.
                         </p>
                     </div>
 
-                    <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-                        {/* İletişim Bilgileri */}
-                        <div className="bg-white rounded-lg p-8 shadow-sm">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">İletişim Bilgileri</h2>
-
-                            <div className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Contact Info */}
+                        <div className="space-y-6">
+                            <Card className="p-6 space-y-6">
                                 <div className="flex items-start gap-4">
                                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <MapPin className="w-6 h-6 text-blue-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1">Adres</h3>
+                                        <h3 className="font-semibold text-lg mb-1">Adres</h3>
                                         <p className="text-gray-600">
-                                            Bahçelievler Mah. Cumhuriyet Cad.<br />
-                                            No: 12/4 Altınordu/ORDU
+                                            {settings?.address || "Adres bilgisi girilmemiş."}
                                         </p>
                                     </div>
                                 </div>
@@ -45,10 +41,13 @@ export default function IletisimPage() {
                                         <Phone className="w-6 h-6 text-green-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1">Telefon</h3>
+                                        <h3 className="font-semibold text-lg mb-1">Telefon</h3>
                                         <p className="text-gray-600">
-                                            +90 (452) 123 45 67<br />
-                                            +90 (452) 123 45 68
+                                            {settings?.phone ? (
+                                                <a href={`tel:${settings.phone}`} className="hover:text-blue-600 transition-colors">
+                                                    {settings.phone}
+                                                </a>
+                                            ) : "Telefon bilgisi girilmemiş."}
                                         </p>
                                     </div>
                                 </div>
@@ -58,108 +57,47 @@ export default function IletisimPage() {
                                         <Mail className="w-6 h-6 text-purple-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1">E-posta</h3>
+                                        <h3 className="font-semibold text-lg mb-1">E-posta</h3>
                                         <p className="text-gray-600">
-                                            info@ordusinavmerkezi.com<br />
-                                            destek@ordusinavmerkezi.com
+                                            {settings?.email ? (
+                                                <a href={`mailto:${settings.email}`} className="hover:text-blue-600 transition-colors">
+                                                    {settings.email}
+                                                </a>
+                                            ) : "E-posta bilgisi girilmemiş."}
                                         </p>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="mt-8 pt-8 border-t">
-                                <h3 className="font-semibold text-gray-900 mb-3">Çalışma Saatleri</h3>
-                                <div className="space-y-2 text-gray-600">
-                                    <p className="flex justify-between">
-                                        <span>Pazartesi - Cuma:</span>
-                                        <span className="font-medium">09:00 - 18:00</span>
-                                    </p>
-                                    <p className="flex justify-between">
-                                        <span>Cumartesi:</span>
-                                        <span className="font-medium">10:00 - 16:00</span>
-                                    </p>
-                                    <p className="flex justify-between">
-                                        <span>Pazar:</span>
-                                        <span className="font-medium text-red-600">Kapalı</span>
-                                    </p>
+                                <div className="flex items-start gap-4">
+                                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <Clock className="w-6 h-6 text-orange-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-lg mb-1">Çalışma Saatleri</h3>
+                                        <p className="text-gray-600">
+                                            Pazartesi - Cumartesi: 09:00 - 19:00<br />
+                                            Pazar: Kapalı
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            </Card>
                         </div>
 
-                        {/* İletişim Formu */}
-                        <div className="bg-white rounded-lg p-8 shadow-sm">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Bize Yazın</h2>
-
-                            <form className="space-y-4">
-                                <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Ad Soyad
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                        placeholder="Adınız ve soyadınız"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                        E-posta
-                                    </label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                        placeholder="ornek@email.com"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Telefon
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                        placeholder="(5XX) XXX XX XX"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Mesajınız
-                                    </label>
-                                    <textarea
-                                        id="message"
-                                        rows={5}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                        placeholder="Mesajınızı buraya yazın..."
-                                    />
-                                </div>
-
-                                <Button type="submit" className="w-full">
-                                    Gönder
-                                </Button>
-                            </form>
-
-                            <p className="text-sm text-gray-500 mt-4 text-center">
-                                * Form şu anda demo amaçlıdır
-                            </p>
+                        {/* Map */}
+                        <div className="h-[400px] bg-gray-200 rounded-xl overflow-hidden shadow-lg">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3010.578676234378!2d37.87846537654354!3d40.98813897135316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40643c6666666667%3A0x6666666666666666!2sOrdu!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     </div>
                 </div>
             </main>
-
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-8">
-                <div className="container mx-auto px-4 text-center">
-                    <p className="text-gray-400 text-sm">
-                        © 2024 Ordu Sınav Merkezi. Tüm hakları saklıdır.
-                    </p>
-                </div>
-            </footer>
         </div>
     )
 }

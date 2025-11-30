@@ -16,10 +16,10 @@ export function SiteHeader() {
                 <nav className="hidden md:flex items-center gap-6">
                     <Link href="/paketler" className="text-sm font-medium text-muted-foreground hover:text-foreground">Paketler</Link>
                     <Link href="/kurumsal" className="text-sm font-medium text-muted-foreground hover:text-foreground">Kurumsal</Link>
-                    <Link href="/hakkimizda" className="text-sm font-medium text-muted-foreground hover:text-foreground">Hakkımızda</Link>
-                    <Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground">Blog</Link>
-                    <Link href="/cevap-anahtarlari" className="text-sm font-medium text-muted-foreground hover:text-foreground">Cevap Anahtarları</Link>
                     <Link href="/sinavlar" className="text-sm font-medium text-muted-foreground hover:text-foreground">Sınavlar</Link>
+                    <Link href="/cevap-anahtarlari" className="text-sm font-medium text-muted-foreground hover:text-foreground">Cevap Anahtarları</Link>
+                    <Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground">Blog</Link>
+                    <Link href="/hakkimizda" className="text-sm font-medium text-muted-foreground hover:text-foreground">Hakkımızda</Link>
                     <Link href="/iletisim" className="text-sm font-medium text-muted-foreground hover:text-foreground">İletişim</Link>
                 </nav>
                 <div className="flex items-center gap-4">

@@ -1,5 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader"
-import { getSystemSetting } from "@/app/actions/settings"
+import { getSettings } from "@/app/actions/settings"
 import { getPartners } from "@/app/actions/partner"
 import { Card } from "@/components/ui/card"
 import { ClientCountdown } from "./client-countdown"
@@ -11,8 +11,8 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 }
 
 export default async function AboutPage() {
-    const lgsDateSetting = await getSystemSetting("lgsDate")
-    const lgsDate = lgsDateSetting.value
+    const settingsResult = await getSettings()
+    const lgsDate = settingsResult.success && settingsResult.data ? settingsResult.data.lgsDate : null
 
     const partnersResult = await getPartners()
     const partners = partnersResult.success ? partnersResult.data : []
