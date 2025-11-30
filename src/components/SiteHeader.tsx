@@ -14,6 +14,7 @@ export function SiteHeader() {
                 </Link>
                 <nav className="hidden md:flex items-center gap-6">
                     <Link href="/kurumsal" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Kurumsal</Link>
+                    <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Blog</Link>
                     <Link href="/cevap-anahtarlari" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Cevap Anahtarları</Link>
                     <Link href="/sinavlar" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Sınavlar</Link>
                     <Link href="/iletisim" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">İletişim</Link>
