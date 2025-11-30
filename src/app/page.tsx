@@ -18,10 +18,10 @@ export default function Home() {
 
         <section className="py-20 md:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-background">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-              Başarınızı <span className="text-blue-600">Analiz Edin</span>, Geleceğinizi Planlayın
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
+              Başarınızı <span className="text-blue-600 dark:text-blue-400">Analiz Edin</span>, Geleceğinizi Planlayın
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Detaylı sınav analizleri, gelişim grafikleri ve kişiselleştirilmiş raporlar ile hedeflerinize bir adım daha yaklaşın.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -35,33 +35,33 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                  <BarChart2 className="w-6 h-6 text-blue-600" />
+              <div className="p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4">
+                  <BarChart2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Detaylı Analiz</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-bold text-foreground mb-2">Detaylı Analiz</h3>
+                <p className="text-muted-foreground">
                   Ders bazlı netleriniz, puanlarınız ve sıralamalarınızla eksiklerinizi anında görün.
                 </p>
               </div>
-              <div className="p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-green-600" />
+              <div className="p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Öğretmen Takibi</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-bold text-foreground mb-2">Öğretmen Takibi</h3>
+                <p className="text-muted-foreground">
                   Öğretmenleriniz gelişiminizi yakından takip etsin, size özel çalışma programları hazırlasın.
                 </p>
               </div>
-              <div className="p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                  <CheckCircle className="w-6 h-6 text-purple-600" />
+              <div className="p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4">
+                  <CheckCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Hedef Odaklı</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-bold text-foreground mb-2">Hedef Odaklı</h3>
+                <p className="text-muted-foreground">
                   Geçmiş sınavlarla karşılaştırmalı raporlar sayesinde hedeflerinize ne kadar yaklaştığınızı ölçün.
                 </p>
               </div>

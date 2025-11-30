@@ -48,12 +48,34 @@ export async function createUser(prevState: any, formData: FormData) {
 
 export async function deleteUser(userId: string) {
     try {
-        await prisma.user.delete({
-            where: { id: userId },
+        // Use transaction to delete related records first, ensuring deletion succeeds
+        // regardless of database foreign key cascade configuration
+        await prisma.$transaction(async (tx) => {
+            // Delete related records where user is student
+            await tx.result.deleteMany({ where: { studentId: userId } })
+            await tx.analysis.deleteMany({ where: { studentId: userId } })
+            await tx.examAssignment.deleteMany({ where: { studentId: userId } })
+
+            // Delete related records where user is student OR teacher in assignments
+            await tx.teacherStudent.deleteMany({
+                where: {
+                    OR: [
+                        { studentId: userId },
+                        { teacherId: userId }
+                    ]
+                }
+            })
+
+            // Finally delete the user
+            await tx.user.delete({
+                where: { id: userId },
+            })
         })
+
         revalidatePath("/dashboard/admin/users")
-        return { message: "Kullanıcı silindi.", success: true }
+        return { message: "Kullanıcı ve ilişkili tüm veriler silindi.", success: true }
     } catch (e) {
-        return { message: "Silme işlemi başarısız.", success: false }
+        console.error("Delete user error:", e)
+        return { message: "Silme işlemi başarısız. Lütfen konsol loglarını kontrol edin.", success: false }
     }
 }
