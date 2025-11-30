@@ -97,6 +97,28 @@ export default function DashboardLayout({
                                 </Link>
                             )
                         })}
+                        {session?.user?.role === "ADMIN" && (
+                            <>
+                                <Link href="/dashboard/admin/settings">
+                                    <Button
+                                        variant={pathname === "/dashboard/admin/settings" ? "secondary" : "ghost"}
+                                        className={`w-full justify-start ${pathname === "/dashboard/admin/settings" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                    >
+                                        <Settings className="mr-2 w-5 h-5" />
+                                        Ayarlar
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/admin/partners">
+                                    <Button
+                                        variant={pathname === "/dashboard/admin/partners" ? "secondary" : "ghost"}
+                                        className={`w-full justify-start ${pathname === "/dashboard/admin/partners" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                    >
+                                        <Users className="mr-2 w-5 h-5" />
+                                        Partnerler
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
                     </nav>
 
                     <div className="border-t pt-4">
