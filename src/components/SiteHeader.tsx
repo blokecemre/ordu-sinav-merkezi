@@ -24,12 +24,14 @@ export function SiteHeader() {
                 </nav>
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <Link href="/login">
-                        <Button variant="outline">Giriş Yap</Button>
-                    </Link>
-                    <Link href="/register">
-                        <Button>Üye Ol</Button>
-                    </Link>
+                    <div className="hidden md:flex items-center gap-4">
+                        <Link href="/login">
+                            <Button variant="outline">Giriş Yap</Button>
+                        </Link>
+                        <Link href="/register">
+                            <Button>Üye Ol</Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </header>
