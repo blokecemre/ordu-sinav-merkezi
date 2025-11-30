@@ -22,10 +22,10 @@ export default async function BlogPage() {
                                 posts.map((post: any) => (
                                     <Link key={post.id} href={`/blog/${post.slug}`} className="group">
                                         <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
-                                            {post.imageUrl && (
+                                            {post.imageMimeType && (
                                                 <div className="aspect-video w-full overflow-hidden">
                                                     <img
-                                                        src={post.imageUrl}
+                                                        src={`/api/blog/${post.id}/image`}
                                                         alt={post.title}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     />
@@ -42,7 +42,7 @@ export default async function BlogPage() {
                                                     </div>
                                                     <div className="flex items-center gap-1 text-orange-500">
                                                         <User className="w-3 h-3" />
-                                                        Ada Sınav Merkezi
+                                                        {post.author || "Ada Sınav Merkezi"}
                                                     </div>
                                                 </div>
                                             </CardHeader>

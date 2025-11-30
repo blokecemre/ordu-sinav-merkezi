@@ -37,10 +37,10 @@ export default async function BlogPostPage({
                     {/* Main Content - Article */}
                     <div className="flex-1">
                         <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            {post.imageUrl && (
+                            {post.imageMimeType && (
                                 <div className="w-full aspect-video relative">
                                     <img
-                                        src={post.imageUrl}
+                                        src={`/api/blog/${post.id}/image`}
                                         alt={post.title}
                                         className="w-full h-full object-cover"
                                     />
@@ -59,7 +59,7 @@ export default async function BlogPostPage({
                                     </div>
                                     <div className="flex items-center gap-2 text-orange-500 font-medium">
                                         <User className="w-4 h-4" />
-                                        Ada Sınav Merkezi
+                                        {post.author || "Ada Sınav Merkezi"}
                                     </div>
                                 </div>
 

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useRouter } from "next/navigation"
 import { createBlogPost, updateBlogPost } from "@/app/actions/blog"
-import { Loader2, Save } from "lucide-react"
+import { Loader2, Save, Upload } from "lucide-react"
 
 interface BlogFormProps {
     initialData?: {
@@ -17,7 +17,8 @@ interface BlogFormProps {
         slug: string
         content: string
         excerpt?: string | null
-        imageUrl?: string | null
+        author?: string | null
+        imageMimeType?: string | null
         published: boolean
     }
 }
@@ -32,9 +33,10 @@ export function BlogForm({ initialData }: BlogFormProps) {
         slug: initialData?.slug || "",
         content: initialData?.content || "",
         excerpt: initialData?.excerpt || "",
-        imageUrl: initialData?.imageUrl || "",
+        author: initialData?.author || "",
         published: initialData?.published || false
     })
+    const [imageFile, setImageFile] = useState<File | null>(null)
 
     const generateSlug = (title: string) => {
         return title
@@ -60,11 +62,23 @@ export function BlogForm({ initialData }: BlogFormProps) {
         setError(null)
 
         try {
+            const data = new FormData()
+            data.append("title", formData.title)
+            data.append("slug", formData.slug)
+            data.append("content", formData.content)
+            data.append("excerpt", formData.excerpt)
+            data.append("author", formData.author)
+            data.append("published", String(formData.published))
+
+            if (imageFile) {
+                data.append("image", imageFile)
+            }
+
             let result
             if (initialData?.id) {
-                result = await updateBlogPost(initialData.id, formData)
+                result = await updateBlogPost(initialData.id, data)
             } else {
-                result = await createBlogPost(formData)
+                result = await createBlogPost(data)
             }
 
             if (result.success) {
@@ -113,16 +127,35 @@ export function BlogForm({ initialData }: BlogFormProps) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="imageUrl">Kapak Görseli URL</Label>
+                <Label htmlFor="author">Yazar (Opsiyonel)</Label>
                 <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                    placeholder="https://example.com/image.jpg"
+                    id="author"
+                    value={formData.author}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                    placeholder="Yazar adı"
                 />
-                <p className="text-xs text-muted-foreground">
-                    Şimdilik harici resim URL'si kullanıyoruz. İleride dosya yükleme eklenebilir.
-                </p>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="image">Kapak Görseli</Label>
+                <div className="flex items-center gap-4">
+                    <Input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            if (e.target.files?.[0]) {
+                                setImageFile(e.target.files[0])
+                            }
+                        }}
+                        className="cursor-pointer"
+                    />
+                </div>
+                {initialData?.imageMimeType && !imageFile && (
+                    <p className="text-xs text-green-600">
+                        Mevcut bir görsel yüklü. Değiştirmek için yeni dosya seçin.
+                    </p>
+                )}
             </div>
 
             <div className="space-y-2">

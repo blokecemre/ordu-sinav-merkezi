@@ -9,7 +9,7 @@ const BlogPostSchema = z.object({
     slug: z.string().min(3, "Slug en az 3 karakter olmalıdır"),
     content: z.string().min(10, "İçerik en az 10 karakter olmalıdır"),
     excerpt: z.string().optional(),
-    imageUrl: z.string().url("Geçersiz resim URL'si").optional().or(z.literal("")),
+    author: z.string().optional(),
     published: z.boolean().default(false),
 })
 
@@ -24,6 +24,19 @@ export async function getBlogPosts(page = 1, limit = 10, publishedOnly = true) {
                 orderBy: { createdAt: 'desc' },
                 skip,
                 take: limit,
+                select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    excerpt: true,
+                    author: true,
+                    published: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    content: true, // Needed for excerpt generation if excerpt is empty
+                    imageData: false, // Don't fetch heavy image data
+                    imageMimeType: true
+                }
             }),
             prisma.blogPost.count({ where })
         ])
@@ -47,7 +60,20 @@ export async function getBlogPosts(page = 1, limit = 10, publishedOnly = true) {
 export async function getBlogPost(slug: string) {
     try {
         const post = await prisma.blogPost.findUnique({
-            where: { slug }
+            where: { slug },
+            select: {
+                id: true,
+                title: true,
+                slug: true,
+                content: true,
+                excerpt: true,
+                author: true,
+                published: true,
+                createdAt: true,
+                updatedAt: true,
+                imageData: false,
+                imageMimeType: true
+            }
         })
 
         if (!post) {
@@ -61,12 +87,27 @@ export async function getBlogPost(slug: string) {
     }
 }
 
-export async function createBlogPost(data: z.infer<typeof BlogPostSchema>) {
+export async function createBlogPost(formData: FormData) {
     try {
-        const validated = BlogPostSchema.safeParse(data)
+        const title = formData.get("title") as string
+        const slug = formData.get("slug") as string
+        const content = formData.get("content") as string
+        const excerpt = formData.get("excerpt") as string
+        const author = formData.get("author") as string
+        const published = formData.get("published") === "true"
+        const imageFile = formData.get("image") as File | null
+
+        const validated = BlogPostSchema.safeParse({
+            title,
+            slug,
+            content,
+            excerpt,
+            author,
+            published
+        })
 
         if (!validated.success) {
-            return { success: false, error: "Geçersiz veri" }
+            return { success: false, error: "Geçersiz veri: " + JSON.stringify(validated.error.flatten().fieldErrors) }
         }
 
         // Check if slug exists
@@ -78,8 +119,20 @@ export async function createBlogPost(data: z.infer<typeof BlogPostSchema>) {
             return { success: false, error: "Bu URL adresi zaten kullanımda" }
         }
 
+        let imageData: Buffer | undefined
+        let imageMimeType: string | undefined
+
+        if (imageFile && imageFile.size > 0) {
+            imageData = Buffer.from(await imageFile.arrayBuffer())
+            imageMimeType = imageFile.type
+        }
+
         const post = await prisma.blogPost.create({
-            data: validated.data
+            data: {
+                ...validated.data,
+                imageData,
+                imageMimeType
+            }
         })
 
         revalidatePath("/blog")
@@ -91,12 +144,35 @@ export async function createBlogPost(data: z.infer<typeof BlogPostSchema>) {
     }
 }
 
-export async function updateBlogPost(id: string, data: Partial<z.infer<typeof BlogPostSchema>>) {
+export async function updateBlogPost(id: string, formData: FormData) {
     try {
+        const title = formData.get("title") as string
+        const slug = formData.get("slug") as string
+        const content = formData.get("content") as string
+        const excerpt = formData.get("excerpt") as string
+        const author = formData.get("author") as string
+        const published = formData.get("published") === "true"
+        const imageFile = formData.get("image") as File | null
+
+        // We only validate fields that are present, but for update we might want to validate all if we are replacing
+        // But here we are constructing the object from form data, so it's similar to create
+        const validated = BlogPostSchema.safeParse({
+            title,
+            slug,
+            content,
+            excerpt,
+            author,
+            published
+        })
+
+        if (!validated.success) {
+            return { success: false, error: "Geçersiz veri" }
+        }
+
         // Check if slug exists (if changing slug)
-        if (data.slug) {
+        if (validated.data.slug) {
             const existing = await prisma.blogPost.findUnique({
-                where: { slug: data.slug }
+                where: { slug: validated.data.slug }
             })
 
             if (existing && existing.id !== id) {
@@ -104,9 +180,18 @@ export async function updateBlogPost(id: string, data: Partial<z.infer<typeof Bl
             }
         }
 
+        const updateData: any = {
+            ...validated.data
+        }
+
+        if (imageFile && imageFile.size > 0) {
+            updateData.imageData = Buffer.from(await imageFile.arrayBuffer())
+            updateData.imageMimeType = imageFile.type
+        }
+
         const post = await prisma.blogPost.update({
             where: { id },
-            data
+            data: updateData
         })
 
         revalidatePath("/blog")
