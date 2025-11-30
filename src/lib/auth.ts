@@ -20,18 +20,31 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 console.log("Login attempt for:", credentials?.username);
-                console.log("DB URL Prefix:", process.env.DATABASE_URL?.substring(0, 20));
 
                 if (!credentials?.username || !credentials?.password) {
                     return null
                 }
 
                 try {
-                    const user = await prisma.user.findUnique({
-                        where: {
-                            username: credentials.username
+                    // Retry logic for DB connection issues
+                    let user = null;
+                    let retries = 3;
+
+                    while (retries > 0) {
+                        try {
+                            user = await prisma.user.findUnique({
+                                where: {
+                                    username: credentials.username
+                                }
+                            })
+                            break; // Success
+                        } catch (dbError) {
+                            console.error(`DB Error (Attempts left: ${retries - 1}):`, dbError);
+                            retries--;
+                            if (retries === 0) throw dbError;
+                            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
                         }
-                    })
+                    }
 
                     console.log("User found in DB:", !!user);
 
