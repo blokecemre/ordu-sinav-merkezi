@@ -15,7 +15,7 @@ export function MobileNav() {
     // Hide on desktop
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 pb-safe">
-            <div className="grid grid-cols-3 h-16">
+            <div className="grid grid-cols-2 h-16">
                 {/* Home Button */}
                 <Link href="/" className={cn(
                     "flex flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary transition-colors",
@@ -35,11 +35,11 @@ export function MobileNav() {
                             <span>Menü</span>
                         </button>
                     </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[85vh] rounded-t-[20px]">
+                    <SheetContent side="bottom" className="h-[100dvh] rounded-none border-none">
                         <SheetHeader className="mb-6 text-left">
                             <SheetTitle>Navigasyon</SheetTitle>
                         </SheetHeader>
-                        <div className="grid gap-2 overflow-y-auto pb-20">
+                        <div className="grid gap-2 overflow-y-auto pb-20 h-full">
                             <MobileLink href="/paketler" icon="📦" label="Paketler" setOpen={setOpen} />
                             <MobileLink href="/kurumsal" icon="🏢" label="Kurumsal" setOpen={setOpen} />
                             <MobileLink href="/sinavlar" icon="📝" label="Sınavlar" setOpen={setOpen} />
@@ -55,19 +55,6 @@ export function MobileNav() {
                         </div>
                     </SheetContent>
                 </Sheet>
-
-                {/* WhatsApp Button */}
-                <a
-                    href="https://wa.me/905555555555"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground hover:text-green-600 transition-colors"
-                >
-                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white">
-                        <Phone className="w-3 h-3" />
-                    </div>
-                    <span>WhatsApp</span>
-                </a>
             </div>
         </div>
     )
