@@ -10,6 +10,7 @@ import {
     BookOpen,
     FileText,
     Settings,
+    Package, // Added as per instruction
     LogOut,
     Menu,
     X,
@@ -106,6 +107,15 @@ export default function DashboardLayout({
                                     >
                                         <Settings className="mr-2 w-5 h-5" />
                                         Ayarlar
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/admin/packages">
+                                    <Button
+                                        variant={pathname === "/dashboard/admin/packages" ? "secondary" : "ghost"}
+                                        className={`w-full justify-start ${pathname === "/dashboard/admin/packages" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                    >
+                                        <Package className="mr-2 w-5 h-5" />
+                                        Paketler
                                     </Button>
                                 </Link>
                                 <Link href="/dashboard/admin/partners">
