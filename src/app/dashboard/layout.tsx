@@ -13,7 +13,9 @@ import {
     LogOut,
     Menu,
     X,
-    TrendingUp
+    TrendingUp,
+    BarChart2, // Added by user instruction
+    UserPlus // Added by user instruction
 } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 

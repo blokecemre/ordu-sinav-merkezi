@@ -13,8 +13,9 @@ export function SiteHeader() {
                     <span className="font-bold text-xl text-gray-900">Ordu Sınav Merkezi</span>
                 </Link>
                 <nav className="hidden md:flex items-center gap-6">
-                    <Link href="/kurumsal" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Kurumsal</Link>
-                    <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Blog</Link>
+                    <Link href="/kurumsal" className="text-sm font-medium text-gray-500 hover:text-gray-900">Kurumsal</Link>
+                    <Link href="/hakkimizda" className="text-sm font-medium text-gray-500 hover:text-gray-900">Hakkımızda</Link>
+                    <Link href="/blog" className="text-sm font-medium text-gray-500 hover:text-gray-900">Blog</Link>
                     <Link href="/cevap-anahtarlari" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Cevap Anahtarları</Link>
                     <Link href="/sinavlar" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Sınavlar</Link>
                     <Link href="/iletisim" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">İletişim</Link>
