@@ -26,6 +26,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { SiteHeader } from "@/components/SiteHeader"
 
 const KVKK_TEXT = `
 KİŞİSEL VERİLERİN KORUNMASI POLİTİKASI
@@ -121,234 +122,237 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4">
-            <Card className="w-full max-w-6xl">
-                <CardHeader className="space-y-1">
-                    <div className="flex items-center justify-center mb-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <UserPlus className="w-6 h-6 text-white" />
-                        </div>
-                    </div>
-                    <CardTitle className="text-2xl text-center">Üye Ol</CardTitle>
-                    <CardDescription className="text-center">
-                        Sınav Merkezi'ne hoş geldiniz
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && (
-                            <Alert variant="destructive">
-                                <AlertDescription>{error}</AlertDescription>
-                            </Alert>
-                        )}
-                        {success && (
-                            <Alert className="bg-green-50 text-green-900 border-green-200">
-                                <AlertDescription>{success}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        {/* Role Selection */}
-                        <div className="flex justify-center mb-6">
-                            <div className="grid grid-cols-2 gap-3 w-full max-w-md">
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedRole("STUDENT")}
-                                    className={`p-4 rounded-lg border-2 transition-all ${selectedRole === "STUDENT"
-                                        ? "border-blue-600 bg-blue-50 text-blue-900"
-                                        : "border-gray-200 bg-white hover:border-gray-300"
-                                        }`}
-                                >
-                                    <div className="font-semibold">Öğrenci</div>
-                                    <div className="text-xs text-gray-500">Sınav sonuçlarını görüntüle</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedRole("TEACHER")}
-                                    className={`p-4 rounded-lg border-2 transition-all ${selectedRole === "TEACHER"
-                                        ? "border-blue-600 bg-blue-50 text-blue-900"
-                                        : "border-gray-200 bg-white hover:border-gray-300"
-                                        }`}
-                                >
-                                    <div className="font-semibold">Öğretmen</div>
-                                    <div className="text-xs text-gray-500">Öğrencileri takip et</div>
-                                </button>
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
+            <SiteHeader />
+            <div className="flex-1 flex items-center justify-center p-4">
+                <Card className="w-full max-w-6xl">
+                    <CardHeader className="space-y-1">
+                        <div className="flex items-center justify-center mb-4">
+                            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <UserPlus className="w-6 h-6 text-white" />
                             </div>
                         </div>
+                        <CardTitle className="text-2xl text-center">Üye Ol</CardTitle>
+                        <CardDescription className="text-center">
+                            Sınav Merkezi'ne hoş geldiniz
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {error && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>{error}</AlertDescription>
+                                </Alert>
+                            )}
+                            {success && (
+                                <Alert className="bg-green-50 text-green-900 border-green-200">
+                                    <AlertDescription>{success}</AlertDescription>
+                                </Alert>
+                            )}
 
-                        {!selectedRole ? (
-                            <div className="text-center py-12 text-gray-500">
-                                <p>Lütfen kayıt olmak istediğiniz üyelik tipini seçiniz.</p>
+                            {/* Role Selection */}
+                            <div className="flex justify-center mb-6">
+                                <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedRole("STUDENT")}
+                                        className={`p-4 rounded-lg border-2 transition-all ${selectedRole === "STUDENT"
+                                            ? "border-blue-600 bg-blue-50 text-blue-900"
+                                            : "border-gray-200 bg-white hover:border-gray-300"
+                                            }`}
+                                    >
+                                        <div className="font-semibold">Öğrenci</div>
+                                        <div className="text-xs text-gray-500">Sınav sonuçlarını görüntüle</div>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedRole("TEACHER")}
+                                        className={`p-4 rounded-lg border-2 transition-all ${selectedRole === "TEACHER"
+                                            ? "border-blue-600 bg-blue-50 text-blue-900"
+                                            : "border-gray-200 bg-white hover:border-gray-300"
+                                            }`}
+                                    >
+                                        <div className="font-semibold">Öğretmen</div>
+                                        <div className="text-xs text-gray-500">Öğrencileri takip et</div>
+                                    </button>
+                                </div>
                             </div>
-                        ) : (
-                            <>
-                                <div className="grid md:grid-cols-3 gap-8">
-                                    {/* Column 1: User Info */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">
-                                            {selectedRole === "TEACHER" ? "Öğretmen Bilgileri" : "Öğrenci Bilgileri"}
-                                        </h3>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="name">Ad <span className="text-red-500">*</span></Label>
-                                            <Input id="name" name="name" required disabled={loading} />
-                                        </div>
+                            {!selectedRole ? (
+                                <div className="text-center py-12 text-gray-500">
+                                    <p>Lütfen kayıt olmak istediğiniz üyelik tipini seçiniz.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="grid md:grid-cols-3 gap-8">
+                                        {/* Column 1: User Info */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">
+                                                {selectedRole === "TEACHER" ? "Öğretmen Bilgileri" : "Öğrenci Bilgileri"}
+                                            </h3>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="surname">Soyad <span className="text-red-500">*</span></Label>
-                                            <Input id="surname" name="surname" required disabled={loading} />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="username">Kullanıcı Adı <span className="text-red-500">*</span></Label>
-                                            <Input id="username" name="username" required disabled={loading} />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="password">Şifre <span className="text-red-500">*</span></Label>
-                                            <Input id="password" name="password" type="password" required disabled={loading} />
-                                        </div>
-
-                                        {selectedRole === "STUDENT" && (
                                             <div className="space-y-2">
-                                                <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
-                                                <Select name="classLevel" required>
+                                                <Label htmlFor="name">Ad <span className="text-red-500">*</span></Label>
+                                                <Input id="name" name="name" required disabled={loading} />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="surname">Soyad <span className="text-red-500">*</span></Label>
+                                                <Input id="surname" name="surname" required disabled={loading} />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="username">Kullanıcı Adı <span className="text-red-500">*</span></Label>
+                                                <Input id="username" name="username" required disabled={loading} />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="password">Şifre <span className="text-red-500">*</span></Label>
+                                                <Input id="password" name="password" type="password" required disabled={loading} />
+                                            </div>
+
+                                            {selectedRole === "STUDENT" && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="classLevel">Sınıf <span className="text-red-500">*</span></Label>
+                                                    <Select name="classLevel" required>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seçiniz..." />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
+                                                                <SelectItem key={level} value={level.toString()}>
+                                                                    {level}. Sınıf
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
+                                                <Input id="school" name="school" required disabled={loading} />
+                                            </div>
+
+                                            {selectedRole === "STUDENT" && (
+                                                <>
+                                                </>
+                                            )}
+
+                                            {selectedRole === "TEACHER" && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="phone">Cep Telefonu <span className="text-red-500">*</span></Label>
+                                                    <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Column 2: Parent Info (Only for Students) or Empty for Teacher */}
+                                        <div className="space-y-4">
+                                            {selectedRole === "STUDENT" ? (
+                                                <>
+                                                    <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
+                                                        <Input id="parentName" name="parentName" required disabled={loading} />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
+                                                        <Input id="parentSurname" name="parentSurname" required disabled={loading} />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
+                                                        <Input id="city" name="city" required disabled={loading} />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
+                                                        <Input id="district" name="district" required disabled={loading} />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="phone">Veli Telefon Numarası <span className="text-red-500">*</span></Label>
+                                                        <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="hidden md:block"></div> // Spacer for teacher layout
+                                            )}
+                                        </div>
+
+                                        {/* Column 3: General Info */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-lg font-semibold text-pink-600 border-b pb-2">Genel Bilgiler</h3>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="referenceSource">Bizi nereden duydunuz?</Label>
+                                                <Select name="referenceSource">
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Seçiniz..." />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {[5, 6, 7, 8, 9, 10, 11, 12, "Mezun"].map((level) => (
-                                                            <SelectItem key={level} value={level.toString()}>
-                                                                {level}. Sınıf
-                                                            </SelectItem>
-                                                        ))}
+                                                        <SelectItem value="sosyal_medya">Sosyal Medya</SelectItem>
+                                                        <SelectItem value="arkadas">Arkadaş Tavsiyesi</SelectItem>
+                                                        <SelectItem value="reklam">Reklam</SelectItem>
+                                                        <SelectItem value="diger">Diğer</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-                                        )}
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="school">Okul <span className="text-red-500">*</span></Label>
-                                            <Input id="school" name="school" required disabled={loading} />
-                                        </div>
-
-                                        {selectedRole === "STUDENT" && (
-                                            <>
-                                            </>
-                                        )}
-
-                                        {selectedRole === "TEACHER" && (
-                                            <div className="space-y-2">
-                                                <Label htmlFor="phone">Cep Telefonu <span className="text-red-500">*</span></Label>
-                                                <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Column 2: Parent Info (Only for Students) or Empty for Teacher */}
-                                    <div className="space-y-4">
-                                        {selectedRole === "STUDENT" ? (
-                                            <>
-                                                <h3 className="text-lg font-semibold text-purple-600 border-b pb-2">Veli Bilgileri</h3>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="parentName">Veli Adı <span className="text-red-500">*</span></Label>
-                                                    <Input id="parentName" name="parentName" required disabled={loading} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="parentSurname">Veli Soyadı <span className="text-red-500">*</span></Label>
-                                                    <Input id="parentSurname" name="parentSurname" required disabled={loading} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="city">İkamet İl <span className="text-red-500">*</span></Label>
-                                                    <Input id="city" name="city" required disabled={loading} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="district">İkamet İlçe <span className="text-red-500">*</span></Label>
-                                                    <Input id="district" name="district" required disabled={loading} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="phone">Veli Telefon Numarası <span className="text-red-500">*</span></Label>
-                                                    <Input id="phone" name="phone" placeholder="0 (5__) ___ __ __" required disabled={loading} />
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="hidden md:block"></div> // Spacer for teacher layout
-                                        )}
-                                    </div>
-
-                                    {/* Column 3: General Info */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-pink-600 border-b pb-2">Genel Bilgiler</h3>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="referenceSource">Bizi nereden duydunuz?</Label>
-                                            <Select name="referenceSource">
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seçiniz..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="sosyal_medya">Sosyal Medya</SelectItem>
-                                                    <SelectItem value="arkadas">Arkadaş Tavsiyesi</SelectItem>
-                                                    <SelectItem value="reklam">Reklam</SelectItem>
-                                                    <SelectItem value="diger">Diğer</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="pt-4">
-                                            <div className="flex items-start space-x-2">
-                                                <Checkbox id="kvkkConsent" name="kvkkConsent" required />
-                                                <div className="grid gap-1.5 leading-none">
-                                                    <label
-                                                        htmlFor="kvkkConsent"
-                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                    >
-                                                        <Dialog>
-                                                            <DialogTrigger asChild>
-                                                                <span className="text-blue-600 hover:underline cursor-pointer">
-                                                                    KVKK Aydınlatma Metnini
-                                                                </span>
-                                                            </DialogTrigger>
-                                                            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                                                                <DialogHeader>
-                                                                    <DialogTitle>KVKK Aydınlatma Metni</DialogTitle>
-                                                                    <DialogDescription>
-                                                                        Lütfen aşağıdaki metni dikkatlice okuyunuz.
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
-                                                                <div className="whitespace-pre-wrap text-sm">
-                                                                    {KVKK_TEXT}
-                                                                </div>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                        {" "}okudum onaylıyorum. <span className="text-red-500">*</span>
-                                                    </label>
+                                            <div className="pt-4">
+                                                <div className="flex items-start space-x-2">
+                                                    <Checkbox id="kvkkConsent" name="kvkkConsent" required />
+                                                    <div className="grid gap-1.5 leading-none">
+                                                        <label
+                                                            htmlFor="kvkkConsent"
+                                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                        >
+                                                            <Dialog>
+                                                                <DialogTrigger asChild>
+                                                                    <span className="text-blue-600 hover:underline cursor-pointer">
+                                                                        KVKK Aydınlatma Metnini
+                                                                    </span>
+                                                                </DialogTrigger>
+                                                                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                                                                    <DialogHeader>
+                                                                        <DialogTitle>KVKK Aydınlatma Metni</DialogTitle>
+                                                                        <DialogDescription>
+                                                                            Lütfen aşağıdaki metni dikkatlice okuyunuz.
+                                                                        </DialogDescription>
+                                                                    </DialogHeader>
+                                                                    <div className="whitespace-pre-wrap text-sm">
+                                                                        {KVKK_TEXT}
+                                                                    </div>
+                                                                </DialogContent>
+                                                            </Dialog>
+                                                            {" "}okudum onaylıyorum. <span className="text-red-500">*</span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <Button type="submit" className="w-full mt-6" disabled={loading}>
-                                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Üye Ol
-                                </Button>
-                            </>
-                        )}
+                                    <Button type="submit" className="w-full mt-6" disabled={loading}>
+                                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Üye Ol
+                                    </Button>
+                                </>
+                            )}
 
-                        <div className="text-center text-sm text-gray-600">
-                            Zaten hesabınız var mı?{" "}
-                            <Link href="/login" className="text-blue-600 hover:underline font-medium">
-                                Giriş Yap
-                            </Link>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+                            <div className="text-center text-sm text-gray-600">
+                                Zaten hesabınız var mı?{" "}
+                                <Link href="/login" className="text-blue-600 hover:underline font-medium">
+                                    Giriş Yap
+                                </Link>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }
