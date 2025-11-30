@@ -130,7 +130,7 @@ export async function createBlogPost(formData: FormData) {
         const post = await prisma.blogPost.create({
             data: {
                 ...validated.data,
-                imageData,
+                imageData: imageData as any,
                 imageMimeType
             }
         })
@@ -216,5 +216,21 @@ export async function deleteBlogPost(id: string) {
     } catch (error) {
         console.error("Error deleting blog post:", error)
         return { success: false, error: "Blog yazısı silinemedi" }
+    }
+}
+
+export async function toggleBlogPostPublish(id: string, published: boolean) {
+    try {
+        await prisma.blogPost.update({
+            where: { id },
+            data: { published }
+        })
+
+        revalidatePath("/blog")
+        revalidatePath("/dashboard/admin/blog")
+        return { success: true, message: "Yayın durumu güncellendi" }
+    } catch (error) {
+        console.error("Error toggling blog post publish status:", error)
+        return { success: false, error: "Yayın durumu güncellenemedi" }
     }
 }

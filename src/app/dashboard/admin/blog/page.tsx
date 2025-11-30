@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
-import { getBlogPosts, deleteBlogPost, updateBlogPost } from "@/app/actions/blog"
+import { getBlogPosts, deleteBlogPost, updateBlogPost, toggleBlogPostPublish } from "@/app/actions/blog"
 import { useRouter } from "next/navigation"
 
 export default function AdminBlogPage() {
@@ -38,7 +38,7 @@ export default function AdminBlogPage() {
     }
 
     const handleTogglePublish = async (id: string, currentStatus: boolean) => {
-        const result = await updateBlogPost(id, { published: !currentStatus })
+        const result = await toggleBlogPostPublish(id, !currentStatus)
         if (result.success) {
             fetchPosts()
         } else {
