@@ -56,12 +56,7 @@ export default async function PackagesPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-end pt-4">
-                                        <Button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all">
-                                            <ShoppingCart className="mr-2 h-5 w-5" />
-                                            Ön Kayıt
-                                        </Button>
-                                    </div>
+
                                 </div>
                             </div>
                         ))
