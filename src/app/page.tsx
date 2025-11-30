@@ -1,4 +1,4 @@
-```
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, BarChart2, CheckCircle, Users } from "lucide-react"
@@ -15,7 +15,7 @@ export default function Home() {
       {/* Hero Section */}
       <main className="flex-1">
         <HomepageSlider />
-        
+
         <section className="py-20 md:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-background">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
