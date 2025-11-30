@@ -79,3 +79,54 @@ export async function deleteUser(userId: string) {
         return { message: "Silme işlemi başarısız. Lütfen konsol loglarını kontrol edin.", success: false }
     }
 }
+
+const UpdateUserSchema = z.object({
+    id: z.string(),
+    username: z.string().min(3, "Kullanıcı adı en az 3 karakter olmalıdır"),
+    name: z.string().min(2, "İsim en az 2 karakter olmalıdır"),
+    surname: z.string().min(2, "Soyisim en az 2 karakter olmalıdır"),
+    role: z.enum(["STUDENT", "TEACHER", "ADMIN"]),
+    password: z.string().optional(),
+})
+
+export async function updateUser(prevState: any, formData: FormData) {
+    try {
+        const rawData = {
+            id: formData.get("id"),
+            username: formData.get("username"),
+            name: formData.get("name"),
+            surname: formData.get("surname"),
+            role: formData.get("role"),
+            password: formData.get("password") || undefined,
+        }
+
+        const validatedData = UpdateUserSchema.parse(rawData)
+
+        const updateData: any = {
+            username: validatedData.username,
+            name: validatedData.name,
+            surname: validatedData.surname,
+            role: validatedData.role,
+        }
+
+        if (validatedData.password && validatedData.password.length >= 6) {
+            updateData.password = await hash(validatedData.password, 10)
+        }
+
+        await prisma.user.update({
+            where: { id: validatedData.id },
+            data: updateData,
+        })
+
+        revalidatePath("/dashboard/admin/users")
+        return { message: "Kullanıcı başarıyla güncellendi.", success: true }
+    } catch (e) {
+        if (e instanceof z.ZodError) {
+            return { message: (e as any).errors[0].message, success: false }
+        }
+        if ((e as any).code === 'P2002') {
+            return { message: "Bu kullanıcı adı zaten kullanılıyor.", success: false }
+        }
+        return { message: "Güncelleme sırasında bir hata oluştu.", success: false }
+    }
+}

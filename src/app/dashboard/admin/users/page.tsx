@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/table"
 import { AddUserDialog } from "@/components/admin/AddUserDialog"
 import { UserDetailDialog } from "@/components/admin/UserDetailDialog"
+import { EditUserDialog } from "@/components/admin/EditUserDialog"
+import { DeleteUserButton } from "@/components/admin/DeleteUserButton"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
@@ -56,7 +58,11 @@ export default async function UsersPage() {
                                     {format(new Date(user.createdAt), "d MMMM yyyy", { locale: tr })}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <UserDetailDialog user={user} />
+                                    <div className="flex items-center justify-end gap-2">
+                                        <UserDetailDialog user={user} />
+                                        <EditUserDialog user={user} />
+                                        <DeleteUserButton userId={user.id} username={user.username} />
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
