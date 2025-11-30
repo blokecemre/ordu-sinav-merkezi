@@ -1,34 +1,13 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, BarChart2, CheckCircle, Users } from "lucide-react"
+import { SiteHeader } from "@/components/SiteHeader"
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="border-b bg-white">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <BarChart2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-xl text-gray-900">Ordu Sınav Merkezi</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/kurumsal" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Kurumsal</Link>
-            <Link href="/sinavlar" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Sınavlar</Link>
-            <Link href="/iletisim" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">İletişim</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/register">
-              <Button variant="outline">Üye Ol</Button>
-            </Link>
-            <Link href="/login">
-              <Button>Giriş Yap</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section */}
       <main className="flex-1">

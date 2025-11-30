@@ -1,27 +1,13 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BarChart2, ArrowLeft, Building, Target, Users, Award } from "lucide-react"
+import { SiteHeader } from "@/components/SiteHeader"
 
 export default function KurumsalPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header */}
-            <header className="border-b bg-white">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <BarChart2 className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-bold text-xl text-gray-900">Ordu Sınav Merkezi</span>
-                    </Link>
-                    <Link href="/">
-                        <Button variant="ghost" size="sm">
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Ana Sayfa
-                        </Button>
-                    </Link>
-                </div>
-            </header>
+            <SiteHeader />
 
             {/* Main Content */}
             <main className="flex-1 bg-gray-50">
