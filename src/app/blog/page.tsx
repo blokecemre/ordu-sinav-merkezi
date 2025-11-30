@@ -19,7 +19,7 @@ export default async function BlogPage() {
 
                         <div className="grid md:grid-cols-2 gap-6">
                             {posts && posts.length > 0 ? (
-                                posts.map((post) => (
+                                posts.map((post: any) => (
                                     <Link key={post.id} href={`/blog/${post.slug}`} className="group">
                                         <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
                                             {post.imageUrl && (
@@ -70,7 +70,7 @@ export default async function BlogPage() {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {posts && posts.slice(0, 5).map((post) => (
+                                    {posts && posts.slice(0, 5).map((post: any) => (
                                         <Link key={post.id} href={`/blog/${post.slug}`} className="block group">
                                             <h4 className="font-medium text-sm group-hover:text-blue-600 transition-colors line-clamp-2">
                                                 {post.title}

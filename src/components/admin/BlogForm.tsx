@@ -105,7 +105,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                     <Input
                         id="slug"
                         value={formData.slug}
-                        onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
                         required
                         placeholder="blog-yazisi-basligi"
                     />
@@ -117,7 +117,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                 <Input
                     id="imageUrl"
                     value={formData.imageUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
                     placeholder="https://example.com/image.jpg"
                 />
                 <p className="text-xs text-muted-foreground">
@@ -130,7 +130,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                 <Textarea
                     id="excerpt"
                     value={formData.excerpt}
-                    onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                     placeholder="Yazının kısa bir özeti..."
                     rows={3}
                 />
@@ -141,7 +141,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                 <Textarea
                     id="content"
                     value={formData.content}
-                    onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                     required
                     placeholder="<p>Blog yazısı içeriği...</p>"
                     className="font-mono text-sm"
@@ -156,7 +156,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                 <Switch
                     id="published"
                     checked={formData.published}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
+                    onCheckedChange={(checked: boolean) => setFormData(prev => ({ ...prev, published: checked }))}
                 />
                 <Label htmlFor="published">Yayınla</Label>
             </div>

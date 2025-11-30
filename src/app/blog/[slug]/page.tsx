@@ -79,7 +79,7 @@ export default async function BlogPostPage({
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {recentPosts && recentPosts.map((recent) => (
+                                    {recentPosts && recentPosts.map((recent: any) => (
                                         <Link key={recent.id} href={`/blog/${recent.slug}`} className="block group">
                                             <h4 className="font-medium text-sm group-hover:text-blue-600 transition-colors line-clamp-2">
                                                 {recent.title}
