@@ -22,21 +22,24 @@ export const authOptions: NextAuthOptions = {
                 const username = credentials?.username?.trim();
                 const password = credentials?.password?.trim();
 
-                console.log("Login attempt for:", username);
+                console.log("--- LOGIN ATTEMPT START ---");
+                console.log("Username provided:", username);
+                console.log("Password provided length:", password?.length);
 
                 if (!username || !password) {
+                    console.log("Missing credentials");
                     return null
                 }
 
                 try {
                     // Retry logic for DB connection issues
                     let user = null;
-                    let retries = 3; // Keep it reasonable
+                    let retries = 3;
                     let lastError = null;
 
                     while (retries > 0) {
                         try {
-                            console.log(`[Auth] Attempting DB connection/fetch for user: ${username} (Retries left: ${retries})`);
+                            console.log(`[Auth] Connection check... (Retries: ${retries})`);
 
                             // Explicit connection check
                             try {
@@ -44,36 +47,40 @@ export const authOptions: NextAuthOptions = {
                                 console.log("[Auth] DB Connection verified");
                             } catch (connError) {
                                 console.error("[Auth] DB Connection check failed:", connError);
-                                throw connError; // Trigger retry
+                                throw connError;
                             }
 
                             const start = Date.now();
+                            console.log(`[Auth] Fetching user: ${username}`);
                             user = await prisma.user.findUnique({
                                 where: {
                                     username: username
                                 }
                             })
                             console.log(`[Auth] DB fetch took ${Date.now() - start}ms`);
-                            break; // Success
+                            break;
                         } catch (dbError) {
                             lastError = dbError;
-                            console.error(`[Auth] DB Error (Attempts left: ${retries - 1}):`, dbError);
+                            console.error(`[Auth] DB Error:`, dbError);
                             retries--;
-                            if (retries === 0) break; // Stop retrying
-                            await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait to 2000ms
+                            if (retries === 0) break;
+                            await new Promise(resolve => setTimeout(resolve, 1000));
                         }
                     }
 
                     if (lastError && !user) {
-                        console.error("[Auth] All DB retries failed. Last error:", lastError);
-                        // We could throw here to show a different error, but let's return null to keep standard flow for now
-                        // but logging is critical.
+                        console.error("[Auth] All retries failed.");
                     }
 
-                    console.log("[Auth] User found in DB:", !!user, user ? `(ID: ${user.id})` : "");
+                    console.log("[Auth] User found:", !!user);
+                    if (user) {
+                        console.log("User ID:", user.id);
+                        console.log("User Role:", user.role);
+                        console.log("Stored Hash Prefix:", user.password.substring(0, 10));
+                    }
 
                     if (!user) {
-                        console.log("[Auth] User not found returning null");
+                        console.log("[Auth] User not found -> Returning null");
                         return null
                     }
 
@@ -81,10 +88,11 @@ export const authOptions: NextAuthOptions = {
                     console.log("[Auth] Password valid:", isPasswordValid);
 
                     if (!isPasswordValid) {
-                        console.log("[Auth] Password invalid returning null");
+                        console.log("[Auth] Password invalid -> Returning null");
                         return null
                     }
 
+                    console.log("--- LOGIN SUCCESS ---");
                     return {
                         id: user.id,
                         name: user.name + " " + user.surname,
@@ -92,7 +100,7 @@ export const authOptions: NextAuthOptions = {
                         role: user.role,
                     }
                 } catch (error) {
-                    console.error("[Auth] Unexpected login error:", error);
+                    console.error("[Auth] Unexpected error:", error);
                     return null;
                 }
             }
