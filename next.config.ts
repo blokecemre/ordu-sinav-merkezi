@@ -10,4 +10,4 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
-// Trigger deployment
+// Trigger deployment: 2025-11-30
