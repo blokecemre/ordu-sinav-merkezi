@@ -41,7 +41,7 @@ export default async function AnswerKeysPage({
 
                 <div className="max-w-4xl mx-auto space-y-4">
                     {keys && keys.length > 0 ? (
-                        keys.map((key) => (
+                        keys.map((key: any) => (
                             <div
                                 key={key.id}
                                 className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow"
