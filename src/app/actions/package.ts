@@ -13,7 +13,7 @@ export async function getPackages() {
                 description: true,
                 createdAt: true,
                 updatedAt: true,
-                logoData: false, // Don't fetch heavy image data
+                imageData: false, // Don't fetch heavy image data
                 imageMimeType: true
             }
         })
