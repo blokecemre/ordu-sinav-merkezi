@@ -1,17 +1,22 @@
+```
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, BarChart2, CheckCircle, Users } from "lucide-react"
 import { SiteHeader } from "@/components/SiteHeader"
 
+import { HomepageSlider } from "@/components/HomepageSlider"
+
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <SiteHeader />
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
+        <HomepageSlider />
+        
+        <section className="py-20 md:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-background">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
               Başarınızı <span className="text-blue-600">Analiz Edin</span>, Geleceğinizi Planlayın

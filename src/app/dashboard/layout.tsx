@@ -11,6 +11,7 @@ import {
     FileText,
     Settings,
     Package, // Added as per instruction
+    Image as ImageIcon,
     LogOut,
     Menu,
     X,
@@ -116,6 +117,15 @@ export default function DashboardLayout({
                                     >
                                         <Package className="mr-2 w-5 h-5" />
                                         Paketler
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/admin/slider">
+                                    <Button
+                                        variant={pathname === "/dashboard/admin/slider" ? "secondary" : "ghost"}
+                                        className={`w-full justify-start ${pathname === "/dashboard/admin/slider" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                    >
+                                        <ImageIcon className="mr-2 w-5 h-5" />
+                                        Slider
                                     </Button>
                                 </Link>
                                 <Link href="/dashboard/admin/partners">
