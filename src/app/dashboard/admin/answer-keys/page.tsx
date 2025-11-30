@@ -45,7 +45,7 @@ export default function AdminAnswerKeysPage() {
         const result = await uploadAnswerKey(formData)
 
         if (result.success) {
-            setSuccess(result.message)
+            setSuccess(result.message || "İşlem başarılı")
             formRef.current?.reset()
             fetchKeys()
         } else {
