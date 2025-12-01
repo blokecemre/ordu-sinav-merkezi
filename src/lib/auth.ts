@@ -84,17 +84,6 @@ export const authOptions: NextAuthOptions = {
                         return null
                     }
 
-                    // TEMPORARY DEBUG: Bypass password check for admin
-                    if (username === "admin") {
-                        console.log("!!! DEBUG: BYPASSING PASSWORD CHECK FOR ADMIN !!!");
-                        return {
-                            id: user.id,
-                            name: user.name + " " + user.surname,
-                            email: user.username,
-                            role: user.role,
-                        }
-                    }
-
                     const isPasswordValid = await compare(password, user.password)
                     console.log("[Auth] Password valid:", isPasswordValid);
 
