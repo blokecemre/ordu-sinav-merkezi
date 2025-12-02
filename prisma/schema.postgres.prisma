@@ -174,3 +174,13 @@ model SliderImage {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model StudyPlanItem {
+  id        String   @id @default(cuid())
+  day       String   // Monday, Tuesday, etc.
+  subject   String
+  duration  Int      // Minutes
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

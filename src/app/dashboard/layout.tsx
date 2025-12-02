@@ -17,7 +17,8 @@ import {
     X,
     TrendingUp,
     BarChart2, // Added by user instruction
-    UserPlus // Added by user instruction
+    UserPlus, // Added by user instruction
+    Calendar // Added for Study Plan
 } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 
@@ -42,7 +43,8 @@ export default function DashboardLayout({
             { href: "/dashboard/admin/analyses", label: "Analiz", icon: TrendingUp }, // Added Analiz for Admin
             { href: "/dashboard/admin/assignments", label: "Atamalar", icon: Users }, // Added Atamalar for Admin
             { href: "/dashboard/admin/answer-keys", label: "Cevap Anahtarları", icon: FileText }, // Added Answer Keys for Admin
-            { href: "/dashboard/admin/blog", label: "Blog", icon: BookOpen } // Added Blog for Admin
+            { href: "/dashboard/admin/blog", label: "Blog", icon: BookOpen }, // Added Blog for Admin
+            { href: "/dashboard/admin/study-plan", label: "Ders Programı", icon: Calendar },
         ] : []),
         // Teacher items
         ...(session?.user?.role === "TEACHER" ? [
