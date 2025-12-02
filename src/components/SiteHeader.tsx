@@ -28,7 +28,6 @@ export function SiteHeader() {
                     <Link href="/kurumsal" className="text-sm font-medium text-muted-foreground hover:text-foreground">Kurumsal</Link>
                     <Link href="/sinavlar" className="text-sm font-medium hover:text-blue-600 transition-colors">Sınavlar</Link>
                     <Link href="/cevap-anahtarlari" className="text-sm font-medium hover:text-blue-600 transition-colors">Cevap Anahtarları</Link>
-                    <Link href="/calisma-plani" className="text-sm font-medium hover:text-blue-600 transition-colors">Çalışma Planı</Link>
                     <Link href="/blog" className="text-sm font-medium hover:text-blue-600 transition-colors">Blog</Link>
                     <Link href="/hakkimizda" className="text-sm font-medium text-muted-foreground hover:text-foreground">Hakkımızda</Link>
                     <Link href="/iletisim" className="text-sm font-medium text-muted-foreground hover:text-foreground">İletişim</Link>
