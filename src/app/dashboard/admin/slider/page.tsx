@@ -37,9 +37,9 @@ export default function AdminSliderPage() {
             return
         }
 
-        // 5MB limit check
-        if (uploadFile.size > 5 * 1024 * 1024) {
-            toast.error("Dosya boyutu 5MB'dan küçük olmalıdır")
+        // 50MB limit check
+        if (uploadFile.size > 50 * 1024 * 1024) {
+            toast.error("Dosya boyutu 50MB'dan küçük olmalıdır")
             return
         }
 
