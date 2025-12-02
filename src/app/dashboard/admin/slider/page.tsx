@@ -9,12 +9,14 @@ import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { compressImage } from "@/lib/utils"
 
 export default function AdminSliderPage() {
     const [images, setImages] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+    const [statusMessage, setStatusMessage] = useState("")
     const [uploadFile, setUploadFile] = useState<File | null>(null)
 
     const fetchImages = async () => {
@@ -37,20 +39,21 @@ export default function AdminSliderPage() {
             return
         }
 
-        // 50MB limit check
-        if (uploadFile.size > 50 * 1024 * 1024) {
-            toast.error("Dosya boyutu 50MB'dan küçük olmalıdır")
-            return
-        }
-
         setSubmitting(true)
-        const data = new FormData()
-        data.append("image", uploadFile)
 
         try {
-            // Create a promise that rejects after 25 seconds (Vercel hobby limit is usually 10s or 60s, but let's be safe)
+            // 1. Optimize Image
+            setStatusMessage("Görsel optimize ediliyor...")
+            const optimizedFile = await compressImage(uploadFile)
+
+            // 2. Upload
+            setStatusMessage("Sunucuya yükleniyor...")
+            const data = new FormData()
+            data.append("image", optimizedFile)
+
+            // Create a promise that rejects after 25 seconds
             const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("İşlem zaman aşımına uğradı. Görsel çok büyük olabilir veya sunucu yanıt vermiyor.")), 25000)
+                setTimeout(() => reject(new Error("İşlem zaman aşımına uğradı.")), 25000)
             );
 
             const result = await Promise.race([
@@ -59,7 +62,7 @@ export default function AdminSliderPage() {
             ]) as any;
 
             if (result.success) {
-                toast.success("Görsel yüklendi")
+                toast.success("Görsel başarıyla yüklendi")
                 setIsDialogOpen(false)
                 setUploadFile(null)
                 fetchImages()
@@ -71,6 +74,7 @@ export default function AdminSliderPage() {
             toast.error(error.message || "Yükleme sırasında bir hata oluştu")
         } finally {
             setSubmitting(false)
+            setStatusMessage("")
         }
     }
 
@@ -145,7 +149,7 @@ export default function AdminSliderPage() {
                                 {submitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Yükleniyor...
+                                        {statusMessage || "İşleniyor..."}
                                     </>
                                 ) : (
                                     "Yükle"
