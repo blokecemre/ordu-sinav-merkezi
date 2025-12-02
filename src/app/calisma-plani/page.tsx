@@ -1,14 +1,42 @@
 import { SiteHeader } from "@/components/SiteHeader"
 import { getStudyPlan } from "@/app/actions/study-plan"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Clock, BookOpen } from "lucide-react"
+import { Clock, BookOpen, Lock } from "lucide-react"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
 ]
 
 export default async function StudyPlanPage() {
-    const { data: items } = await getStudyPlan()
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+        return (
+            <div className="flex flex-col min-h-screen bg-gray-50">
+                <SiteHeader />
+                <main className="flex-1 container mx-auto px-4 py-12 flex flex-col items-center justify-center text-center">
+                    <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Lock className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Giriş Yapmalısınız</h1>
+                        <p className="text-gray-600 mb-6">
+                            Size özel çalışma planınızı görüntülemek için lütfen giriş yapın.
+                        </p>
+                        <Link href="/login">
+                            <Button className="w-full">Giriş Yap</Button>
+                        </Link>
+                    </div>
+                </main>
+            </div>
+        )
+    }
+
+    const { data: items } = await getStudyPlan(session.user.id)
 
     // Group by day
     const plan: { [key: string]: any[] } = {}
@@ -29,7 +57,7 @@ export default async function StudyPlanPage() {
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">Haftalık Ders Çalışma Programı</h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Başarıya giden yolda planlı çalışmak en önemli adımdır. Sizin için hazırladığımız haftalık programı aşağıdan inceleyebilirsiniz.
+                        Sayın <span className="font-semibold text-gray-900">{session.user.name}</span>, başarıya giden yolda planlı çalışmak en önemli adımdır. Sizin için hazırladığımız haftalık programı aşağıdan inceleyebilirsiniz.
                     </p>
                 </div>
 
@@ -61,7 +89,7 @@ export default async function StudyPlanPage() {
                                             </div>
                                         ))}
                                         <div className="p-4 bg-gray-50 text-center text-sm font-medium text-gray-600 border-t">
-                                            Toplam: {plan[day]?.reduce((acc, curr) => acc + curr.duration, 0)} dk
+                                            Toplam: {plan[day]?.reduce((acc: any, curr: any) => acc + curr.duration, 0)} dk
                                         </div>
                                     </div>
                                 )}

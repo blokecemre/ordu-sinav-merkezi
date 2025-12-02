@@ -11,9 +11,14 @@ export type StudyPlanItem = {
     order: number
 }
 
-export async function getStudyPlan() {
+export async function getStudyPlan(studentId?: string) {
     try {
+        if (!studentId) {
+            return { success: true, data: [] }
+        }
+
         const items = await prisma.studyPlanItem.findMany({
+            where: { studentId },
             orderBy: { order: 'asc' }
         })
         return { success: true, data: items }
@@ -23,17 +28,26 @@ export async function getStudyPlan() {
     }
 }
 
-export async function updateStudyPlan(items: { day: string; subject: string; duration: number; order: number }[]) {
+export async function updateStudyPlan(studentId: string, items: { day: string; subject: string; duration: number; order: number }[]) {
     try {
+        if (!studentId) {
+            return { success: false, error: "Öğrenci seçilmedi" }
+        }
+
         // Transaction to replace all items safely
         await prisma.$transaction(async (tx) => {
-            // Delete all existing items
-            await tx.studyPlanItem.deleteMany()
+            // Delete all existing items for this student
+            await tx.studyPlanItem.deleteMany({
+                where: { studentId }
+            })
 
             // Create new items
             if (items.length > 0) {
                 await tx.studyPlanItem.createMany({
-                    data: items
+                    data: items.map(item => ({
+                        ...item,
+                        studentId
+                    }))
                 })
             }
         })

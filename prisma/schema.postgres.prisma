@@ -46,6 +46,7 @@ model User {
   // For Students
   teachers      TeacherStudent[] @relation("StudentToTeacher") // Teachers assigned to this student
   examAssignments ExamAssignment[] // Exams assigned to this student
+  studyPlans    StudyPlanItem[]
 }
 
 model TeacherStudent {
@@ -177,10 +178,13 @@ model SliderImage {
 
 model StudyPlanItem {
   id        String   @id @default(cuid())
+  studentId String
   day       String   // Monday, Tuesday, etc.
   subject   String
   duration  Int      // Minutes
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }

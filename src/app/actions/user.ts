@@ -130,3 +130,24 @@ export async function updateUser(prevState: any, formData: FormData) {
         return { message: "Güncelleme sırasında bir hata oluştu.", success: false }
     }
 }
+
+export async function getUsers(role?: "STUDENT" | "TEACHER" | "ADMIN") {
+    try {
+        const where = role ? { role } : {}
+        const users = await prisma.user.findMany({
+            where,
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                username: true,
+                role: true
+            },
+            orderBy: { name: 'asc' }
+        })
+        return { success: true, data: users }
+    } catch (error) {
+        console.error("Error fetching users:", error)
+        return { success: false, error: "Kullanıcılar getirilemedi" }
+    }
+}

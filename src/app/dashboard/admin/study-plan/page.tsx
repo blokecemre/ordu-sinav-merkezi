@@ -6,9 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, Plus, Save, Trash2 } from "lucide-react"
+import { Loader2, Plus, Save, Trash2, Search } from "lucide-react"
 import { toast } from "sonner"
 import { getStudyPlan, updateStudyPlan } from "@/app/actions/study-plan"
+import { getUsers } from "@/app/actions/user"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
@@ -35,16 +39,34 @@ type WeeklyPlan = {
 
 export default function AdminStudyPlanPage() {
     const [plan, setPlan] = useState<WeeklyPlan>({})
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [students, setStudents] = useState<any[]>([])
+    const [selectedStudentId, setSelectedStudentId] = useState<string>("")
+    const [openCombobox, setOpenCombobox] = useState(false)
 
     useEffect(() => {
-        loadPlan()
+        fetchStudents()
     }, [])
 
-    const loadPlan = async () => {
+    useEffect(() => {
+        if (selectedStudentId) {
+            loadPlan(selectedStudentId)
+        } else {
+            setPlan({})
+        }
+    }, [selectedStudentId])
+
+    const fetchStudents = async () => {
+        const result = await getUsers("STUDENT")
+        if (result.success) {
+            setStudents(result.data || [])
+        }
+    }
+
+    const loadPlan = async (studentId: string) => {
         setLoading(true)
-        const result = await getStudyPlan()
+        const result = await getStudyPlan(studentId)
         if (result.success && result.data) {
             const newPlan: WeeklyPlan = {}
             DAYS.forEach(day => newPlan[day] = [])
@@ -89,6 +111,11 @@ export default function AdminStudyPlanPage() {
     }
 
     const handleSave = async () => {
+        if (!selectedStudentId) {
+            toast.error("Lütfen bir öğrenci seçin")
+            return
+        }
+
         setSaving(true)
         const itemsToSave: any[] = []
 
@@ -105,7 +132,7 @@ export default function AdminStudyPlanPage() {
             }
         })
 
-        const result = await updateStudyPlan(itemsToSave)
+        const result = await updateStudyPlan(selectedStudentId, itemsToSave)
         if (result.success) {
             toast.success("Çalışma planı kaydedildi")
         } else {
@@ -114,87 +141,134 @@ export default function AdminStudyPlanPage() {
         setSaving(false)
     }
 
-    if (loading) {
-        return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
-    }
-
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <h1 className="text-3xl font-bold">Ders Çalışma Programı</h1>
-                <Button onClick={handleSave} disabled={saving}>
-                    {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    Kaydet
-                </Button>
+
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={openCombobox}
+                                className="w-[250px] justify-between"
+                            >
+                                {selectedStudentId
+                                    ? students.find((student) => student.id === selectedStudentId)?.name + " " + students.find((student) => student.id === selectedStudentId)?.surname
+                                    : "Öğrenci Seç..."}
+                                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[250px] p-0">
+                            <Command>
+                                <CommandInput placeholder="Öğrenci ara..." />
+                                <CommandList>
+                                    <CommandEmpty>Öğrenci bulunamadı.</CommandEmpty>
+                                    <CommandGroup>
+                                        {students.map((student) => (
+                                            <CommandItem
+                                                key={student.id}
+                                                value={student.name + " " + student.surname}
+                                                onSelect={() => {
+                                                    setSelectedStudentId(student.id)
+                                                    setOpenCombobox(false)
+                                                }}
+                                            >
+                                                {student.name} {student.surname}
+                                                <span className="ml-2 text-xs text-muted-foreground">({student.username})</span>
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+
+                    <Button onClick={handleSave} disabled={saving || !selectedStudentId}>
+                        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        Kaydet
+                    </Button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {DAYS.map(day => (
-                    <Card key={day} className="flex flex-col h-full">
-                        <CardHeader className="pb-3 bg-gray-50 rounded-t-lg border-b">
-                            <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                                {day}
-                                <span className="text-xs font-normal text-muted-foreground">
-                                    {(plan[day]?.length || 0)}/5 Ders
-                                </span>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-1 p-4 space-y-4">
-                            {plan[day]?.map((lesson, index) => (
-                                <div key={lesson.id} className="bg-white p-3 rounded-lg border shadow-sm space-y-3 relative group">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute -top-2 -right-2 h-6 w-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={() => removeLesson(day, lesson.id)}
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
-
-                                    <div className="space-y-1">
-                                        <Label className="text-xs text-muted-foreground">Ders</Label>
-                                        <Select
-                                            value={lesson.subject}
-                                            onValueChange={(val) => updateLesson(day, lesson.id, 'subject', val)}
+            {!selectedStudentId ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-gray-50 border-2 border-dashed rounded-lg text-muted-foreground">
+                    <Search className="w-12 h-12 mb-4 opacity-20" />
+                    <p className="text-lg font-medium">Lütfen işlem yapmak için bir öğrenci seçin</p>
+                </div>
+            ) : loading ? (
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {DAYS.map(day => (
+                        <Card key={day} className="flex flex-col h-full">
+                            <CardHeader className="pb-3 bg-gray-50 rounded-t-lg border-b">
+                                <CardTitle className="text-lg font-semibold flex justify-between items-center">
+                                    {day}
+                                    <span className="text-xs font-normal text-muted-foreground">
+                                        {(plan[day]?.length || 0)}/5 Ders
+                                    </span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex-1 p-4 space-y-4">
+                                {plan[day]?.map((lesson, index) => (
+                                    <div key={lesson.id} className="bg-white p-3 rounded-lg border shadow-sm space-y-3 relative group">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="absolute -top-2 -right-2 h-6 w-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => removeLesson(day, lesson.id)}
                                         >
-                                            <SelectTrigger className="h-8">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {SUBJECTS.map(sub => (
-                                                    <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                            <Trash2 className="h-3 w-3" />
+                                        </Button>
 
-                                    <div className="space-y-1">
-                                        <Label className="text-xs text-muted-foreground">Süre (dk)</Label>
-                                        <Input
-                                            type="number"
-                                            value={lesson.duration}
-                                            onChange={(e) => updateLesson(day, lesson.id, 'duration', parseInt(e.target.value) || 0)}
-                                            className="h-8"
-                                            min={1}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
+                                        <div className="space-y-1">
+                                            <Label className="text-xs text-muted-foreground">Ders</Label>
+                                            <Select
+                                                value={lesson.subject}
+                                                onValueChange={(val) => updateLesson(day, lesson.id, 'subject', val)}
+                                            >
+                                                <SelectTrigger className="h-8">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {SUBJECTS.map(sub => (
+                                                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
 
-                            {(plan[day]?.length || 0) < 5 && (
-                                <Button
-                                    variant="outline"
-                                    className="w-full border-dashed text-muted-foreground hover:text-primary hover:border-primary"
-                                    onClick={() => addLesson(day)}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Ders Ekle
-                                </Button>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                                        <div className="space-y-1">
+                                            <Label className="text-xs text-muted-foreground">Süre (dk)</Label>
+                                            <Input
+                                                type="number"
+                                                value={lesson.duration}
+                                                onChange={(e) => updateLesson(day, lesson.id, 'duration', parseInt(e.target.value) || 0)}
+                                                className="h-8"
+                                                min={1}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {(plan[day]?.length || 0) < 5 && (
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-dashed text-muted-foreground hover:text-primary hover:border-primary"
+                                        onClick={() => addLesson(day)}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Ders Ekle
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
