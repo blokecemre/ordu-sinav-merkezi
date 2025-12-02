@@ -59,12 +59,12 @@ export default async function BlogPostPage({
                                     </div>
                                     <div className="flex items-center gap-2 text-orange-500 font-medium">
                                         <User className="w-4 h-4" />
-                                        {post.author || "Ada Sınav Merkezi"}
+                                        {post.author || "Ordu Sınav Merkezi"}
                                     </div>
                                 </div>
 
                                 <div
-                                    className="prose prose-blue max-w-none"
+                                    className="prose prose-blue max-w-none whitespace-pre-wrap"
                                     dangerouslySetInnerHTML={{ __html: post.content }}
                                 />
                             </div>
