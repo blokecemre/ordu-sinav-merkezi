@@ -34,11 +34,11 @@ export function HomepageSlider() {
         <div className="embla overflow-hidden" ref={emblaRef}>
             <div className="embla__container flex">
                 {images.map((img) => (
-                    <div key={img.id} className="embla__slide flex-[0_0_100%] min-w-0 relative h-[300px] md:h-[500px]">
+                    <div key={img.id} className="embla__slide flex-[0_0_100%] min-w-0 relative h-[200px] sm:h-[300px] md:h-[500px] bg-gray-50">
                         <img
                             src={`/api/slider/${img.id}/image`}
                             alt="Slider"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain md:object-cover"
                         />
                     </div>
                 ))}
