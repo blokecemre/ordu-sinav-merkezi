@@ -37,21 +37,41 @@ export default function AdminSliderPage() {
             return
         }
 
+        // 5MB limit check
+        if (uploadFile.size > 5 * 1024 * 1024) {
+            toast.error("Dosya boyutu 5MB'dan küçük olmalıdır")
+            return
+        }
+
         setSubmitting(true)
         const data = new FormData()
         data.append("image", uploadFile)
 
-        const result = await createSliderImage(data)
+        try {
+            // Create a promise that rejects after 25 seconds (Vercel hobby limit is usually 10s or 60s, but let's be safe)
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("İşlem zaman aşımına uğradı. Görsel çok büyük olabilir veya sunucu yanıt vermiyor.")), 25000)
+            );
 
-        if (result.success) {
-            toast.success("Görsel yüklendi")
-            setIsDialogOpen(false)
-            setUploadFile(null)
-            fetchImages()
-        } else {
-            toast.error(result.error || "Bir hata oluştu")
+            const result = await Promise.race([
+                createSliderImage(data),
+                timeoutPromise
+            ]) as any;
+
+            if (result.success) {
+                toast.success("Görsel yüklendi")
+                setIsDialogOpen(false)
+                setUploadFile(null)
+                fetchImages()
+            } else {
+                toast.error(result.error || "Bir hata oluştu")
+            }
+        } catch (error: any) {
+            console.error("Upload error:", error)
+            toast.error(error.message || "Yükleme sırasında bir hata oluştu")
+        } finally {
+            setSubmitting(false)
         }
-        setSubmitting(false)
     }
 
     const handleDelete = async (id: string) => {
