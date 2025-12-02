@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { useRouter } from "next/navigation"
 import { createBlogPost, updateBlogPost } from "@/app/actions/blog"
 import { Loader2, Save, Upload } from "lucide-react"
+import { compressImage } from "@/lib/utils"
 
 interface BlogFormProps {
     initialData?: {
@@ -38,6 +39,8 @@ export function BlogForm({ initialData }: BlogFormProps) {
     })
     const [imageFile, setImageFile] = useState<File | null>(null)
 
+    const [statusMessage, setStatusMessage] = useState("")
+
     const generateSlug = (title: string) => {
         return title
             .toLowerCase()
@@ -58,6 +61,12 @@ export function BlogForm({ initialData }: BlogFormProps) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (imageFile && imageFile.size > 50 * 1024 * 1024) {
+            setError("Dosya boyutu 50MB'dan küçük olmalıdır")
+            return
+        }
+
         setLoading(true)
         setError(null)
 
@@ -71,15 +80,29 @@ export function BlogForm({ initialData }: BlogFormProps) {
             data.append("published", String(formData.published))
 
             if (imageFile) {
-                data.append("image", imageFile)
+                setStatusMessage("Görsel optimize ediliyor...")
+                const optimizedFile = await compressImage(imageFile)
+                data.append("image", optimizedFile)
             }
 
-            let result
+            setStatusMessage("Kaydediliyor...")
+
+            // Create a promise that rejects after 25 seconds
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("İşlem zaman aşımına uğradı.")), 25000)
+            );
+
+            let resultPromise;
             if (initialData?.id) {
-                result = await updateBlogPost(initialData.id, data)
+                resultPromise = updateBlogPost(initialData.id, data)
             } else {
-                result = await createBlogPost(data)
+                resultPromise = createBlogPost(data)
             }
+
+            const result = await Promise.race([
+                resultPromise,
+                timeoutPromise
+            ]) as any;
 
             if (result.success) {
                 router.push("/dashboard/admin/blog")
@@ -87,10 +110,12 @@ export function BlogForm({ initialData }: BlogFormProps) {
             } else {
                 setError(result.error || "Bir hata oluştu")
             }
-        } catch (err) {
-            setError("Beklenmedik bir hata oluştu")
+        } catch (err: any) {
+            console.error("Blog save error:", err)
+            setError(err.message || "Beklenmedik bir hata oluştu")
         } finally {
             setLoading(false)
+            setStatusMessage("")
         }
     }
 
@@ -206,7 +231,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Kaydediliyor...
+                            {statusMessage || "Kaydediliyor..."}
                         </>
                     ) : (
                         <>
