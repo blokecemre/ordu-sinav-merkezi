@@ -126,3 +126,106 @@ export async function getAllStudents() {
         return { students: [], success: false }
     }
 }
+
+export async function updateStudentResult(
+    examId: string,
+    studentId: string,
+    formData: FormData
+) {
+    try {
+        const totalScore = parseFloat(formData.get("totalScore") as string) || 0
+        const totalNet = parseFloat(formData.get("totalNet") as string) || 0
+        const pdfFile = formData.get("pdfFile") as File | null
+
+        let pdfData: Uint8Array | null = null
+        let pdfName: string | null = null
+        let pdfMimeType: string | null = null
+
+        if (pdfFile && pdfFile.size > 0) {
+            const bytes = await pdfFile.arrayBuffer()
+            pdfData = new Uint8Array(bytes)
+            pdfName = pdfFile.name
+            pdfMimeType = pdfFile.type
+        }
+
+        // Check if result exists
+        const existingResult = await prisma.result.findUnique({
+            where: {
+                studentId_examId: {
+                    studentId,
+                    examId
+                }
+            }
+        })
+
+        const data: any = {
+            totalScore,
+            totalNet,
+        }
+
+        if (pdfData) {
+            data.resultPdfData = pdfData
+            data.resultPdfName = pdfName
+            data.resultPdfMimeType = pdfMimeType
+        }
+
+        if (existingResult) {
+            await prisma.result.update({
+                where: { id: existingResult.id },
+                data
+            })
+        } else {
+            await prisma.result.create({
+                data: {
+                    examId,
+                    studentId,
+                    totalScore,
+                    totalNet,
+                    details: JSON.stringify({}),
+                    ...data
+                }
+            })
+        }
+
+        revalidatePath(`/dashboard/admin/exams`)
+        revalidatePath(`/dashboard/student`)
+
+        return { success: true, message: "Sonuç başarıyla güncellendi" }
+    } catch (error) {
+        console.error("Error updating result:", error)
+        return { success: false, message: "Güncelleme sırasında bir hata oluştu" }
+    }
+}
+
+export async function getExamResults(examId: string) {
+    try {
+        const exam = await prisma.exam.findUnique({
+            where: { id: examId },
+            include: {
+                assignments: {
+                    include: {
+                        student: {
+                            select: {
+                                id: true,
+                                name: true,
+                                surname: true,
+                                username: true
+                            }
+                        }
+                    }
+                },
+                results: true
+            }
+        })
+
+        if (!exam) return { success: false, error: "Sınav bulunamadı" }
+
+        const students = exam.assignments.map(a => a.student)
+        const results = exam.results
+
+        return { success: true, students, results, examName: exam.name }
+    } catch (error) {
+        console.error("Error fetching exam results:", error)
+        return { success: false, error: "Sonuçlar getirilemedi" }
+    }
+}

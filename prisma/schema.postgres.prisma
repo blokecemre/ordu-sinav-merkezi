@@ -83,6 +83,12 @@ model Result {
   totalScore Float
   totalNet   Float
   details    String   // JSON string for detailed results (Lesson based correct/incorrect/empty)
+  
+  // Individual Result PDF
+  resultPdfData     Bytes?
+  resultPdfName     String?
+  resultPdfMimeType String?
+
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

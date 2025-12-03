@@ -129,6 +129,13 @@ export default async function StudentDashboard() {
                                         </a>
                                     </div>
                                 )}
+                                {result.resultPdfName && (
+                                    <div className="mt-2 pt-2 border-t border-dashed">
+                                        <a href={`/api/result/${result.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-green-600 hover:underline flex items-center">
+                                            <FileText className="w-4 h-4 mr-1" /> Sonuç Karnesi İndir
+                                        </a>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     ))}

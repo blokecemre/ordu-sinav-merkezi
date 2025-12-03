@@ -15,6 +15,7 @@ import { tr } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { deleteExam } from "@/app/actions/exam"
+import Link from "next/link"
 
 export default async function ExamsPage() {
     const exams = await prisma.exam.findMany({
@@ -71,14 +72,21 @@ export default async function ExamsPage() {
                                     )}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <form action={async () => {
-                                        "use server"
-                                        await deleteExam(exam.id)
-                                    }}>
-                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </form>
+                                    <div className="flex justify-end gap-2">
+                                        <Link href={`/dashboard/admin/exams/${exam.id}/results`}>
+                                            <Button variant="outline" size="sm">
+                                                Sonuçlar
+                                            </Button>
+                                        </Link>
+                                        <form action={async () => {
+                                            "use server"
+                                            await deleteExam(exam.id)
+                                        }}>
+                                            <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
