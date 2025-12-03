@@ -461,5 +461,10 @@ export const CURRICULUM: Record<string, Record<string, string[]>> = {
         "10. Ünite: Natural Forces": [
             "Making predictions about the future (Giving reasons and results)"
         ]
+    },
+    "Günlük Tekrar": {
+        "Genel": [
+            "Okulda Alınan Konuların Tekrarı"
+        ]
     }
 }
