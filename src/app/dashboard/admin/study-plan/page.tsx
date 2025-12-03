@@ -15,6 +15,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 
 import { CURRICULUM } from "@/lib/constants/curriculum"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
@@ -26,7 +28,7 @@ type Lesson = {
     id: string // Temporary ID for UI
     subject: string
     duration: number
-    outcome?: string
+    outcomes?: string[]
 }
 
 type WeeklyPlan = {
@@ -73,7 +75,7 @@ export default function AdminStudyPlanPage() {
                     id: Math.random().toString(36).substr(2, 9),
                     subject: item.subject,
                     duration: item.duration,
-                    outcome: item.outcome || undefined
+                    outcomes: item.outcomes || []
                 })
             })
             setPlan(newPlan)
@@ -89,7 +91,7 @@ export default function AdminStudyPlanPage() {
 
         setPlan(prev => ({
             ...prev,
-            [day]: [...(prev[day] || []), { id: Math.random().toString(), subject: SUBJECTS[0], duration: 40 }]
+            [day]: [...(prev[day] || []), { id: Math.random().toString(), subject: SUBJECTS[0], duration: 40, outcomes: [] }]
         }))
     }
 
@@ -105,6 +107,28 @@ export default function AdminStudyPlanPage() {
             ...prev,
             [day]: prev[day].map(l => l.id === lessonId ? { ...l, [field]: value } : l)
         }))
+    }
+
+    const toggleOutcome = (day: string, lessonId: string, outcome: string) => {
+        setPlan(prev => {
+            const dayLessons = prev[day] || []
+            const lessonIndex = dayLessons.findIndex(l => l.id === lessonId)
+            if (lessonIndex === -1) return prev
+
+            const lesson = dayLessons[lessonIndex]
+            const currentOutcomes = lesson.outcomes || []
+            const newOutcomes = currentOutcomes.includes(outcome)
+                ? currentOutcomes.filter(o => o !== outcome)
+                : [...currentOutcomes, outcome]
+
+            const newLessons = [...dayLessons]
+            newLessons[lessonIndex] = { ...lesson, outcomes: newOutcomes }
+
+            return {
+                ...prev,
+                [day]: newLessons
+            }
+        })
     }
 
     const handleSave = async () => {
@@ -124,7 +148,7 @@ export default function AdminStudyPlanPage() {
                         subject: lesson.subject,
                         duration: Number(lesson.duration),
                         order: index,
-                        outcome: lesson.outcome
+                        outcomes: lesson.outcomes
                     })
                 })
             }
@@ -228,7 +252,7 @@ export default function AdminStudyPlanPage() {
                                                 value={lesson.subject}
                                                 onValueChange={(val) => {
                                                     updateLesson(day, lesson.id, 'subject', val)
-                                                    updateLesson(day, lesson.id, 'outcome', undefined) // Reset outcome when subject changes
+                                                    updateLesson(day, lesson.id, 'outcomes', []) // Reset outcomes when subject changes
                                                 }}
                                             >
                                                 <SelectTrigger className="h-8">
@@ -244,33 +268,72 @@ export default function AdminStudyPlanPage() {
 
                                         {CURRICULUM[lesson.subject] && (
                                             <div className="space-y-1">
-                                                <Label className="text-xs text-muted-foreground">Kazanım</Label>
-                                                <Select
-                                                    value={lesson.outcome || ""}
-                                                    onValueChange={(val) => updateLesson(day, lesson.id, 'outcome', val)}
-                                                >
-                                                    <SelectTrigger className="h-8 text-xs">
-                                                        <SelectValue placeholder="Kazanım seçiniz" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="max-h-[300px]">
-                                                        {Object.entries(CURRICULUM[lesson.subject]).map(([unit, outcomes]) => (
-                                                            <div key={unit}>
-                                                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-gray-50 sticky top-0">
-                                                                    {unit}
+                                                <Label className="text-xs text-muted-foreground">Kazanımlar</Label>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            role="combobox"
+                                                            className="w-full justify-between h-auto min-h-[2rem] py-1 px-3 text-xs"
+                                                        >
+                                                            {lesson.outcomes && lesson.outcomes.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {lesson.outcomes.length} kazanım seçildi
                                                                 </div>
-                                                                {outcomes.map((outcome) => (
-                                                                    <SelectItem
-                                                                        key={outcome}
-                                                                        value={outcome}
-                                                                        className="text-xs pl-4"
-                                                                    >
-                                                                        {outcome.length > 50 ? outcome.substring(0, 50) + "..." : outcome}
-                                                                    </SelectItem>
+                                                            ) : (
+                                                                "Kazanım seçiniz"
+                                                            )}
+                                                            <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-[300px] p-0" align="start">
+                                                        <Command>
+                                                            <CommandInput placeholder="Kazanım ara..." />
+                                                            <CommandList>
+                                                                <CommandEmpty>Kazanım bulunamadı.</CommandEmpty>
+                                                                {Object.entries(CURRICULUM[lesson.subject]).map(([unit, outcomes]) => (
+                                                                    <CommandGroup key={unit} heading={unit}>
+                                                                        {outcomes.map((outcome) => (
+                                                                            <CommandItem
+                                                                                key={outcome}
+                                                                                value={outcome}
+                                                                                onSelect={() => toggleOutcome(day, lesson.id, outcome)}
+                                                                            >
+                                                                                <div className={cn(
+                                                                                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                                                                    lesson.outcomes?.includes(outcome)
+                                                                                        ? "bg-primary text-primary-foreground"
+                                                                                        : "opacity-50 [&_svg]:invisible"
+                                                                                )}>
+                                                                                    <Check className={cn("h-4 w-4")} />
+                                                                                </div>
+                                                                                <span className="text-xs">{outcome}</span>
+                                                                            </CommandItem>
+                                                                        ))}
+                                                                    </CommandGroup>
                                                                 ))}
-                                                            </div>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                {lesson.outcomes && lesson.outcomes.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1 mt-1">
+                                                        {lesson.outcomes.map((outcome, i) => (
+                                                            <Badge key={i} variant="secondary" className="text-[10px] font-normal px-1 py-0 h-auto whitespace-normal text-left">
+                                                                {outcome.length > 30 ? outcome.substring(0, 30) + "..." : outcome}
+                                                                <button
+                                                                    className="ml-1 hover:text-red-500"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        toggleOutcome(day, lesson.id, outcome)
+                                                                    }}
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </Badge>
                                                         ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 

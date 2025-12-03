@@ -65,11 +65,13 @@ export default async function StudentStudyPlanPage() {
                                                     {lesson.duration} dk
                                                 </div>
                                             </div>
-                                            {lesson.outcome && (
-                                                <div className="px-4 pb-3 text-xs text-muted-foreground pl-14">
-                                                    <div className="bg-blue-50 p-2 rounded text-blue-700 border border-blue-100">
-                                                        {lesson.outcome}
-                                                    </div>
+                                            {lesson.outcomes && lesson.outcomes.length > 0 && (
+                                                <div className="px-4 pb-3 text-xs text-muted-foreground pl-14 space-y-1">
+                                                    {lesson.outcomes.map((outcome: string, i: number) => (
+                                                        <div key={i} className="bg-blue-50 p-2 rounded text-blue-700 border border-blue-100">
+                                                            {outcome}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             )}
                                         </div>
