@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "dotenv -e .env.production -- prisma generate --schema=prisma/schema.postgres.prisma && dotenv -e .env.production -- prisma db push --schema=prisma/schema.postgres.prisma --accept-data-loss && next build",
+    "build": "dotenv -e .env.production -- prisma generate --schema=prisma/schema.postgres.prisma && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate --schema=prisma/schema.postgres.prisma"
