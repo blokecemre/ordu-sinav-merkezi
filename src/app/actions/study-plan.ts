@@ -28,7 +28,7 @@ export async function getStudyPlan(studentId?: string) {
     }
 }
 
-export async function updateStudyPlan(studentId: string, items: { day: string; subject: string; duration: number; order: number }[]) {
+export async function updateStudyPlan(studentId: string, items: { day: string; subject: string; duration: number; order: number; outcome?: string }[]) {
     try {
         if (!studentId) {
             return { success: false, error: "Öğrenci seçilmedi" }

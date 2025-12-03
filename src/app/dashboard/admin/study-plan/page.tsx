@@ -14,23 +14,19 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
+import { CURRICULUM } from "@/lib/constants/curriculum"
+
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
 ]
 
-const SUBJECTS = [
-    "Matematik",
-    "Türkçe",
-    "Fen Bilimleri",
-    "İngilizce",
-    "Sosyal Bilgiler",
-    "Din Kültürü ve Ahlak Bilgisi"
-]
+const SUBJECTS = Object.keys(CURRICULUM)
 
 type Lesson = {
     id: string // Temporary ID for UI
     subject: string
     duration: number
+    outcome?: string
 }
 
 type WeeklyPlan = {
@@ -76,7 +72,8 @@ export default function AdminStudyPlanPage() {
                 newPlan[item.day].push({
                     id: Math.random().toString(36).substr(2, 9),
                     subject: item.subject,
-                    duration: item.duration
+                    duration: item.duration,
+                    outcome: item.outcome || undefined
                 })
             })
             setPlan(newPlan)
@@ -126,7 +123,8 @@ export default function AdminStudyPlanPage() {
                         day,
                         subject: lesson.subject,
                         duration: Number(lesson.duration),
-                        order: index
+                        order: index,
+                        outcome: lesson.outcome
                     })
                 })
             }
@@ -228,7 +226,10 @@ export default function AdminStudyPlanPage() {
                                             <Label className="text-xs text-muted-foreground">Ders</Label>
                                             <Select
                                                 value={lesson.subject}
-                                                onValueChange={(val) => updateLesson(day, lesson.id, 'subject', val)}
+                                                onValueChange={(val) => {
+                                                    updateLesson(day, lesson.id, 'subject', val)
+                                                    updateLesson(day, lesson.id, 'outcome', undefined) // Reset outcome when subject changes
+                                                }}
                                             >
                                                 <SelectTrigger className="h-8">
                                                     <SelectValue />
@@ -240,6 +241,38 @@ export default function AdminStudyPlanPage() {
                                                 </SelectContent>
                                             </Select>
                                         </div>
+
+                                        {CURRICULUM[lesson.subject] && (
+                                            <div className="space-y-1">
+                                                <Label className="text-xs text-muted-foreground">Kazanım</Label>
+                                                <Select
+                                                    value={lesson.outcome || ""}
+                                                    onValueChange={(val) => updateLesson(day, lesson.id, 'outcome', val)}
+                                                >
+                                                    <SelectTrigger className="h-8 text-xs">
+                                                        <SelectValue placeholder="Kazanım seçiniz" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-[300px]">
+                                                        {Object.entries(CURRICULUM[lesson.subject]).map(([unit, outcomes]) => (
+                                                            <div key={unit}>
+                                                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-gray-50 sticky top-0">
+                                                                    {unit}
+                                                                </div>
+                                                                {outcomes.map((outcome) => (
+                                                                    <SelectItem
+                                                                        key={outcome}
+                                                                        value={outcome}
+                                                                        className="text-xs pl-4"
+                                                                    >
+                                                                        {outcome.length > 50 ? outcome.substring(0, 50) + "..." : outcome}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </div>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        )}
 
                                         <div className="space-y-1">
                                             <Label className="text-xs text-muted-foreground">Süre (dk)</Label>

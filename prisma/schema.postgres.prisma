@@ -187,6 +187,7 @@ model StudyPlanItem {
   studentId String
   day       String   // Monday, Tuesday, etc.
   subject   String
+  outcome   String?  // Learning outcome (Kazanım)
   duration  Int      // Minutes
   order     Int      @default(0)
   createdAt DateTime @default(now())

@@ -52,17 +52,26 @@ export default async function StudentStudyPlanPage() {
                             ) : (
                                 <div className="divide-y divide-gray-100">
                                     {plan[day]?.map((lesson, index) => (
-                                        <div key={index} className="p-4 flex items-center justify-between hover:bg-blue-50 transition-colors">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
-                                                    {index + 1}
+                                        <div key={index} className="border-b last:border-0 hover:bg-blue-50 transition-colors">
+                                            <div className="p-4 flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
+                                                        {index + 1}
+                                                    </div>
+                                                    <span className="font-medium text-gray-700">{lesson.subject}</span>
                                                 </div>
-                                                <span className="font-medium text-gray-700">{lesson.subject}</span>
+                                                <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                                    <Clock className="w-3 h-3" />
+                                                    {lesson.duration} dk
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                                <Clock className="w-3 h-3" />
-                                                {lesson.duration} dk
-                                            </div>
+                                            {lesson.outcome && (
+                                                <div className="px-4 pb-3 text-xs text-muted-foreground pl-14">
+                                                    <div className="bg-blue-50 p-2 rounded text-blue-700 border border-blue-100">
+                                                        {lesson.outcome}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     <div className="p-4 bg-gray-50 text-center text-sm font-medium text-gray-600 border-t">
@@ -74,6 +83,6 @@ export default async function StudentStudyPlanPage() {
                     </Card>
                 ))}
             </div>
-        </div>
+        </div >
     )
 }
