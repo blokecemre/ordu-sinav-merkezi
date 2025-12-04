@@ -110,6 +110,28 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>
 
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Yanlış Soru Defteri Ayarları</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="daily_mistake_limit">Günlük Yükleme Limiti</Label>
+                                <Input
+                                    id="daily_mistake_limit"
+                                    name="daily_mistake_limit"
+                                    type="number"
+                                    min="1"
+                                    defaultValue={settings.daily_mistake_limit || "5"}
+                                    placeholder="5"
+                                />
+                                <p className="text-sm text-muted-foreground">
+                                    Öğrencilerin günde yükleyebileceği maksimum görsel sayısı.
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <div className="flex justify-end">
                         <Button type="submit" disabled={submitting} size="lg">
                             {submitting ? (

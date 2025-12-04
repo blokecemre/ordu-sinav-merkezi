@@ -33,6 +33,7 @@ model User {
   studyPlans      StudyPlanItem[]
   teachers        TeacherStudent[] @relation("StudentToTeacher")
   students        TeacherStudent[] @relation("TeacherToStudent")
+  mistakes        Mistake[]
 }
 
 model TeacherStudent {
@@ -171,6 +172,16 @@ model StudyPlanItem {
   studentId String
   outcomes  String[]
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Mistake {
+  id            String   @id @default(cuid())
+  studentId     String
+  imageData     Bytes
+  imageMimeType String
+  description   String?
+  createdAt     DateTime @default(now())
+  student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

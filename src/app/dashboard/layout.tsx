@@ -56,6 +56,7 @@ export default function DashboardLayout({
             { href: "/dashboard/student/analyses", label: "Analizler", icon: BookOpen },
             { href: "/dashboard/student/analysis", label: "Gelişim Grafiği", icon: TrendingUp },
             { href: "/dashboard/student/study-plan", label: "Çalışma Planı", icon: Calendar },
+            { href: "/dashboard/student/mistakes", label: "Yanlış Soru Defteri", icon: ImageIcon },
         ] : []),
     ]
 
