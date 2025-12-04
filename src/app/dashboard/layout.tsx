@@ -84,14 +84,14 @@ export default function DashboardLayout({
                     </Button>
                 </div>
 
-                <div className="p-4 flex flex-col h-[calc(100vh-4rem)] justify-between">
-                    <nav className="space-y-1">
+                <div className="flex flex-col h-[calc(100vh-4rem)]">
+                    <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
                         {navItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href
 
                             return (
-                                <Link key={item.href} href={item.href}>
+                                <Link key={item.href} href={item.href} onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={isActive ? "secondary" : "ghost"}
                                         className={`w-full justify-start ${isActive ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
@@ -104,7 +104,7 @@ export default function DashboardLayout({
                         })}
                         {session?.user?.role === "ADMIN" && (
                             <>
-                                <Link href="/dashboard/admin/settings">
+                                <Link href="/dashboard/admin/settings" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/settings" ? "secondary" : "ghost"}
                                         className={`w-full justify-start ${pathname === "/dashboard/admin/settings" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
@@ -113,7 +113,7 @@ export default function DashboardLayout({
                                         Ayarlar
                                     </Button>
                                 </Link>
-                                <Link href="/dashboard/admin/packages">
+                                <Link href="/dashboard/admin/packages" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/packages" ? "secondary" : "ghost"}
                                         className={`w-full justify-start ${pathname === "/dashboard/admin/packages" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
@@ -122,7 +122,7 @@ export default function DashboardLayout({
                                         Paketler
                                     </Button>
                                 </Link>
-                                <Link href="/dashboard/admin/slider">
+                                <Link href="/dashboard/admin/slider" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/slider" ? "secondary" : "ghost"}
                                         className={`w-full justify-start ${pathname === "/dashboard/admin/slider" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
@@ -131,7 +131,7 @@ export default function DashboardLayout({
                                         Slider
                                     </Button>
                                 </Link>
-                                <Link href="/dashboard/admin/partners">
+                                <Link href="/dashboard/admin/partners" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/partners" ? "secondary" : "ghost"}
                                         className={`w-full justify-start ${pathname === "/dashboard/admin/partners" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
@@ -144,7 +144,7 @@ export default function DashboardLayout({
                         )}
                     </nav>
 
-                    <div className="border-t pt-4">
+                    <div className="p-4 border-t bg-white">
                         <div className="px-4 py-2 mb-2">
                             <p className="text-sm font-medium text-gray-900">{session?.user?.name || "Kullanıcı"}</p>
                             <p className="text-xs text-gray-500 capitalize">{session?.user?.role?.toLowerCase() || "Rol"}</p>
