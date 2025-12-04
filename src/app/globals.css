@@ -69,7 +69,7 @@
   --color-primary-new: #135bec;
   --color-background-light: #f6f6f8;
   --color-background-dark: #101622;
-  --font-display: "Inter", sans-serif;
+  --font-display: var(--font-lexend);
 }
 
 :root {

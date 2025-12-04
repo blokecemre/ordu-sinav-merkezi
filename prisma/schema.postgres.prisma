@@ -7,46 +7,32 @@ datasource db {
   url      = "postgresql://neondb_owner:npg_TNSOG7p4YcnP@ep-square-frost-ahkqztsu-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"
 }
 
-enum Role {
-  STUDENT
-  TEACHER
-  ADMIN
-}
-
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
-  name      String
-  surname   String
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Extended Profile Info
+  id              String           @id @default(cuid())
+  username        String           @unique
+  password        String
+  name            String
+  surname         String
+  role            Role             @default(STUDENT)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  city            String?
   classLevel      String?
-  school          String?
-  session         String?
+  district        String?
   examCenter      String?
+  kvkkConsent     Boolean          @default(false)
   parentName      String?
   parentSurname   String?
-  city            String?
-  district        String?
   phone           String?
   referenceSource String?
-  kvkkConsent     Boolean  @default(false)
-
-  // Relations
-  studentResults Result[]
-  analyses      Analysis[] // New relation
-  
-  // For Teachers
-  students      TeacherStudent[] @relation("TeacherToStudent") // Students assigned to this teacher
-  
-  // For Students
-  teachers      TeacherStudent[] @relation("StudentToTeacher") // Teachers assigned to this student
-  examAssignments ExamAssignment[] // Exams assigned to this student
-  studyPlans    StudyPlanItem[]
+  school          String?
+  session         String?
+  analyses        Analysis[]
+  examAssignments ExamAssignment[]
+  studentResults  Result[]
+  studyPlans      StudyPlanItem[]
+  teachers        TeacherStudent[] @relation("StudentToTeacher")
+  students        TeacherStudent[] @relation("TeacherToStudent")
 }
 
 model TeacherStudent {
@@ -54,46 +40,40 @@ model TeacherStudent {
   teacherId String
   studentId String
   createdAt DateTime @default(now())
-
-  teacher   User     @relation("TeacherToStudent", fields: [teacherId], references: [id], onDelete: Cascade)
   student   User     @relation("StudentToTeacher", fields: [studentId], references: [id], onDelete: Cascade)
+  teacher   User     @relation("TeacherToStudent", fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@unique([teacherId, studentId])
 }
 
 model Exam {
-  id        String   @id @default(cuid())
-  name      String
-  date      DateTime
-  type      String   // TYT, AYT, LGS, etc.
-  pdfData   Bytes?   // Binary data for PDF
-  pdfName   String?  // Original filename
-  pdfMimeType String? // Mime type (e.g. application/pdf)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  results   Result[]
+  id          String           @id @default(cuid())
+  name        String
+  date        DateTime
+  type        String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  pdfData     Bytes?
+  pdfMimeType String?
+  pdfName     String?
   assignments ExamAssignment[]
+  results     Result[]
 }
 
 model Result {
-  id         String   @id @default(cuid())
-  studentId  String
-  examId     String
-  totalScore Float
-  totalNet   Float
-  details    String   // JSON string for detailed results (Lesson based correct/incorrect/empty)
-  
-  // Individual Result PDF
+  id                String   @id @default(cuid())
+  studentId         String
+  examId            String
+  totalScore        Float
+  totalNet          Float
+  details           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   resultPdfData     Bytes?
-  resultPdfName     String?
   resultPdfMimeType String?
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  student    User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  resultPdfName     String?
+  exam              Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student           User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, examId])
 }
@@ -102,10 +82,9 @@ model Analysis {
   id        String   @id @default(cuid())
   studentId String
   title     String
-  content   String   // Markdown content
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
@@ -114,7 +93,6 @@ model ExamAssignment {
   examId    String
   studentId String
   createdAt DateTime @default(now())
-
   exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -125,25 +103,25 @@ model AnswerKey {
   id          String   @id @default(cuid())
   title       String
   description String?
-  pdfData     Bytes    // Binary data for PDF
-  pdfName     String   // Original filename
-  pdfMimeType String   // Mime type (e.g. application/pdf)
+  pdfData     Bytes
+  pdfName     String
+  pdfMimeType String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model BlogPost {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique
-  content   String   // HTML content
-  excerpt   String?
-  author    String?
-  imageData Bytes?
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String
+  excerpt       String?
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  author        String?
+  imageData     Bytes?
   imageMimeType String?
-  published Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model SystemSetting {
@@ -164,13 +142,13 @@ model Partner {
 }
 
 model Package {
-  id           String   @id @default(cuid())
-  title        String
-  description  String   // Rich text or HTML content
-  imageData    Bytes
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  imageData     Bytes
   imageMimeType String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model SliderImage {
@@ -184,14 +162,19 @@ model SliderImage {
 
 model StudyPlanItem {
   id        String   @id @default(cuid())
-  studentId String
-  day       String   // Monday, Tuesday, etc.
+  day       String
   subject   String
-  outcomes  String[] // Learning outcomes (Kazanımlar)
-  duration  Int      // Minutes
+  duration  Int
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  studentId String
+  outcomes  String[]
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
 }
