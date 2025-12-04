@@ -7,7 +7,7 @@ export default function KurumsalPage() {
         <div className="flex flex-col min-h-screen bg-background">
             <SiteHeader />
             <main className="flex-1">
-                <section className="w-full py-20 lg:py-32">
+                <section className="w-full py-10 lg:py-16">
                     <div className="px-4 md:px-6">
                         <div className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-center justify-center p-4 text-center" style={{ backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDC49981GpwnVwYCqYUH50caIXRjjSbgDJ_3ETNY0YtknTCuZ12-O-ziTONAwQrjehk_n93Gbu0fQkCvyPyHf7f5dfteDO-U6mDVKVqbq74DDdwhieLNUvTDHs3IhET_1X5qgGAmv8NOdgzf7o-3eM72gZTme6DWR3nvZ47ghy2pbAIzMeMWotJE7b4AjlGWuAOqNSUbzvz-kdg_gAJV2o0WwOH73i-dQKXxiGdVyzhklFyt1gs307hhKY32YKKozqyCo0ApKrsJOI')" }}>
                             <div className="flex flex-col gap-4 max-w-3xl">

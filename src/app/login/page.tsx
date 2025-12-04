@@ -51,7 +51,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden font-display bg-background-light dark:bg-background-dark text-foreground">
+        <div className="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden bg-background-light dark:bg-background-dark text-foreground">
             <SiteHeader />
             <div className="flex-grow grid grid-cols-1 lg:grid-cols-2">
                 {/* Left Pane: Branding & Welcome Message */}
