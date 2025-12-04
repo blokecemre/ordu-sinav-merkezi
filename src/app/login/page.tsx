@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Loader2, Mail, Lock, Eye, EyeOff, School } from "lucide-react"
 import { toast } from "sonner"
+import { SiteHeader } from "@/components/SiteHeader"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -56,6 +57,7 @@ export default function LoginPage() {
 
     return (
         <div className="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden font-display bg-background-light dark:bg-background-dark text-foreground">
+            <SiteHeader />
             <div className="flex-grow grid grid-cols-1 lg:grid-cols-2">
                 {/* Left Pane: Branding & Welcome Message */}
                 <div className="relative hidden lg:flex flex-col items-center justify-center p-12 bg-gray-100 dark:bg-background-dark">
