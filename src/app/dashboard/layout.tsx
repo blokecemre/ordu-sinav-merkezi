@@ -141,6 +141,15 @@ export default function DashboardLayout({
                                         Partnerler
                                     </Button>
                                 </Link>
+                                <Link href="/dashboard/admin/mistakes" onClick={() => setIsSidebarOpen(false)}>
+                                    <Button
+                                        variant={pathname.startsWith("/dashboard/admin/mistakes") ? "secondary" : "ghost"}
+                                        className={`w-full justify-start ${pathname.startsWith("/dashboard/admin/mistakes") ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                    >
+                                        <ImageIcon className="mr-2 w-5 h-5" />
+                                        Yanlış Soru Defteri
+                                    </Button>
+                                </Link>
                             </>
                         )}
                     </nav>
