@@ -14,6 +14,7 @@ export async function POST(request: Request) {
         const formData = await request.formData()
         const file = formData.get("file") as File
         const description = formData.get("description") as string
+        const lesson = formData.get("lesson") as string || "Genel"
 
         if (!file) {
             return new NextResponse("File is required", { status: 400 })
@@ -49,7 +50,8 @@ export async function POST(request: Request) {
                 studentId: session.user.id,
                 imageData: buffer,
                 imageMimeType: file.type,
-                description: description || null
+                description: description || null,
+                lesson: lesson
             }
         })
 
@@ -72,7 +74,6 @@ export async function GET(request: Request) {
 
         // If teacher/admin, allow viewing specific student's mistakes
         if ((session.user.role === "TEACHER" || session.user.role === "ADMIN") && studentId) {
-            // Optional: Check if teacher is assigned to student (skipping for now for simplicity/admin access)
             const mistakes = await prisma.mistake.findMany({
                 where: { studentId },
                 orderBy: { createdAt: "desc" }

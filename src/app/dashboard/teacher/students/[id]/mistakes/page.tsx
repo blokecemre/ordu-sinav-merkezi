@@ -9,6 +9,7 @@ interface Mistake {
     id: string
     imageData: string
     description: string | null
+    lesson: string
     createdAt: string
 }
 
@@ -58,6 +59,16 @@ export default function StudentMistakesPage() {
         )
     }
 
+    // Group mistakes by lesson
+    const groupedMistakes = mistakes.reduce((acc, mistake) => {
+        const lesson = mistake.lesson || "Genel"
+        if (!acc[lesson]) {
+            acc[lesson] = []
+        }
+        acc[lesson].push(mistake)
+        return acc
+    }, {} as Record<string, Mistake[]>)
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold tracking-tight">Öğrenci Yanlış Soru Defteri</h1>
@@ -67,32 +78,39 @@ export default function StudentMistakesPage() {
                     Bu öğrenci henüz yanlış soru yüklememiş.
                 </div>
             ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {mistakes.map((mistake) => (
-                        <Card key={mistake.id} className="overflow-hidden group">
-                            <div className="aspect-[3/4] relative bg-gray-100">
-                                <img
-                                    src={mistake.imageData}
-                                    alt="Mistake"
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-                                    onClick={() => window.open(mistake.imageData, '_blank')}
-                                />
+                <div className="space-y-8">
+                    {Object.entries(groupedMistakes).map(([groupLesson, groupMistakes]) => (
+                        <div key={groupLesson} className="space-y-4">
+                            <h2 className="text-xl font-bold text-gray-800 border-b pb-2">{groupLesson}</h2>
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                {groupMistakes.map((mistake) => (
+                                    <Card key={mistake.id} className="overflow-hidden group">
+                                        <div className="aspect-[3/4] relative bg-gray-100">
+                                            <img
+                                                src={mistake.imageData}
+                                                alt="Mistake"
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105 cursor-pointer"
+                                                onClick={() => window.open(mistake.imageData, '_blank')}
+                                            />
+                                        </div>
+                                        <CardContent className="p-4">
+                                            <p className="text-xs text-gray-500 mb-1">
+                                                {new Date(mistake.createdAt).toLocaleDateString("tr-TR", {
+                                                    day: "numeric",
+                                                    month: "long",
+                                                    year: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </p>
+                                            {mistake.description && (
+                                                <p className="text-sm text-gray-700 line-clamp-2">{mistake.description}</p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
-                            <CardContent className="p-4">
-                                <p className="text-xs text-gray-500 mb-1">
-                                    {new Date(mistake.createdAt).toLocaleDateString("tr-TR", {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit"
-                                    })}
-                                </p>
-                                {mistake.description && (
-                                    <p className="text-sm text-gray-700 line-clamp-2">{mistake.description}</p>
-                                )}
-                            </CardContent>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             )}

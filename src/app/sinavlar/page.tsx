@@ -22,36 +22,49 @@ export default function SinavlarPage() {
                     </div>
 
                     {/* Sınav Türleri */}
-                    <div className="flex justify-center mb-12">
-                        <div className="bg-white rounded-lg p-8 shadow-sm max-w-2xl w-full border border-gray-100">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                    <FileText className="w-6 h-6 text-purple-600" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900">Lise Geçiş Sınavı (LGS)</h3>
+                    <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+                        <div className="bg-white rounded-lg p-6 shadow-sm">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                <FileText className="w-6 h-6 text-blue-600" />
                             </div>
-
-                            <p className="text-gray-600 mb-6 leading-relaxed">
-                                Liselere Geçiş Sistemi (LGS) kapsamında yapılan merkezi sınava yönelik deneme sınavları ve detaylı performans analizi.
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">TYT</h3>
+                            <p className="text-gray-600 mb-4">
+                                Temel Yeterlilik Testi için detaylı analiz ve ders bazlı net takibi
                             </p>
+                            <ul className="space-y-1 text-sm text-gray-600">
+                                <li>• Türkçe - Matematik</li>
+                                <li>• Fen Bilimleri - Sosyal Bilimler</li>
+                                <li>• Soru bazlı çözümleme</li>
+                            </ul>
+                        </div>
 
-                            <ul className="space-y-3 text-gray-600">
-                                <li className="flex items-center gap-2">
-                                    <span className="text-blue-500">✓</span>
-                                    Türkçe, Matematik, Fen Bilimleri
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-blue-500">✓</span>
-                                    T.C. İnkılap Tarihi ve Atatürkçülük
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-blue-500">✓</span>
-                                    Din Kültürü ve Ahlak Bilgisi, Yabancı Dil
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-blue-500">✓</span>
-                                    Kazanım bazlı değerlendirme ve eksik tamamlama
-                                </li>
+                        <div className="bg-white rounded-lg p-6 shadow-sm">
+                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                <BookOpen className="w-6 h-6 text-green-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">AYT</h3>
+                            <p className="text-gray-600 mb-4">
+                                Alan Yeterlilik Testi için branş bazlı detaylı raporlama
+                            </p>
+                            <ul className="space-y-1 text-sm text-gray-600">
+                                <li>• Sayısal - Sözel - Eşit Ağırlık</li>
+                                <li>• Dil sınavları</li>
+                                <li>• Konu bazlı analiz</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-6 shadow-sm">
+                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                <Calendar className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">LGS</h3>
+                            <p className="text-gray-600 mb-4">
+                                Liseye Geçiş Sınavı için kapsamlı hazırlık ve takip sistemi
+                            </p>
+                            <ul className="space-y-1 text-sm text-gray-600">
+                                <li>• Türkçe - Matematik</li>
+                                <li>• Fen - Sosyal - İnkılap - Din</li>
+                                <li>• Kazanım bazlı analiz</li>
                             </ul>
                         </div>
                     </div>

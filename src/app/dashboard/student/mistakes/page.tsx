@@ -14,13 +14,30 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 interface Mistake {
     id: string
     imageData: string
     description: string | null
+    lesson: string
     createdAt: string
 }
+
+const LESSONS = [
+    "Matematik",
+    "Fen Bilimleri",
+    "Türkçe",
+    "Din Kültürü ve Ahlak Bilgisi",
+    "Sosyal Bilgiler",
+    "İngilizce"
+]
 
 export default function MistakeNotebookPage() {
     const [mistakes, setMistakes] = useState<Mistake[]>([])
@@ -30,6 +47,7 @@ export default function MistakeNotebookPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const [description, setDescription] = useState("")
+    const [lesson, setLesson] = useState(LESSONS[0])
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -68,6 +86,7 @@ export default function MistakeNotebookPage() {
         const formData = new FormData()
         formData.append("file", selectedFile)
         formData.append("description", description)
+        formData.append("lesson", lesson)
 
         try {
             const res = await fetch("/api/mistakes", {
@@ -81,6 +100,7 @@ export default function MistakeNotebookPage() {
                 setSelectedFile(null)
                 setPreviewUrl(null)
                 setDescription("")
+                setLesson(LESSONS[0])
                 fetchMistakes()
             } else {
                 const msg = await res.text()
@@ -93,6 +113,16 @@ export default function MistakeNotebookPage() {
             setIsUploading(false)
         }
     }
+
+    // Group mistakes by lesson
+    const groupedMistakes = mistakes.reduce((acc, mistake) => {
+        const lesson = mistake.lesson || "Genel"
+        if (!acc[lesson]) {
+            acc[lesson] = []
+        }
+        acc[lesson].push(mistake)
+        return acc
+    }, {} as Record<string, Mistake[]>)
 
     return (
         <div className="space-y-6">
@@ -158,6 +188,22 @@ export default function MistakeNotebookPage() {
                             )}
 
                             <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <Label htmlFor="lesson">Ders</Label>
+                                <Select value={lesson} onValueChange={setLesson}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Ders seçin" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {LESSONS.map((l) => (
+                                            <SelectItem key={l} value={l}>
+                                                {l}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="description">Açıklama (Opsiyonel)</Label>
                                 <Input
                                     id="description"
@@ -191,32 +237,39 @@ export default function MistakeNotebookPage() {
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {mistakes.map((mistake) => (
-                        <Card key={mistake.id} className="overflow-hidden group">
-                            <div className="aspect-[3/4] relative bg-gray-100">
-                                <img
-                                    src={mistake.imageData}
-                                    alt="Mistake"
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-                                    onClick={() => window.open(mistake.imageData, '_blank')}
-                                />
+                <div className="space-y-8">
+                    {Object.entries(groupedMistakes).map(([groupLesson, groupMistakes]) => (
+                        <div key={groupLesson} className="space-y-4">
+                            <h2 className="text-xl font-bold text-gray-800 border-b pb-2">{groupLesson}</h2>
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                {groupMistakes.map((mistake) => (
+                                    <Card key={mistake.id} className="overflow-hidden group">
+                                        <div className="aspect-[3/4] relative bg-gray-100">
+                                            <img
+                                                src={mistake.imageData}
+                                                alt="Mistake"
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105 cursor-pointer"
+                                                onClick={() => window.open(mistake.imageData, '_blank')}
+                                            />
+                                        </div>
+                                        <CardContent className="p-4">
+                                            <p className="text-xs text-gray-500 mb-1">
+                                                {new Date(mistake.createdAt).toLocaleDateString("tr-TR", {
+                                                    day: "numeric",
+                                                    month: "long",
+                                                    year: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </p>
+                                            {mistake.description && (
+                                                <p className="text-sm text-gray-700 line-clamp-2">{mistake.description}</p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
-                            <CardContent className="p-4">
-                                <p className="text-xs text-gray-500 mb-1">
-                                    {new Date(mistake.createdAt).toLocaleDateString("tr-TR", {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit"
-                                    })}
-                                </p>
-                                {mistake.description && (
-                                    <p className="text-sm text-gray-700 line-clamp-2">{mistake.description}</p>
-                                )}
-                            </CardContent>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             )}
