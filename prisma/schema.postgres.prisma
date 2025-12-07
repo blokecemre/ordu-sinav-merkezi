@@ -42,6 +42,7 @@ model Mistake {
   imageData     Bytes
   imageMimeType String
   description   String?
+  adminNote     String?
   lesson        String   @default("Genel")
   createdAt     DateTime @default(now())
   student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)

@@ -27,6 +27,7 @@ interface Mistake {
     imageData: string
     description: string | null
     lesson: string
+    adminNote: string | null
     createdAt: string
 }
 
@@ -264,6 +265,12 @@ export default function MistakeNotebookPage() {
                                             </p>
                                             {mistake.description && (
                                                 <p className="text-sm text-gray-700 line-clamp-2">{mistake.description}</p>
+                                            )}
+                                            {mistake.adminNote && (
+                                                <div className="mt-3 bg-blue-50 p-2 rounded border border-blue-100">
+                                                    <span className="text-xs font-semibold text-blue-600 block mb-1">Eğitmen Notu:</span>
+                                                    <p className="text-sm text-gray-800">{mistake.adminNote}</p>
+                                                </div>
                                             )}
                                         </CardContent>
                                     </Card>
