@@ -12,7 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { FileText, ArrowRight } from "lucide-react"
+import { FileText, ArrowRight, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -54,9 +54,17 @@ export default async function StudentDetailPage({ params }: PageProps) {
 
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">{student.name} {student.surname}</h1>
-                <p className="text-muted-foreground">Öğrenci Analizi</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">{student.name} {student.surname}</h1>
+                    <p className="text-muted-foreground">Öğrenci Analizi</p>
+                </div>
+                <Link href={`/dashboard/teacher/students/${id}/mistakes`}>
+                    <Button>
+                        <ImageIcon className="mr-2 h-4 w-4" />
+                        Yanlış Soru Defteri
+                    </Button>
+                </Link>
             </div>
 
             <AnalysisCharts data={chartData} />
