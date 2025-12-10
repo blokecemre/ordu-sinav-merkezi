@@ -14,6 +14,7 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url)
         const role = searchParams.get("role")
         const query = searchParams.get("query")
+        const includeMistakeCount = searchParams.get("includeMistakeCount") === "true"
 
         const whereClause: any = {}
 
@@ -38,11 +39,27 @@ export async function GET(request: Request) {
                 username: true,
                 role: true,
                 classLevel: true,
+                ...(includeMistakeCount && {
+                    _count: {
+                        select: { mistakes: true }
+                    }
+                })
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: [
+                { classLevel: 'asc' },
+                { name: 'asc' },
+                { surname: 'asc' }
+            ]
         })
 
-        return NextResponse.json(users)
+        // Transform to include mistakeCount as a flat field
+        const result = users.map(user => ({
+            ...user,
+            mistakeCount: (user as any)._count?.mistakes ?? 0,
+            _count: undefined
+        }))
+
+        return NextResponse.json(result)
     } catch (error) {
         console.error("Users fetch error:", error)
         return new NextResponse("Internal Error", { status: 500 })
