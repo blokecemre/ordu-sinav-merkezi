@@ -50,6 +50,7 @@ export default function MistakeNotebookPage() {
     const [description, setDescription] = useState("")
     const [lesson, setLesson] = useState(LESSONS[0])
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const galleryInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         fetchMistakes()
@@ -147,11 +148,20 @@ export default function MistakeNotebookPage() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="w-full"
+                                        className="flex-1"
                                         onClick={() => fileInputRef.current?.click()}
                                     >
+                                        <Camera className="mr-2 h-4 w-4" />
+                                        Kamera
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="flex-1"
+                                        onClick={() => galleryInputRef.current?.click()}
+                                    >
                                         <ImageIcon className="mr-2 h-4 w-4" />
-                                        Dosya Seç / Kamera
+                                        Galeri
                                     </Button>
                                     <Input
                                         ref={fileInputRef}
@@ -159,6 +169,13 @@ export default function MistakeNotebookPage() {
                                         type="file"
                                         accept="image/*"
                                         capture="environment"
+                                        className="hidden"
+                                        onChange={handleFileSelect}
+                                    />
+                                    <Input
+                                        ref={galleryInputRef}
+                                        type="file"
+                                        accept="image/*"
                                         className="hidden"
                                         onChange={handleFileSelect}
                                     />
