@@ -41,7 +41,6 @@ export function MobileNav() {
                         </SheetHeader>
                         <div className="grid gap-2 overflow-y-auto pb-20 h-full">
                             <MobileLink href="/paketler" icon="📦" label="Paketler" setOpen={setOpen} />
-                            <MobileLink href="/kurumsal" icon="🏢" label="Kurumsal" setOpen={setOpen} />
                             <MobileLink href="/sinavlar" icon="📝" label="Sınavlar" setOpen={setOpen} />
                             <MobileLink href="/cevap-anahtarlari" icon="🔑" label="Cevap Anahtarları" setOpen={setOpen} />
                             <MobileLink href="/blog" icon="📰" label="Blog" setOpen={setOpen} />
