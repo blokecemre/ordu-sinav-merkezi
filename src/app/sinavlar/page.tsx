@@ -28,24 +28,12 @@ export default function SinavlarPage() {
             {/* Main Content */}
             <main className="flex-1 bg-gray-50">
                 <div className="container mx-auto px-4 py-12">
-                    {/* Hero */}
-                    <div className="text-center mb-16">
-                        <FileText className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Sınavlar
-                        </h1>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Desteklediğimiz sınavlar ve analiz hizmetlerimiz
-                        </p>
-                    </div>
+                    {/* Hero - REMOVED */}
 
                     {/* Analiz Hizmetlerimiz Section (Moved to Top) */}
                     <div className="mb-20">
                         <div className="text-center mb-12">
-                            <span className="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
-                                🚀 Web Sitesi İçeriği: Akıllı Analiz Sistemlerimiz
-                            </span>
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 pt-12">
                                 Sadece Sınava Girmek Yetmez; <br className="hidden md:block" />
                                 <span className="text-blue-600">Başarı, Doğru Analizle Gelir</span>
                             </h2>
