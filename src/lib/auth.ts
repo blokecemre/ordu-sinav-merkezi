@@ -12,20 +12,8 @@ export const authOptions: NextAuthOptions = {
     pages: {
         signIn: "/login",
     },
-    cookies: {
-        sessionToken: {
-            name: process.env.NODE_ENV === 'production'
-                ? `__Secure-next-auth.session-token`
-                : `next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                // Remove domain to let browser set it automatically
-            }
-        }
-    },
+    // Let NextAuth handle cookies automatically - removing custom config
+    // that was causing issues on mobile
     providers: [
         CredentialsProvider({
             name: "Credentials",
