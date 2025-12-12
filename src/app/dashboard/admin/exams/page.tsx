@@ -33,7 +33,7 @@ export default async function ExamsPage() {
         }
     })
 
-    // Get students with their result PDF counts
+    // Get students with their exam results (participated in exams)
     const studentsWithPdfCounts = await prisma.user.findMany({
         where: { role: "STUDENT" },
         select: {
@@ -43,13 +43,13 @@ export default async function ExamsPage() {
             username: true,
             classLevel: true,
             studentResults: {
-                where: {
-                    resultPdfName: { not: null }
-                },
                 select: {
                     id: true,
                     exam: {
-                        select: { name: true }
+                        select: {
+                            name: true,
+                            pdfName: true
+                        }
                     }
                 }
             }
@@ -60,7 +60,7 @@ export default async function ExamsPage() {
         ]
     })
 
-    // Filter only students who have at least one PDF
+    // Filter only students who have at least one result
     const studentsWithPdfs = studentsWithPdfCounts.filter(s => s.studentResults.length > 0)
 
     // Group by class level
@@ -141,13 +141,13 @@ export default async function ExamsPage() {
                 </Table>
             </div>
 
-            {/* Students with PDFs Section */}
+            {/* Students with Exam Results Section */}
             <div className="space-y-6">
-                <h2 className="text-2xl font-bold tracking-tight">Öğrenci Deneme PDF'leri</h2>
+                <h2 className="text-2xl font-bold tracking-tight">Sınava Katılan Öğrenciler</h2>
 
                 {studentsWithPdfs.length === 0 ? (
                     <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed">
-                        Henüz hiçbir öğrenciye PDF yüklenmemiş.
+                        Henüz hiçbir öğrenci sınava katılmamış.
                     </div>
                 ) : (
                     <div className="space-y-8">
@@ -168,7 +168,7 @@ export default async function ExamsPage() {
                                                         <div className="flex items-center gap-2 mt-2">
                                                             <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
                                                                 <FileText className="h-3 w-3" />
-                                                                {student.studentResults.length} PDF
+                                                                {student.studentResults.length} sınav
                                                             </span>
                                                         </div>
                                                         <div className="mt-2 space-y-1">
