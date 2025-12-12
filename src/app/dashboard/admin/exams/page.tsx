@@ -13,9 +13,10 @@ import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
+import { Trash2, FileText, User as UserIcon } from "lucide-react"
 import { deleteExam } from "@/app/actions/exam"
 import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
 
 export default async function ExamsPage() {
     const exams = await prisma.exam.findMany({
@@ -32,8 +33,54 @@ export default async function ExamsPage() {
         }
     })
 
+    // Get students with their result PDF counts
+    const studentsWithPdfCounts = await prisma.user.findMany({
+        where: { role: "STUDENT" },
+        select: {
+            id: true,
+            name: true,
+            surname: true,
+            username: true,
+            classLevel: true,
+            studentResults: {
+                where: {
+                    resultPdfName: { not: null }
+                },
+                select: {
+                    id: true,
+                    exam: {
+                        select: { name: true }
+                    }
+                }
+            }
+        },
+        orderBy: [
+            { classLevel: 'asc' },
+            { name: 'asc' }
+        ]
+    })
+
+    // Filter only students who have at least one PDF
+    const studentsWithPdfs = studentsWithPdfCounts.filter(s => s.studentResults.length > 0)
+
+    // Group by class level
+    const groupedStudents: Record<string, typeof studentsWithPdfs> = {}
+    studentsWithPdfs.forEach(student => {
+        const key = student.classLevel ? `${student.classLevel}. Sınıf` : "Sınıf Belirtilmemiş"
+        if (!groupedStudents[key]) {
+            groupedStudents[key] = []
+        }
+        groupedStudents[key].push(student)
+    })
+
+    const sortedKeys = Object.keys(groupedStudents).sort((a, b) => {
+        const aNum = parseInt(a) || 99
+        const bNum = parseInt(b) || 99
+        return aNum - bNum
+    })
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Sınavlar</h1>
                 <UploadExamDialog />
@@ -92,6 +139,60 @@ export default async function ExamsPage() {
                         ))}
                     </TableBody>
                 </Table>
+            </div>
+
+            {/* Students with PDFs Section */}
+            <div className="space-y-6">
+                <h2 className="text-2xl font-bold tracking-tight">Öğrenci Deneme PDF'leri</h2>
+
+                {studentsWithPdfs.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed">
+                        Henüz hiçbir öğrenciye PDF yüklenmemiş.
+                    </div>
+                ) : (
+                    <div className="space-y-8">
+                        {sortedKeys.map(classLevel => (
+                            <div key={classLevel} className="space-y-4">
+                                <h3 className="text-xl font-bold text-gray-800 border-b pb-2">{classLevel}</h3>
+                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                    {groupedStudents[classLevel].map((student) => (
+                                        <Card key={student.id} className="hover:bg-gray-50 transition-colors">
+                                            <CardContent className="p-4">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                                        <UserIcon className="h-5 w-5 text-blue-600" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-medium text-gray-900">{student.name} {student.surname}</h4>
+                                                        <p className="text-sm text-gray-500">@{student.username}</p>
+                                                        <div className="flex items-center gap-2 mt-2">
+                                                            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                                                                <FileText className="h-3 w-3" />
+                                                                {student.studentResults.length} PDF
+                                                            </span>
+                                                        </div>
+                                                        <div className="mt-2 space-y-1">
+                                                            {student.studentResults.slice(0, 3).map((result) => (
+                                                                <p key={result.id} className="text-xs text-gray-500 truncate">
+                                                                    • {result.exam.name}
+                                                                </p>
+                                                            ))}
+                                                            {student.studentResults.length > 3 && (
+                                                                <p className="text-xs text-gray-400 italic">
+                                                                    +{student.studentResults.length - 3} daha...
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )
