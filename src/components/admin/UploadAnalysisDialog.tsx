@@ -31,17 +31,20 @@ interface UploadAnalysisDialogProps {
 export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [analysisType, setAnalysisType] = useState("GENEL_DENEME")
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
         const formData = new FormData(e.currentTarget)
+        formData.set("analysisType", analysisType)
 
         try {
             const result = await createAnalysis(formData)
             if (result.success) {
                 toast.success(result.message)
                 setOpen(false)
+                setAnalysisType("GENEL_DENEME")
             } else {
                 toast.error(result.message)
             }
@@ -63,7 +66,7 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
                 <DialogHeader>
                     <DialogTitle>Öğrenci Analizi Yükle</DialogTitle>
                     <DialogDescription>
-                        Öğrenci seçin ve Markdown (.md) formatında analiz dosyasını yükleyin.
+                        Öğrenci seçin, analiz türünü belirleyin ve Markdown (.md) formatında dosyayı yükleyin.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
@@ -82,6 +85,22 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
                                             {student.name} {student.surname} ({student.username})
                                         </SelectItem>
                                     ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="analysisType" className="text-right">
+                            Analiz Türü
+                        </Label>
+                        <div className="col-span-3">
+                            <Select value={analysisType} onValueChange={setAnalysisType}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Analiz türü seçin" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="GENEL_DENEME">Genel Deneme Analizi</SelectItem>
+                                    <SelectItem value="YANLIS_SORU">Yanlış Soru Analizi</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

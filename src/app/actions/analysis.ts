@@ -8,6 +8,7 @@ const AnalysisSchema = z.object({
     studentId: z.string(),
     title: z.string().min(3),
     content: z.string(),
+    analysisType: z.enum(["GENEL_DENEME", "YANLIS_SORU"]).default("GENEL_DENEME"),
 })
 
 export async function createAnalysis(formData: FormData) {
@@ -23,6 +24,7 @@ export async function createAnalysis(formData: FormData) {
             studentId: formData.get("studentId"),
             title: formData.get("title"),
             content: content,
+            analysisType: formData.get("analysisType") || "GENEL_DENEME",
         }
 
         const validatedData = AnalysisSchema.parse(rawData)

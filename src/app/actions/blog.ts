@@ -130,6 +130,7 @@ export async function createBlogPost(formData: FormData) {
         const post = await prisma.blogPost.create({
             data: {
                 ...validated.data,
+                author: validated.data.author || "Ordu Sınav Merkezi",
                 imageData: imageData as any,
                 imageMimeType
             }
@@ -181,7 +182,8 @@ export async function updateBlogPost(id: string, formData: FormData) {
         }
 
         const updateData: any = {
-            ...validated.data
+            ...validated.data,
+            author: validated.data.author || "Ordu Sınav Merkezi"
         }
 
         if (imageFile && imageFile.size > 0) {
