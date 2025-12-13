@@ -55,11 +55,11 @@ export default async function AboutPage() {
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 md:gap-12">
                                 {partners.map((partner: any) => (
                                     <div key={partner.id} className="flex flex-col items-center justify-center group">
-                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center p-4 mb-4 group-hover:shadow-md transition-shadow relative overflow-hidden">
+                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover:shadow-md transition-shadow overflow-hidden">
                                             <img
                                                 src={`/api/partner/${partner.id}/logo`}
                                                 alt={partner.name}
-                                                className="max-w-full max-h-full object-contain"
+                                                className="w-full h-full object-cover"
                                             />
                                         </div>
                                         <span className="text-[10px] md:text-xs font-bold text-blue-500 text-center uppercase tracking-wide">
