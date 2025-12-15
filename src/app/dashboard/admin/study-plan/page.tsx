@@ -14,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
-import { CURRICULUM } from "@/lib/constants/curriculum"
+import { CURRICULUM_BY_GRADE, SUBJECTS, GRADES } from "@/lib/constants/curriculum-index"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -22,11 +22,10 @@ const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
 ]
 
-const SUBJECTS = Object.keys(CURRICULUM)
-
 type Lesson = {
     id: string // Temporary ID for UI
     subject: string
+    classLevel: string
     duration: number
     outcomes?: string[]
 }
@@ -74,6 +73,7 @@ export default function AdminStudyPlanPage() {
                 newPlan[item.day].push({
                     id: Math.random().toString(36).substr(2, 9),
                     subject: item.subject,
+                    classLevel: item.classLevel || "8",
                     duration: item.duration,
                     outcomes: item.outcomes || []
                 })
@@ -91,7 +91,7 @@ export default function AdminStudyPlanPage() {
 
         setPlan(prev => ({
             ...prev,
-            [day]: [...(prev[day] || []), { id: Math.random().toString(), subject: SUBJECTS[0], duration: 40, outcomes: [] }]
+            [day]: [...(prev[day] || []), { id: Math.random().toString(), subject: SUBJECTS[0], classLevel: "8", duration: 40, outcomes: [] }]
         }))
     }
 
@@ -266,7 +266,27 @@ export default function AdminStudyPlanPage() {
                                             </Select>
                                         </div>
 
-                                        {CURRICULUM[lesson.subject] && (
+                                        <div className="space-y-1">
+                                            <Label className="text-xs text-muted-foreground">Sınıf</Label>
+                                            <Select
+                                                value={lesson.classLevel}
+                                                onValueChange={(val) => {
+                                                    updateLesson(day, lesson.id, 'classLevel', val)
+                                                    updateLesson(day, lesson.id, 'outcomes', []) // Reset outcomes when class changes
+                                                }}
+                                            >
+                                                <SelectTrigger className="h-8">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {GRADES.map(grade => (
+                                                        <SelectItem key={grade} value={grade}>{grade}. Sınıf</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        {CURRICULUM_BY_GRADE[lesson.classLevel]?.[lesson.subject] && (
                                             <div className="space-y-1">
                                                 <Label className="text-xs text-muted-foreground">Kazanımlar</Label>
                                                 <Popover>
@@ -291,9 +311,9 @@ export default function AdminStudyPlanPage() {
                                                             <CommandInput placeholder="Kazanım ara..." />
                                                             <CommandList>
                                                                 <CommandEmpty>Kazanım bulunamadı.</CommandEmpty>
-                                                                {Object.entries(CURRICULUM[lesson.subject]).map(([unit, outcomes]) => (
+                                                                {Object.entries(CURRICULUM_BY_GRADE[lesson.classLevel]?.[lesson.subject] || {}).map(([unit, outcomes]) => (
                                                                     <CommandGroup key={unit} heading={unit}>
-                                                                        {outcomes.map((outcome) => (
+                                                                        {(outcomes as string[]).map((outcome: string) => (
                                                                             <CommandItem
                                                                                 key={outcome}
                                                                                 value={outcome}
