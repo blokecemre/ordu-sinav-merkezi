@@ -21,8 +21,11 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { createAnalysis } from "@/app/actions/analysis"
-import { Upload, Loader2 } from "lucide-react"
+import { Upload, Loader2, Check, ChevronsUpDown } from "lucide-react"
 import { toast } from "sonner"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface UploadAnalysisDialogProps {
     students: { id: string; name: string; surname: string; username: string }[]
@@ -32,6 +35,17 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [analysisType, setAnalysisType] = useState("GENEL_DENEME")
+    const [openCombobox, setOpenCombobox] = useState(false)
+    const [selectedStudentId, setSelectedStudentId] = useState("")
+
+    // Reset state when dialog opens/closes
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen)
+        if (!newOpen) {
+            setSelectedStudentId("")
+            setAnalysisType("GENEL_DENEME")
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -44,6 +58,7 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
             if (result.success) {
                 toast.success(result.message)
                 setOpen(false)
+                setSelectedStudentId("")
                 setAnalysisType("GENEL_DENEME")
             } else {
                 toast.error(result.message)
@@ -56,7 +71,7 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button>
                     <Upload className="mr-2 h-4 w-4" /> Yeni Analiz Yükle
@@ -75,18 +90,53 @@ export function UploadAnalysisDialog({ students }: UploadAnalysisDialogProps) {
                             Öğrenci
                         </Label>
                         <div className="col-span-3">
-                            <Select name="studentId" required>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Öğrenci seçin" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {students.map((student) => (
-                                        <SelectItem key={student.id} value={student.id}>
-                                            {student.name} {student.surname} ({student.username})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <input type="hidden" name="studentId" value={selectedStudentId} />
+                            <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
+                                        aria-expanded={openCombobox}
+                                        className="w-full justify-between"
+                                    >
+                                        {selectedStudentId
+                                            ? (() => {
+                                                const s = students.find((student) => student.id === selectedStudentId)
+                                                return s ? `${s.name} ${s.surname} (${s.username})` : "Öğrenci seçin"
+                                            })()
+                                            : "Öğrenci seçin"}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-full p-0" align="start">
+                                    <Command>
+                                        <CommandInput placeholder="Öğrenci ara..." />
+                                        <CommandList>
+                                            <CommandEmpty>Öğrenci bulunamadı.</CommandEmpty>
+                                            <CommandGroup>
+                                                {students.map((student) => (
+                                                    <CommandItem
+                                                        key={student.id}
+                                                        value={student.name + " " + student.surname + " " + student.username}
+                                                        onSelect={() => {
+                                                            setSelectedStudentId(student.id)
+                                                            setOpenCombobox(false)
+                                                        }}
+                                                    >
+                                                        <Check
+                                                            className={cn(
+                                                                "mr-2 h-4 w-4",
+                                                                selectedStudentId === student.id ? "opacity-100" : "opacity-0"
+                                                            )}
+                                                        />
+                                                        {student.name} {student.surname} ({student.username})
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
