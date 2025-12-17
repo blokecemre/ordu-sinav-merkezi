@@ -64,7 +64,7 @@ export default async function BlogPostPage({
                                 </div>
 
                                 <div
-                                    className="prose prose-blue max-w-none whitespace-pre-wrap"
+                                    className="prose prose-lg max-w-none"
                                     dangerouslySetInnerHTML={{ __html: post.content }}
                                 />
                             </div>
