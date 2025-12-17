@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, User, ChevronLeft } from "lucide-react"
 import { notFound } from "next/navigation"
+import Markdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 
 export default async function BlogPostPage({
     params
@@ -63,10 +65,13 @@ export default async function BlogPostPage({
                                     </div>
                                 </div>
 
-                                <div
-                                    className="prose prose-lg max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: post.content }}
-                                />
+                                <div className="prose prose-lg max-w-none">
+                                    <Markdown
+                                        rehypePlugins={[rehypeRaw]}
+                                    >
+                                        {post.content}
+                                    </Markdown>
+                                </div>
                             </div>
                         </article>
                     </div>
