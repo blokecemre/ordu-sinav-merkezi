@@ -110,3 +110,45 @@ export async function resetPassword(phone: string, code: string, newPassword: st
         return { success: false, error: "İşlem sırasında bir hata oluştu." }
     }
 }
+
+export async function resetPasswordDirectly(phone: string, newPassword: string) {
+    try {
+        const cleanPhone = phone.replace(/\s/g, "")
+
+        // 1. Check if user exists
+        const userCount = await prisma.user.count({
+            where: { phone: cleanPhone }
+        })
+
+        if (userCount === 0) {
+            return { success: false, error: "Bu telefon numarası ile kayıtlı kullanıcı bulunamadı." }
+        }
+
+        // 2. Validate Password Rules
+        if (newPassword.length < 8) {
+            return { success: false, error: "Şifre en az 8 karakter olmalıdır." }
+        }
+
+        // Basic complexity check: 1 letter, 1 number
+        const hasLetter = /[a-zA-Z]/.test(newPassword);
+        const hasNumber = /[0-9]/.test(newPassword);
+
+        if (!hasLetter || !hasNumber) {
+            return { success: false, error: "Şifre en az bir harf ve bir rakam içermelidir." }
+        }
+
+        // 3. Update User Password(s)
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+        await prisma.user.updateMany({
+            where: { phone: cleanPhone },
+            data: { password: hashedPassword }
+        })
+
+        return { success: true, message: "Şifreniz başarıyla güncellendi." }
+
+    } catch (error) {
+        console.error("Direct reset password error:", error)
+        return { success: false, error: "İşlem sırasında bir hata oluştu." }
+    }
+}
