@@ -132,7 +132,7 @@ export default function LoginPage() {
                                     </button>
                                 </div>
                             </label>
-                            <a className="text-[#9da6b9] text-sm font-normal leading-normal text-right underline hover:text-primary-new transition-colors" href="#">Şifremi Unuttum?</a>
+                            <a className="text-[#9da6b9] text-sm font-normal leading-normal text-right underline hover:text-primary-new transition-colors" href="/sifremi-unuttum">Şifremi Unuttum?</a>
 
                             {/* Primary Action Button */}
                             <button

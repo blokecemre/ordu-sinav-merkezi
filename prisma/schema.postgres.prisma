@@ -192,3 +192,11 @@ enum Role {
   TEACHER
   ADMIN
 }
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
