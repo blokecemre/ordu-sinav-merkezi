@@ -206,7 +206,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
                     rows={15}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Basit HTML etiketleri kullanabilirsiniz (p, h2, h3, ul, li, strong, em).
+                    HTML veya Markdown kullanabilirsiniz. Başlıklar için #, ##, kalın yazı için **text** kullanabilirsiniz.
                 </p>
             </div>
 
