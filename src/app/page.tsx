@@ -16,27 +16,7 @@ export default function Home() {
       <main className="flex-1">
         <HomepageSlider />
 
-        {/* Bölüm 1: Slogan & Vaat */}
-        {/* Slider ile bütünleşik görünmesi için padding-top kaldırıldı */}
-        <section className="bg-blue-50/50 dark:bg-gray-900/50 pb-16 pt-0">
-          <div className="container mx-auto px-4 text-center">
-            {/* Slider ile görsel bütünlük için üst boşluk bırakmıyoruz veya negatif margin kullanıyoruz. 
-                 Ancak slider'ın yapısını bozmamak için burada sadece padding-top: 8/10 gibi bir değer verip
-                 arka planı slider ile uyumlu hale getirmek daha güvenli. 
-                 Kullanıcı "margin top 0" istediği için pt-8 ile başlıyoruz ki çok yapışık durmasın ama bütünlük sağlasın.
-                 Eğer slider'ın altında boşluk varsa -mt ile yukarı çekebiliriz. 
-                 Şimdilik standart akışta bırakalım.
-             */}
-            <div className="pt-8 md:pt-12 max-w-4xl mx-auto space-y-6">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
-                Sınav Sadece Bilgi Değil, <span className="text-blue-600">Doğru Yönetilmesi Gereken</span> Bir Süreçtir
-              </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                20 yıllık eğitim tecrübemizle biliyoruz ki; başarı tesadüf değildir. Öğrencinizi Türkiye geneli kurumsal denemelerle test ediyor, nokta atışı analizlerle eksiklerini belirliyor ve sadece ihtiyaç duyduğu alanlarda destekliyoruz. Zamanı ve enerjiyi verimli kullanma devri başladı.
-              </p>
-            </div>
-          </div>
-        </section>
+
 
         {/* Bölüm 2: Sistemimiz Nasıl İşliyor? */}
         {/* Bölüm 2: Sistemimiz Nasıl İşliyor? - YENİ TASARIM */}

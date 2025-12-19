@@ -205,22 +205,28 @@
 }
 
 @layer utilities {
-    .text-gradient {
-      @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500;
-    }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500;
+  }
 
-    .animate-fade-in-up {
-        animation: fade-in-up 0.8s ease-out forwards;
-    }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .font-heading {
+    @apply font-bold tracking-tight;
+    font-family: var(--font-display, sans-serif);
+  }
 }
 
 @keyframes fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
