@@ -2,12 +2,16 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 import { SiteHeader } from "@/components/SiteHeader"
+import { getSettings } from "@/app/actions/settings"
 
 import { HomepageSlider } from "@/components/HomepageSlider"
 import { Features } from "@/components/Features"
 import { WhyUs } from "@/components/WhyUs"
 
-export default function Home() {
+export default async function Home() {
+  const settingsResult = await getSettings()
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {} as Record<string, string>
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
@@ -51,17 +55,21 @@ export default function Home() {
                 20 yıllık tecrübeyle öğrencilerimizi geleceğe hazırlıyoruz. Doğru analiz, doğru yönlendirme, kesin başarı.
               </p>
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-gray-300">
-                  <MapPin className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                  <span>Ordu Merkez, Eğitim Sokak No: 1</span>
+                <div className="flex items-start gap-3 text-gray-300">
+                  <MapPin className="w-5 h-5 text-blue-400 flex-shrink-0 mt-1" />
+                  <span>{settings.address || "Ordu Merkez, Eğitim Sokak No: 1"}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-300">
                   <Phone className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                  <span>0500 123 45 67</span>
+                  <a href={`tel:${settings.phone}`} className="hover:text-blue-400 transition-colors">
+                    {settings.phone || "0500 123 45 67"}
+                  </a>
                 </div>
                 <div className="flex items-center gap-3 text-gray-300">
                   <Mail className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                  <span>info@ordusinav.com</span>
+                  <a href={`mailto:${settings.email}`} className="hover:text-blue-400 transition-colors">
+                    {settings.email || "info@ordusinav.com"}
+                  </a>
                 </div>
               </div>
             </div>
@@ -105,7 +113,7 @@ export default function Home() {
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-sm">
-                © 2024 Ordu Sınav Merkezi. Tüm hakları saklıdır.
+                © {new Date().getFullYear()} Ordu Sınav Merkezi. Tüm hakları saklıdır.
               </p>
               <div className="flex items-center gap-4">
                 <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
@@ -128,3 +136,4 @@ export default function Home() {
     </div >
   )
 }
+
