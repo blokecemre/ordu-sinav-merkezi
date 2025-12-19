@@ -109,7 +109,7 @@ export function WhyUs() {
                 {/* Bottom CTA */}
                 <div className="text-center mt-16 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
                     <a
-                        href="#contact"
+                        href="/iletisim"
                         className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary font-bold rounded-full hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl shadow-white/20"
                     >
                         <span>Hemen Başlayın</span>
