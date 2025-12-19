@@ -6,13 +6,14 @@ import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { getSliderImages } from "@/app/actions/slider"
 import Link from "next/link"
 
-const bannerSlides = [
+// Default fallback slides if no data is present
+const DEFAULT_SLIDES = [
     {
         title: "DOĞRU DENEME ANALİZİ",
         subtitle: "Öğrencinizi Türkiye geneli kurumsal denemelerle test edin",
         description: "Nokta atışı analizlerle eksikleri belirleyin",
         highlight: "20 Yıllık Tecrübe",
-        bgClass: "from-blue-600 to-blue-900", // Adjusted to standard Tailwind colors to ensure visibility if primary/secondary variable mapping varies
+        bgClass: "from-blue-600 to-blue-900",
     },
     {
         title: "TÜRKİYE GENELİ SIRALAMA",
@@ -38,18 +39,16 @@ export function HomepageSlider() {
     useEffect(() => {
         const fetchImages = async () => {
             const result = await getSliderImages()
-            if (result.success) {
-                setImages(result.data || [])
+            if (result.success && result.data && result.data.length > 0) {
+                setImages(result.data)
             }
             setLoading(false)
         }
         fetchImages()
     }, [])
 
-    // Calculate total slides based on max of fixed text slides or dynamic images
-    // If we have images, we want to show all of them. Text will cycle.
-    // If no images, we show just the 3 text slides with gradient backgrounds.
-    const totalSlides = images.length > 0 ? Math.max(images.length, bannerSlides.length) : bannerSlides.length
+    const slides = images.length > 0 ? images : DEFAULT_SLIDES
+    const totalSlides = slides.length
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -62,12 +61,6 @@ export function HomepageSlider() {
     const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
     const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides)
 
-    // Helper to get text content loosely coupled to slide index
-    const getSlideContent = (index: number) => bannerSlides[index % bannerSlides.length]
-
-    // Helper to get image (if any)
-    const getSlideImage = (index: number) => images.length > 0 ? images[index % images.length] : null
-
     if (loading) {
         return <div className="w-full h-[70vh] flex items-center justify-center bg-gray-50"><Loader2 className="animate-spin w-8 h-8 text-blue-500" /></div>
     }
@@ -75,10 +68,11 @@ export function HomepageSlider() {
     return (
         <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-center overflow-hidden">
             {/* Background Slides */}
-            {Array.from({ length: totalSlides }).map((_, index) => {
+            {slides.map((slide, index) => {
                 const isActive = index === currentSlide
-                const content = getSlideContent(index)
-                const image = getSlideImage(index)
+                // For DB images, we check if there's an ID (meaning it's from DB and has an image url)
+                // For default slides, we use gradient only.
+                const hasImage = !!slide.id
 
                 return (
                     <div
@@ -87,26 +81,26 @@ export function HomepageSlider() {
                             }`}
                     >
                         {/* 1. Underlying Base: Either Image or Gradient */}
-                        {image ? (
+                        {hasImage ? (
                             <img
-                                src={`/api/slider/${image.id}/image`}
-                                alt={content.title}
+                                src={`/api/slider/${slide.id}/image`}
+                                alt={slide.title || "Slider"}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
                         ) : (
                             // Fallback if no images are uploaded: use solid gradient
-                            <div className={`absolute inset-0 bg-gradient-to-br ${content.bgClass}`} />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${slide.bgClass || "from-blue-900 to-slate-900"}`} />
                         )}
 
                         {/* 2. Overlay: Always add a gradient overlay to ensure text readability */}
                         {/* If there is an image, use a dark overlay. If no image, the gradient above is enough? 
                             Actually, to be safe and consistent with the "design", let's always add a semi-transparent gradient
                             that matches the slide's theme color or just dark. */}
-                        <div className={`absolute inset-0 bg-gradient-to-r ${image ? 'from-black/80 via-black/40 to-transparent' : 'from-black/20 to-transparent'}`} />
+                        <div className={`absolute inset-0 bg-gradient-to-r ${hasImage ? 'from-black/80 via-black/40 to-transparent' : 'from-black/20 to-transparent'}`} />
 
                         {/* Also add the colored gradient from the design but with mix-blend-mode if image exists? */}
-                        {image && (
-                            <div className={`absolute inset-0 bg-gradient-to-br ${content.bgClass} opacity-60 mix-blend-multiply`} />
+                        {hasImage && slide.bgClass && (
+                            <div className={`absolute inset-0 bg-gradient-to-br ${slide.bgClass} opacity-60 mix-blend-multiply`} />
                         )}
                     </div>
                 )
@@ -125,12 +119,7 @@ export function HomepageSlider() {
             <div className="container mx-auto px-4 relative z-10 pt-20">
                 <div className="max-w-4xl mx-auto text-center text-white">
                     {/* Content Layer */}
-                    {Array.from({ length: totalSlides }).map((_, index) => {
-                        // Only render one active slide content to prevent DOM clutter, but keep mapped for transition logic if needed
-                        // Actually, rendering all but hiding via CSS is better for transitions if we want text to fade in/out separately
-                        // But strictly matching the snippet loop structure:
-                        const content = getSlideContent(index)
-
+                    {slides.map((slide, index) => {
                         return (
                             <div
                                 key={index}
@@ -138,32 +127,36 @@ export function HomepageSlider() {
                                         ? "opacity-100 translate-y-0 relative"
                                         : "opacity-0 translate-y-8 pointer-events-none"
                                     }`}
-                                // Note: 'absolute inset-0' on the mapped div maps it to the container, 
-                                // but we need it strictly centered. The parent has 'flex items-center'.
-                                // The user snippet used specific CSS. I will adjust to ensure it centers.
                                 style={{ display: index === currentSlide ? 'flex' : 'none' }}
-                            // ^ Optimization: Hide non-active slides to prevent interaction/layout issues
                             >
                                 {/* Badge */}
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-100">
-                                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                                    {content.highlight}
-                                </div>
+                                {slide.highlight && (
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-100">
+                                        <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                        {slide.highlight}
+                                    </div>
+                                )}
 
                                 {/* Title */}
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 drop-shadow-lg animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                                    {content.title}
-                                </h1>
+                                {slide.title && (
+                                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 drop-shadow-lg animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                                        {slide.title}
+                                    </h1>
+                                )}
 
                                 {/* Subtitle */}
-                                <p className="text-xl md:text-2xl font-medium mb-2 text-white/95 drop-shadow-md animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-300">
-                                    {content.subtitle}
-                                </p>
+                                {slide.subtitle && (
+                                    <p className="text-xl md:text-2xl font-medium mb-2 text-white/95 drop-shadow-md animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-300">
+                                        {slide.subtitle}
+                                    </p>
+                                )}
 
                                 {/* Description */}
-                                <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto drop-shadow animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-                                    {content.description}
-                                </p>
+                                {slide.description && (
+                                    <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto drop-shadow animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
+                                        {slide.description}
+                                    </p>
+                                )}
 
                                 {/* CTA */}
                                 <div className="flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
@@ -196,7 +189,7 @@ export function HomepageSlider() {
 
             {/* Dots Indicator */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-                {Array.from({ length: totalSlides }).map((_, index) => (
+                {slides.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => goToSlide(index)}

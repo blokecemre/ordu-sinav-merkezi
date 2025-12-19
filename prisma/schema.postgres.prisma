@@ -170,6 +170,11 @@ model SliderImage {
   imageData     Bytes
   imageMimeType String
   order         Int      @default(0)
+  title         String?
+  subtitle      String?
+  description   String?
+  highlight     String?
+  bgClass       String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

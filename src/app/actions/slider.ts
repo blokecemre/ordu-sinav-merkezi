@@ -13,7 +13,12 @@ export async function getSliderImages() {
                 createdAt: true,
                 updatedAt: true,
                 imageData: false, // Don't fetch heavy image data
-                imageMimeType: true
+                imageMimeType: true,
+                title: true,
+                subtitle: true,
+                description: true,
+                highlight: true,
+                bgClass: true
             }
         })
         return { success: true, data: images }
@@ -26,6 +31,11 @@ export async function getSliderImages() {
 export async function createSliderImage(formData: FormData) {
     try {
         const imageFile = formData.get("image") as File | null
+        const title = formData.get("title") as string || ""
+        const subtitle = formData.get("subtitle") as string || ""
+        const description = formData.get("description") as string || ""
+        const highlight = formData.get("highlight") as string || ""
+        const bgClass = formData.get("bgClass") as string || ""
 
         if (!imageFile) {
             return { success: false, error: "Görsel zorunludur" }
@@ -44,7 +54,12 @@ export async function createSliderImage(formData: FormData) {
             data: {
                 imageData: imageData as any,
                 imageMimeType,
-                order: newOrder
+                order: newOrder,
+                title,
+                subtitle,
+                description,
+                highlight,
+                bgClass
             }
         })
 
@@ -54,6 +69,34 @@ export async function createSliderImage(formData: FormData) {
     } catch (error) {
         console.error("Error creating slider image:", error)
         return { success: false, error: "Görsel yüklenemedi" }
+    }
+}
+
+export async function updateSliderText(id: string, formData: FormData) {
+    try {
+        const title = formData.get("title") as string
+        const subtitle = formData.get("subtitle") as string
+        const description = formData.get("description") as string
+        const highlight = formData.get("highlight") as string
+        const bgClass = formData.get("bgClass") as string
+
+        await prisma.sliderImage.update({
+            where: { id },
+            data: {
+                title,
+                subtitle,
+                description,
+                highlight,
+                bgClass
+            }
+        })
+
+        revalidatePath("/")
+        revalidatePath("/dashboard/admin/slider")
+        return { success: true, message: "İçerik güncellendi" }
+    } catch (error) {
+        console.error("Error updating slider text:", error)
+        return { success: false, error: "İçerik güncellenemedi" }
     }
 }
 
