@@ -26,21 +26,7 @@ export default async function Home() {
         {/* Bölüm 3: Neden Biz? - YENİ TASARIM */}
         <WhyUs />
 
-        {/* Bölüm 4: Harekete Geçirici Mesaj (CTA) */}
-        <section className="py-20 bg-[#001D4A] text-white">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-5xl font-bold mb-8 max-w-4xl mx-auto leading-tight">
-              Başarınızı Analiz Edin, <span className="text-blue-400">Geleceğinizi Şansa Bırakmayın.</span>
-            </h2>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/iletisim">
-                <Button size="lg" className="h-14 px-10 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                  Hemen Bilgi Alın <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+
       </main>
 
       {/* Footer */}
