@@ -4,34 +4,26 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Loader2, Mail, Lock, Eye, EyeOff, School } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Users, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { SiteHeader } from "@/components/SiteHeader"
 
 export default function LoginPage() {
     const router = useRouter()
-    const [loading, setLoading] = useState(false)
-
-    // Login State
+    const [showPassword, setShowPassword] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [showPassword, setShowPassword] = useState(false)
+    const [loading, setLoading] = useState(false)
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
 
         try {
-            // Since the original login used username, but this design asks for email,
-            // we might need to adjust. However, standard NextAuth usually supports either.
-            // If the backend expects username, we might need to ask the user to enter username in the email field
-            // or update the backend. For now, I'll assume the input can handle username or email.
-            // The placeholder says "ornek@eposta.com", so it implies email.
-            // But the existing login page used "username".
-            // I will pass the value to "username" field of signIn for compatibility.
-
             const result = await signIn("credentials", {
-                username: email, // Mapping email input to username field for backend compatibility
+                username: email,
                 password,
                 redirect: false,
             })
@@ -51,105 +43,173 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden bg-background-light dark:bg-background-dark text-foreground">
-            <SiteHeader />
-            <div className="flex-grow grid grid-cols-1 lg:grid-cols-2">
-                {/* Left Pane: Branding & Welcome Message */}
-                <div className="relative hidden lg:flex flex-col items-center justify-center p-12 bg-gray-100 dark:bg-background-dark">
-                    <div
-                        className="absolute inset-0 bg-center bg-no-repeat bg-cover"
-                        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDYOl1HpZhA6h8lVd4VjqakRm5gevrcWMykywxBj3dm7kFFL2SlKP4w3baMpq5cIKQz3Wa56wRLHudjSoXPkyhRynTC-e-028zYHzhFCe7ICN9bf2QhgyAcpbBhuuN1jLr9FuFbg6FEo4A7geJLbAuzDXz4TehkmD6b4gygG4ZQEDQuBw_ZvaZbG4axjEGEgjXp0lPddwgTUrpj5JQoeMwqegtQ1_oB-qA4ZlNd60gIZrZkiV7KRZ6OqbVONcuCq_AnO5PzBG51HmU')" }}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent"></div>
-                    </div>
-                    <div className="relative z-10 flex flex-col items-start w-full max-w-md text-white">
-                        <div className="flex items-center gap-3 mb-6">
-                            <School className="w-10 h-10 text-primary-new" />
-                            <span className="text-2xl font-bold">Ordu Sınav Merkezi</span>
+        <div className="min-h-screen flex">
+            {/* Left Side - Hero Section */}
+            <div className="hidden lg:flex lg:w-1/2 hero-gradient relative overflow-hidden">
+                <div className="absolute inset-0 pattern-dots" />
+
+                {/* Floating decorative elements */}
+                <div className="absolute top-20 left-20 w-32 h-32 rounded-full bg-white/10 blur-2xl float" />
+                <div className="absolute bottom-40 right-20 w-48 h-48 rounded-full bg-white/10 blur-3xl float-delayed" />
+
+                <div className="relative z-10 flex flex-col justify-center p-12 lg:p-16">
+                    {/* Logo */}
+                    <div className="flex items-center gap-3 mb-12">
+                        <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                            <GraduationCap className="h-8 w-8 text-white" />
                         </div>
-                        <h1 className="text-5xl font-black leading-tight tracking-tighter">
-                            Başarıya Giden Yolda İlk Adım
-                        </h1>
-                        <p className="mt-4 text-lg text-gray-300">
-                            Ordu Sınav Merkezi'ne hoş geldiniz. Hesabınıza giriş yapın veya yeni bir hesap oluşturarak yolculuğunuza başlayın.
-                        </p>
+                        <span className="text-2xl font-bold text-white">
+                            Ordu Sınav Merkezi
+                        </span>
+                    </div>
+
+                    {/* Hero Content */}
+                    <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                        Başarıya Giden
+                        <br />
+                        Yolda İlk Adım
+                    </h1>
+
+                    <p className="text-lg text-white/80 mb-12 max-w-md">
+                        Ordu Sınav Merkezi&apos;ne hoş geldiniz. Hesabınıza giriş yapın veya yeni bir hesap oluşturarak yolculuğunuza başlayın.
+                    </p>
+
+                    {/* Features */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4 text-white/90">
+                            <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                                <BookOpen className="h-5 w-5" />
+                            </div>
+                            <span>Kapsamlı sınav hazırlık materyalleri</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-white/90">
+                            <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                                <Users className="h-5 w-5" />
+                            </div>
+                            <span>Uzman eğitmenlerden birebir destek</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-white/90">
+                            <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                                <GraduationCap className="h-5 w-5" />
+                            </div>
+                            <span>Başarıya giden en kısa yol</span>
+                        </div>
+                    </div>
+
+                    {/* Hero Image */}
+                    <div className="mt-12 relative">
+                        <div className="absolute -inset-4 bg-white/5 rounded-3xl blur-xl" />
+                        <img
+                            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop"
+                            alt="Öğrenciler birlikte çalışıyor"
+                            className="relative rounded-2xl shadow-2xl w-full max-w-md object-cover"
+                        />
                     </div>
                 </div>
+            </div>
 
-                {/* Right Pane: Login/Registration Form */}
-                <div className="flex flex-col items-center justify-center w-full p-4 sm:p-8 bg-background-dark">
-                    <div className="w-full max-w-md mx-auto">
-                        <div className="lg:hidden flex items-center gap-3 mb-8 text-white">
-                            <School className="w-8 h-8 text-primary-new" />
-                            <span className="text-xl font-bold">Ordu Sınav Merkezi</span>
+            {/* Right Side - Login Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-background">
+                <div className="w-full max-w-md">
+                    {/* Mobile Logo */}
+                    <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+                        <div className="p-2 rounded-xl bg-primary/10">
+                            <GraduationCap className="h-6 w-6 text-primary" />
+                        </div>
+                        <span className="text-xl font-bold text-foreground">
+                            Ordu Sınav Merkezi
+                        </span>
+                    </div>
+
+                    {/* Form Header */}
+                    <div className="mb-8">
+                        <h2 className="text-3xl font-bold text-foreground mb-2">
+                            Giriş Yap
+                        </h2>
+                        <p className="text-muted-foreground">
+                            Hesabınıza erişmek için bilgilerinizi girin.
+                        </p>
+                    </div>
+
+                    {/* Login Form */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Email/Username Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                                Kullanıcı Adı / E-posta
+                            </Label>
+                            <div className="relative">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Input
+                                    id="email"
+                                    type="text"
+                                    placeholder="Kullanıcı adınız veya e-postanız"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="pl-12 h-14 bg-muted/30 border-border/50 focus:border-primary/50 rounded-xl text-foreground placeholder:text-muted-foreground"
+                                    required
+                                />
+                            </div>
                         </div>
 
-                        <div className="mb-8">
-                            <h2 className="text-2xl font-bold text-white mb-2">Giriş Yap</h2>
-                            <p className="text-gray-400">Hesabınıza erişmek için bilgilerinizi girin.</p>
+                        {/* Password Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="password" className="text-sm font-medium text-foreground">
+                                Şifre
+                            </Label>
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Şifrenizi girin"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="pl-12 pr-12 h-14 bg-muted/30 border-border/50 focus:border-primary/50 rounded-xl text-foreground placeholder:text-muted-foreground"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
+                            </div>
                         </div>
 
-                        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                            {/* Email Field */}
-                            <label className="flex flex-col w-full">
-                                <p className="text-white text-sm font-medium leading-normal pb-2">Kullanıcı Adı / E-posta</p>
-                                <div className="flex w-full flex-1 items-stretch rounded-lg">
-                                    <span className="text-[#9da6b9] flex border border-[#3b4354] bg-[#1c1f27] items-center justify-center pl-[15px] rounded-l-lg border-r-0">
-                                        <Mail className="w-5 h-5" />
-                                    </span>
-                                    <input
-                                        className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary-new/50 border border-[#3b4354] bg-[#1c1f27] focus:border-primary-new h-14 placeholder:text-[#9da6b9] p-[15px] rounded-l-none border-l-0 text-base font-normal leading-normal"
-                                        placeholder="Kullanıcı adınız veya e-postanız"
-                                        type="text"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                            </label>
-
-                            {/* Password Field */}
-                            <label className="flex flex-col w-full">
-                                <p className="text-white text-sm font-medium leading-normal pb-2">Şifre</p>
-                                <div className="flex w-full flex-1 items-stretch rounded-lg">
-                                    <span className="text-[#9da6b9] flex border border-[#3b4354] bg-[#1c1f27] items-center justify-center pl-[15px] rounded-l-lg border-r-0">
-                                        <Lock className="w-5 h-5" />
-                                    </span>
-                                    <input
-                                        className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary-new/50 border border-[#3b4354] bg-[#1c1f27] focus:border-primary-new h-14 placeholder:text-[#9da6b9] p-[15px] rounded-r-none border-l-0 text-base font-normal leading-normal pr-12"
-                                        placeholder="Şifrenizi girin"
-                                        type={showPassword ? "text" : "password"}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="text-[#9da6b9] flex border border-[#3b4354] bg-[#1c1f27] items-center justify-center pr-[15px] rounded-r-lg border-l-0 -ml-10 z-10"
-                                    >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                    </button>
-                                </div>
-                            </label>
-                            <a className="text-[#9da6b9] text-sm font-normal leading-normal text-right underline hover:text-primary-new transition-colors" href="/sifremi-unuttum">Şifremi Unuttum?</a>
-
-                            {/* Primary Action Button */}
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary-new text-white text-base font-bold leading-normal tracking-[0.015em] mt-6 hover:bg-primary-new/90 transition-colors shadow-lg shadow-primary-new/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        {/* Forgot Password Link */}
+                        <div className="flex justify-end">
+                            <Link
+                                href="/sifremi-unuttum"
+                                className="text-sm text-muted-foreground hover:text-primary transition-colors"
                             >
-                                {loading ? <Loader2 className="animate-spin w-5 h-5" /> : <span className="truncate">Giriş Yap</span>}
-                            </button>
-                        </form>
-
-                        <div className="text-center text-sm text-gray-600 mt-8">
-                            Hesabınız yok mu?{" "}
-                            <Link href="/register" className="text-blue-500 hover:underline font-medium">
-                                Üye Ol
+                                Şifremi Unuttum?
                             </Link>
                         </div>
+
+                        {/* Submit Button */}
+                        <Button
+                            type="submit"
+                            className="w-full h-14 text-lg font-semibold rounded-xl"
+                            size="lg"
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="animate-spin w-5 h-5" /> : "Giriş Yap"}
+                        </Button>
+                    </form>
+
+                    {/* Register Link */}
+                    <div className="mt-8 text-center">
+                        <p className="text-muted-foreground">
+                            Hesabınız yok mu?{" "}
+                            <Link
+                                href="/register"
+                                className="text-primary font-semibold hover:underline"
+                            >
+                                Üye Ol
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>
