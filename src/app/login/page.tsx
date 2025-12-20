@@ -54,14 +54,14 @@ export default function LoginPage() {
 
                 <div className="relative z-10 flex flex-col justify-center p-12 lg:p-16">
                     {/* Logo */}
-                    <div className="flex items-center gap-3 mb-12">
+                    <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
                         <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
                             <GraduationCap className="h-8 w-8 text-white" />
                         </div>
                         <span className="text-2xl font-bold text-white">
                             Ordu Sınav Merkezi
                         </span>
-                    </div>
+                    </Link>
 
                     {/* Hero Content */}
                     <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
@@ -112,14 +112,14 @@ export default function LoginPage() {
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-background">
                 <div className="w-full max-w-md">
                     {/* Mobile Logo */}
-                    <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+                    <Link href="/" className="lg:hidden flex items-center justify-center gap-3 mb-8 hover:opacity-80 transition-opacity">
                         <div className="p-2 rounded-xl bg-primary/10">
                             <GraduationCap className="h-6 w-6 text-primary" />
                         </div>
                         <span className="text-xl font-bold text-foreground">
                             Ordu Sınav Merkezi
                         </span>
-                    </div>
+                    </Link>
 
                     {/* Form Header */}
                     <div className="mb-8">
