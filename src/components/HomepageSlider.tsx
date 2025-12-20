@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { getSliderImages } from "@/app/actions/slider"
 import Link from "next/link"
+import Image from "next/image"
 
 // Default fallback slides if no data is present
 const DEFAULT_SLIDES = [
@@ -82,10 +83,13 @@ export function HomepageSlider() {
                     >
                         {/* 1. Underlying Base: Either Image or Gradient */}
                         {hasImage ? (
-                            <img
+                            <Image
                                 src={`/api/slider/${slide.id}/image`}
                                 alt={slide.title || "Slider"}
-                                className="absolute inset-0 w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                priority={index === 0}
+                                quality={90}
                             />
                         ) : (
                             // Fallback if no images are uploaded: use solid gradient
@@ -124,8 +128,8 @@ export function HomepageSlider() {
                             <div
                                 key={index}
                                 className={`transition-all duration-700 ease-in-out absolute inset-0 flex flex-col items-center justify-center ${index === currentSlide
-                                        ? "opacity-100 translate-y-0 relative"
-                                        : "opacity-0 translate-y-8 pointer-events-none"
+                                    ? "opacity-100 translate-y-0 relative"
+                                    : "opacity-0 translate-y-8 pointer-events-none"
                                     }`}
                                 style={{ display: index === currentSlide ? 'flex' : 'none' }}
                             >
@@ -194,8 +198,8 @@ export function HomepageSlider() {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`transition-all duration-300 rounded-full ${index === currentSlide
-                                ? "bg-white w-8 h-3"
-                                : "bg-white/40 w-3 h-3 hover:bg-white/60"
+                            ? "bg-white w-8 h-3"
+                            : "bg-white/40 w-3 h-3 hover:bg-white/60"
                             }`}
                     />
                 ))}

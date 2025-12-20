@@ -4,6 +4,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -97,12 +98,15 @@ export default function LoginPage() {
                     </div>
 
                     {/* Hero Image */}
-                    <div className="mt-12 relative">
+                    <div className="mt-12 relative w-full h-[400px]">
                         <div className="absolute -inset-4 bg-white/5 rounded-3xl blur-xl" />
-                        <img
+                        <Image
                             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop"
                             alt="Öğrenciler birlikte çalışıyor"
-                            className="relative rounded-2xl shadow-2xl w-full max-w-md object-cover"
+                            fill
+                            className="relative rounded-2xl shadow-2xl object-cover"
+                            priority
+                            sizes="(max-width: 1024px) 100vw, 50vw"
                         />
                     </div>
                 </div>
