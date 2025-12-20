@@ -125,42 +125,42 @@ export function SiteHeader() {
                     <nav className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-2">
                         <Link
                             href="/paketler"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Paketler
                         </Link>
                         <Link
                             href="/sinavlar"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Sınavlar
                         </Link>
                         <Link
                             href="/cevap-anahtarlari"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Cevap Anahtarları
                         </Link>
                         <Link
                             href="/blog"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Blog
                         </Link>
                         <Link
                             href="/hakkimizda"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Hakkımızda
                         </Link>
                         <Link
                             href="/iletisim"
-                            className="p-4 text-lg font-medium hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             İletişim
