@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -120,23 +121,7 @@ export default function Sinavlar() {
                             sonuçlarını yapay zeka destekli gelişmiş sistemlerle analiz ediyoruz.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button
-                                size="lg"
-                                className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-6 text-lg btn-glow"
-                            >
-                                <BookOpen className="w-5 h-5 mr-2" />
-                                Hemen Başla
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-6 text-lg"
-                            >
-                                Daha Fazla Bilgi
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                            </Button>
-                        </div>
+
                     </div>
                 </div>
 
@@ -301,13 +286,15 @@ export default function Sinavlar() {
                             Veriye dayalı analizler ve kişiye özel stratejilerle potansiyelinizi zirveye taşıyın.
                             Gelin, eksiklerinizi birlikte keşfedelim ve başarı hikayenizi yazalım.
                         </p>
-                        <Button
-                            size="lg"
-                            className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 text-white font-semibold px-10 py-6 text-lg btn-glow"
-                        >
-                            Hemen İletişime Geç
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
+                        <Link href="/iletisim">
+                            <Button
+                                size="lg"
+                                className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 text-white font-semibold px-10 py-6 text-lg btn-glow"
+                            >
+                                Hemen İletişime Geç
+                                <ArrowRight className="w-5 h-5 ml-2" />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -350,8 +337,8 @@ export default function Sinavlar() {
                                             {exam.features.map((feature, fIndex) => (
                                                 <li key={fIndex} className="flex items-center gap-3 text-sm text-muted-foreground">
                                                     <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${index === 0 ? 'text-primary' :
-                                                            index === 1 ? 'text-violet-500' :
-                                                                'text-emerald-500'
+                                                        index === 1 ? 'text-violet-500' :
+                                                            'text-emerald-500'
                                                         }`} />
                                                     {feature}
                                                 </li>
