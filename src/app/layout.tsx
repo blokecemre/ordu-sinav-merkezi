@@ -26,7 +26,7 @@ import Providers from "./providers"
 import { Toaster } from "@/components/ui/sonner"
 
 import { ThemeProvider } from "@/components/theme-provider"
-import { MobileNav } from "@/components/MobileNav"
+
 
 export default function RootLayout({
   children,
@@ -46,7 +46,6 @@ export default function RootLayout({
         >
           <Providers>
             {children}
-            <MobileNav />
             <Toaster />
           </Providers>
         </ThemeProvider>
