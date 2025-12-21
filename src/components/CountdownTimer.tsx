@@ -128,7 +128,7 @@ export function CountdownTimer({ lgsDate, tytDate, aytDate }: CountdownTimerProp
                 {/* Header */}
                 <div className="text-center mb-12 mt-8">
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
-                        {selectedExam.name} 2025'e Kalan Süre
+                        {selectedExam.name}'ye Kalan Süre
                     </h2>
                     <p className="text-white/80 text-lg">Hedefe Geri Sayım</p>
                     <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">

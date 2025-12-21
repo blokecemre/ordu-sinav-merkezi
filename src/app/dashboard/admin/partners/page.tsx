@@ -107,22 +107,6 @@ export default function AdminPartnersPage() {
                                     placeholder="https://..."
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="logo">Logo (Opsiyonel)</Label>
-                                <div className="flex items-center gap-4">
-                                    <Input
-                                        id="logo"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            if (e.target.files?.[0]) {
-                                                setLogoFile(e.target.files[0])
-                                            }
-                                        }}
-                                        className="cursor-pointer"
-                                    />
-                                </div>
-                            </div>
                             <Button type="submit" className="w-full" disabled={submitting}>
                                 {submitting ? (
                                     <>
