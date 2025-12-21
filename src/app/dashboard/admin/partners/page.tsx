@@ -128,21 +128,7 @@ export default function AdminPartnersPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {partners.map((partner) => (
                         <Card key={partner.id} className="overflow-hidden group relative">
-                            <div className="aspect-video p-4 flex items-center justify-center bg-gray-50 flex-col gap-2">
-                                {partner.id && (
-                                    <div className="w-full h-20 flex items-center justify-center mb-2">
-                                        <img
-                                            src={`/api/partner/${partner.id}/logo`}
-                                            alt={partner.name}
-                                            className="max-w-full max-h-full object-contain"
-                                            onError={(e) => {
-                                                // If logo fails to load (or doesn't exist), hide it or show placeholder
-                                                e.currentTarget.style.display = 'none'
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                                <div className="text-center">
+                                <div className="text-center w-full">
                                     <p className="font-bold text-sm truncate" title={partner.name}>
                                         {partner.name}
                                     </p>
@@ -167,14 +153,15 @@ export default function AdminPartnersPage() {
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </Card>
-                    ))}
-                    {partners.length === 0 && (
-                        <div className="col-span-full text-center py-12 text-muted-foreground bg-gray-50 rounded-lg border border-dashed">
-                            Henüz hiç partner eklenmemiş.
-                        </div>
-                    )}
+            ))}
+            {partners.length === 0 && (
+                <div className="col-span-full text-center py-12 text-muted-foreground bg-gray-50 rounded-lg border border-dashed">
+                    Henüz hiç partner eklenmemiş.
                 </div>
             )}
         </div>
+    )
+}
+        </div >
     )
 }

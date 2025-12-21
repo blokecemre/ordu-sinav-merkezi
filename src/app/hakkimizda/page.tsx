@@ -6,6 +6,7 @@ import { getSettings } from "@/app/actions/settings"
 import { getPartners } from "@/app/actions/partner"
 
 export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export default async function HakkimizdaPage() {
     const settingsResult = await getSettings()

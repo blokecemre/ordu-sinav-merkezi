@@ -11,9 +11,7 @@ export async function getPartners() {
                 id: true,
                 name: true,
                 url: true,
-                createdAt: true,
-                updatedAt: true,
-                logoMimeType: true
+                updatedAt: true
             }
         })
         return { success: true, data: partners }
