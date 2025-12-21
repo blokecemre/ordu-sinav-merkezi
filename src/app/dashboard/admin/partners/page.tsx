@@ -128,17 +128,17 @@ export default function AdminPartnersPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {partners.map((partner) => (
                         <Card key={partner.id} className="overflow-hidden group relative">
-                                <div className="text-center w-full">
-                                    <p className="font-bold text-sm truncate" title={partner.name}>
-                                        {partner.name}
-                                    </p>
-                                    {partner.url && (
-                                        <a href={partner.url} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline truncate block max-w-full">
-                                            {partner.url}
-                                        </a>
-                                    )}
-                                </div>
+                            <div className="text-center w-full">
+                                <p className="font-bold text-sm truncate" title={partner.name}>
+                                    {partner.name}
+                                </p>
+                                {partner.url && (
+                                    <a href={partner.url} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline truncate block max-w-full">
+                                        {partner.url}
+                                    </a>
+                                )}
                             </div>
+
                             <div className="p-3 text-center border-t">
                                 <p className="font-medium text-sm truncate" title={partner.name}>
                                     {partner.name}
@@ -153,15 +153,15 @@ export default function AdminPartnersPage() {
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </Card>
-            ))}
-            {partners.length === 0 && (
-                <div className="col-span-full text-center py-12 text-muted-foreground bg-gray-50 rounded-lg border border-dashed">
-                    Henüz hiç partner eklenmemiş.
+                    ))}
+                    {partners.length === 0 && (
+                        <div className="col-span-full text-center py-12 text-muted-foreground bg-gray-50 rounded-lg border border-dashed">
+                            Henüz hiç partner eklenmemiş.
+                        </div>
+                    )}
                 </div>
-            )}
-        </div>
-    )
-}
+            )
+            }
         </div >
     )
 }
