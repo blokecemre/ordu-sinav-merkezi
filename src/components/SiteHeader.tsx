@@ -68,13 +68,7 @@ function MobileMenuOverlay({ isOpen, onClose, session }: { isOpen: boolean; onCl
                 >
                     Blog
                 </Link>
-                <Link
-                    href="/hakkimizda"
-                    className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
-                    onClick={onClose}
-                >
-                    Hakkımızda
-                </Link>
+
                 <Link
                     href="/iletisim"
                     className="p-4 text-lg font-medium text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -130,7 +124,7 @@ export function SiteHeader() {
                         <Link href="/sinavlar" className="text-sm font-medium hover:text-blue-600 transition-colors">Sınavlar</Link>
                         <Link href="/cevap-anahtarlari" className="text-sm font-medium hover:text-blue-600 transition-colors">Cevap Anahtarları</Link>
                         <Link href="/blog" className="text-sm font-medium hover:text-blue-600 transition-colors">Blog</Link>
-                        <Link href="/hakkimizda" className="text-sm font-medium text-muted-foreground hover:text-foreground">Hakkımızda</Link>
+
                         <Link href="/iletisim" className="text-sm font-medium text-muted-foreground hover:text-foreground">İletişim</Link>
                     </nav>
 

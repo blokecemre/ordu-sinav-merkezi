@@ -57,11 +57,7 @@ export async function SiteFooter() {
                                     Performans Analizi
                                 </Link>
                             </li>
-                            <li>
-                                <Link href="/hakkimizda" className="text-gray-400 hover:text-white transition-colors">
-                                    Rehberlik
-                                </Link>
-                            </li>
+
                         </ul>
                     </div>
 

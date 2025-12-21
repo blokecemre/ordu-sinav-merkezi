@@ -132,15 +132,7 @@ export default function DashboardLayout({
                                         Slider
                                     </Button>
                                 </Link>
-                                <Link href="/dashboard/admin/partners" onClick={() => setIsSidebarOpen(false)}>
-                                    <Button
-                                        variant={pathname === "/dashboard/admin/partners" ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${pathname === "/dashboard/admin/partners" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
-                                    >
-                                        <Users className="mr-2 w-5 h-5" />
-                                        Partnerler
-                                    </Button>
-                                </Link>
+
                                 <Link href="/dashboard/admin/mistakes" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname.startsWith("/dashboard/admin/mistakes") ? "secondary" : "ghost"}
