@@ -13,7 +13,6 @@ export async function getPartners() {
                 url: true,
                 createdAt: true,
                 updatedAt: true,
-                logoData: false, // Don't fetch heavy image data
                 logoMimeType: true
             }
         })
