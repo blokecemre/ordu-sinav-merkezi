@@ -5,6 +5,8 @@ import { Partners } from "@/components/Partners"
 import { getSettings } from "@/app/actions/settings"
 import { getPartners } from "@/app/actions/partner"
 
+export const dynamic = "force-dynamic"
+
 export default async function HakkimizdaPage() {
     const settingsResult = await getSettings()
     const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
