@@ -16,6 +16,7 @@ interface PackageFormProps {
         id: string
         title: string
         description: string
+        theme?: string
     }
     onSubmit: (formData: FormData) => Promise<{ success: boolean; error?: string }>
 }
@@ -26,87 +27,18 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
     const [formData, setFormData] = useState({
         title: initialData?.title || "",
         description: initialData?.description || "",
+        theme: initialData?.theme || "blue"
     })
-    const [imageFile, setImageFile] = useState<File | null>(null)
-
-    const compressImage = async (file: File): Promise<File> => {
-        return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.src = URL.createObjectURL(file)
-            img.onload = () => {
-                const canvas = document.createElement("canvas")
-                let width = img.width
-                let height = img.height
-
-                // Max dimensions
-                const MAX_WIDTH = 1200
-                const MAX_HEIGHT = 1200
-
-                if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width
-                        width = MAX_WIDTH
-                    }
-                } else {
-                    if (height > MAX_HEIGHT) {
-                        width *= MAX_HEIGHT / height
-                        height = MAX_HEIGHT
-                    }
-                }
-
-                canvas.width = width
-                canvas.height = height
-                const ctx = canvas.getContext("2d")
-                ctx?.drawImage(img, 0, 0, width, height)
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (blob) {
-                            const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
-                                type: "image/jpeg",
-                                lastModified: Date.now(),
-                            })
-                            resolve(newFile)
-                        } else {
-                            reject(new Error("Image compression failed"))
-                        }
-                    },
-                    "image/jpeg",
-                    0.8 // Quality
-                )
-            }
-            img.onerror = (error) => reject(error)
-        })
-    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!initialData && !imageFile) {
-            toast.error("Lütfen bir görsel seçin")
-            return
-        }
 
         setSubmitting(true)
         try {
             const data = new FormData()
             data.append("title", formData.title)
             data.append("description", formData.description)
-
-            if (imageFile) {
-                // Compress image if it's larger than 1MB
-                if (imageFile.size > 1024 * 1024) {
-                    try {
-                        const compressedFile = await compressImage(imageFile)
-                        data.append("image", compressedFile)
-                    } catch (error) {
-                        console.error("Compression error:", error)
-                        // Fallback to original file
-                        data.append("image", imageFile)
-                    }
-                } else {
-                    data.append("image", imageFile)
-                }
-            }
+            data.append("theme", formData.theme)
 
             const result = await onSubmit(data)
 
@@ -123,6 +55,12 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
             setSubmitting(false)
         }
     }
+
+    const THEMES = [
+        { id: "blue", name: "Mavi Tema", gradient: "from-blue-600 via-blue-500 to-cyan-400" },
+        { id: "purple", name: "Mor Tema", gradient: "from-fuchsia-600 via-purple-500 to-pink-400" },
+        { id: "orange", name: "Turuncu Tema", gradient: "from-amber-500 via-orange-500 to-red-400" },
+    ]
 
     return (
         <div className="space-y-6">
@@ -167,29 +105,22 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="image">Paket Görseli</Label>
-                            <div className="flex flex-col gap-4">
-                                {initialData && (
-                                    <div className="w-40 h-40 relative bg-gray-100 rounded-lg overflow-hidden border">
-                                        <img
-                                            src={`/api/package/${initialData.id}/image`}
-                                            alt="Current"
-                                            className="w-full h-full object-cover"
-                                        />
+                            <Label>Paket Teması</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {THEMES.map((theme) => (
+                                    <div
+                                        key={theme.id}
+                                        onClick={() => setFormData({ ...formData, theme: theme.id })}
+                                        className={`cursor-pointer rounded-xl border-2 p-1 transition-all ${formData.theme === theme.id
+                                            ? "border-primary ring-2 ring-primary/20"
+                                            : "border-transparent hover:border-border"
+                                            }`}
+                                    >
+                                        <div className={`h-20 rounded-lg bg-gradient-to-br ${theme.gradient} flex items-center justify-center text-white font-medium shadow-sm`}>
+                                            {theme.name}
+                                        </div>
                                     </div>
-                                )}
-                                <Input
-                                    id="image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files?.[0]) {
-                                            setImageFile(e.target.files[0])
-                                        }
-                                    }}
-                                    required={!initialData}
-                                    className="cursor-pointer"
-                                />
+                                ))}
                             </div>
                         </div>
 

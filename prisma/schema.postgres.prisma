@@ -159,8 +159,9 @@ model Package {
   id            String   @id @default(cuid())
   title         String
   description   String
-  imageData     Bytes
-  imageMimeType String
+  imageData     Bytes?
+  imageMimeType String?
+  theme         String   @default("blue")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

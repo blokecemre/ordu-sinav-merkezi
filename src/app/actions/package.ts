@@ -14,7 +14,8 @@ export async function getPackages() {
                 createdAt: true,
                 updatedAt: true,
                 imageData: false, // Don't fetch heavy image data
-                imageMimeType: true
+                imageMimeType: true,
+                theme: true
             }
         })
         return { success: true, data: packages }
@@ -32,7 +33,8 @@ export async function getPackage(id: string) {
                 id: true,
                 title: true,
                 description: true,
-                imageMimeType: true
+                imageMimeType: true,
+                theme: true
             }
         })
         return { success: true, data: pkg }
@@ -46,22 +48,27 @@ export async function createPackage(formData: FormData) {
     try {
         const title = formData.get("title") as string
         const description = formData.get("description") as string
+        const theme = formData.get("theme") as string || "blue"
+        // Image is now optional
         const imageFile = formData.get("image") as File | null
 
-        if (!title || !description || !imageFile) {
-            return { success: false, error: "Başlık, açıklama ve görsel zorunludur" }
+        if (!title || !description) {
+            return { success: false, error: "Başlık ve açıklama zorunludur" }
         }
 
-        const imageData = Buffer.from(await imageFile.arrayBuffer())
-        const imageMimeType = imageFile.type
+        const data: any = {
+            title,
+            description,
+            theme
+        }
+
+        if (imageFile && imageFile.size > 0) {
+            data.imageData = Buffer.from(await imageFile.arrayBuffer())
+            data.imageMimeType = imageFile.type
+        }
 
         const pkg = await prisma.package.create({
-            data: {
-                title,
-                description,
-                imageData: imageData as any,
-                imageMimeType
-            }
+            data
         })
 
         revalidatePath("/paketler")
@@ -77,11 +84,13 @@ export async function updatePackage(id: string, formData: FormData) {
     try {
         const title = formData.get("title") as string
         const description = formData.get("description") as string
+        const theme = formData.get("theme") as string
         const imageFile = formData.get("image") as File | null
 
         const data: any = {
             title,
-            description
+            description,
+            theme
         }
 
         if (imageFile && imageFile.size > 0) {

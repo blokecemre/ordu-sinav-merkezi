@@ -41,7 +41,9 @@ export default async function PackagesPage() {
                     <div className="space-y-6 max-w-5xl mx-auto">
                         {packages && packages.length > 0 ? (
                             packages.map((pkg: any, index: number) => {
-                                const style = STYLE_CYCLE[index % STYLE_CYCLE.length]
+                                // Find style based on stored theme (default to blue if not found)
+                                const theme = pkg.theme || 'blue'
+                                const style = STYLE_CYCLE.find(s => s.theme === theme) || STYLE_CYCLE[0]
                                 const IconComponent = style.icon
 
                                 // Parse description into features
