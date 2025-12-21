@@ -21,6 +21,8 @@ export async function updateSettings(formData: FormData) {
     try {
         const updates = [
             { key: "lgsDate", value: formData.get("lgsDate") as string },
+            { key: "tytDate", value: formData.get("tytDate") as string },
+            { key: "aytDate", value: formData.get("aytDate") as string },
             { key: "address", value: formData.get("address") as string },
             { key: "phone", value: formData.get("phone") as string },
             { key: "email", value: formData.get("email") as string },

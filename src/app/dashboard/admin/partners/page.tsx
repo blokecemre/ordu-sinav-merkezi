@@ -18,6 +18,7 @@ export default function AdminPartnersPage() {
 
     const [formData, setFormData] = useState({
         name: "",
+        url: "",
     })
     const [logoFile, setLogoFile] = useState<File | null>(null)
 
@@ -36,22 +37,21 @@ export default function AdminPartnersPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!logoFile) {
-            toast.error("Lütfen bir logo seçin")
-            return
-        }
 
         setSubmitting(true)
         const data = new FormData()
         data.append("name", formData.name)
-        data.append("logo", logoFile)
+        data.append("url", formData.url)
+        if (logoFile) {
+            data.append("logo", logoFile)
+        }
 
         const result = await createPartner(data)
 
         if (result.success) {
             toast.success("Partner başarıyla eklendi")
             setIsDialogOpen(false)
-            setFormData({ name: "" })
+            setFormData({ name: "", url: "" })
             setLogoFile(null)
             fetchPartners()
         } else {
@@ -99,7 +99,16 @@ export default function AdminPartnersPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="logo">Logo</Label>
+                                <Label htmlFor="url">Web Sitesi (URL)</Label>
+                                <Input
+                                    id="url"
+                                    value={formData.url}
+                                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                                    placeholder="https://..."
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="logo">Logo (Opsiyonel)</Label>
                                 <div className="flex items-center gap-4">
                                     <Input
                                         id="logo"
@@ -110,7 +119,6 @@ export default function AdminPartnersPage() {
                                                 setLogoFile(e.target.files[0])
                                             }
                                         }}
-                                        required
                                         className="cursor-pointer"
                                     />
                                 </div>
@@ -136,12 +144,30 @@ export default function AdminPartnersPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {partners.map((partner) => (
                         <Card key={partner.id} className="overflow-hidden group relative">
-                            <div className="aspect-square p-4 flex items-center justify-center bg-gray-50">
-                                <img
-                                    src={`/api/partner/${partner.id}/logo`}
-                                    alt={partner.name}
-                                    className="max-w-full max-h-full object-contain"
-                                />
+                            <div className="aspect-video p-4 flex items-center justify-center bg-gray-50 flex-col gap-2">
+                                {partner.id && (
+                                    <div className="w-full h-20 flex items-center justify-center mb-2">
+                                        <img
+                                            src={`/api/partner/${partner.id}/logo`}
+                                            alt={partner.name}
+                                            className="max-w-full max-h-full object-contain"
+                                            onError={(e) => {
+                                                // If logo fails to load (or doesn't exist), hide it or show placeholder
+                                                e.currentTarget.style.display = 'none'
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                                <div className="text-center">
+                                    <p className="font-bold text-sm truncate" title={partner.name}>
+                                        {partner.name}
+                                    </p>
+                                    {partner.url && (
+                                        <a href={partner.url} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline truncate block max-w-full">
+                                            {partner.url}
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                             <div className="p-3 text-center border-t">
                                 <p className="font-medium text-sm truncate" title={partner.name}>

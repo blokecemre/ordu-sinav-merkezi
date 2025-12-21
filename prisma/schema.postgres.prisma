@@ -149,8 +149,9 @@ model SystemSetting {
 model Partner {
   id           String   @id @default(cuid())
   name         String
-  logoData     Bytes
-  logoMimeType String
+  url          String   @default("")
+  logoData     Bytes?
+  logoMimeType String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

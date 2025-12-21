@@ -10,6 +10,7 @@ export async function getPartners() {
             select: {
                 id: true,
                 name: true,
+                url: true,
                 createdAt: true,
                 updatedAt: true,
                 logoData: false, // Don't fetch heavy image data
@@ -26,21 +27,25 @@ export async function getPartners() {
 export async function createPartner(formData: FormData) {
     try {
         const name = formData.get("name") as string
+        const url = formData.get("url") as string || ""
         const logoFile = formData.get("logo") as File | null
 
-        if (!name || !logoFile) {
-            return { success: false, error: "İsim ve logo zorunludur" }
+        if (!name) {
+            return { success: false, error: "İsim zorunludur" }
         }
 
-        const logoData = Buffer.from(await logoFile.arrayBuffer())
-        const logoMimeType = logoFile.type
+        const data: any = {
+            name,
+            url
+        }
+
+        if (logoFile && logoFile.size > 0) {
+            data.logoData = Buffer.from(await logoFile.arrayBuffer())
+            data.logoMimeType = logoFile.type
+        }
 
         const partner = await prisma.partner.create({
-            data: {
-                name,
-                logoData: logoData as any, // Fix for Prisma type mismatch
-                logoMimeType
-            }
+            data
         })
 
         revalidatePath("/hakkimizda")

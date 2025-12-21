@@ -95,18 +95,38 @@ export default function SettingsPage() {
                             <CardTitle>Diğer Ayarlar</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="lgsDate">LGS Tarihi</Label>
-                                <Input
-                                    id="lgsDate"
-                                    name="lgsDate"
-                                    type="datetime-local"
-                                    defaultValue={settings.lgsDate}
-                                />
-                                <p className="text-sm text-muted-foreground">
-                                    Sayaç için kullanılacak tarih ve saat.
-                                </p>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="lgsDate">LGS Tarihi</Label>
+                                    <Input
+                                        id="lgsDate"
+                                        name="lgsDate"
+                                        type="datetime-local"
+                                        defaultValue={settings.lgsDate}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="tytDate">TYT Tarihi</Label>
+                                    <Input
+                                        id="tytDate"
+                                        name="tytDate"
+                                        type="datetime-local"
+                                        defaultValue={settings.tytDate}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="aytDate">AYT Tarihi</Label>
+                                    <Input
+                                        id="aytDate"
+                                        name="aytDate"
+                                        type="datetime-local"
+                                        defaultValue={settings.aytDate}
+                                    />
+                                </div>
                             </div>
+                            <p className="text-sm text-muted-foreground">
+                                Sayaçlar için kullanılacak tarih ve saatler.
+                            </p>
                         </CardContent>
                     </Card>
 
