@@ -68,25 +68,6 @@ export default async function Blog() {
                 </div>
             </section>
 
-            {/* Category Filter */}
-            <section className="py-8 border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-20 z-40">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        {categories.map((cat, index) => (
-                            <button
-                                key={cat}
-                                className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${index === 0
-                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                                        : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
-                                    }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Blog Grid */}
             <main className="py-16">
                 <div className="container mx-auto px-4">
@@ -219,43 +200,8 @@ export default async function Blog() {
                             ))}
                         </div>
                     )}
-
-                    {/* Load More - Hidden for now as we load 100 */}
-                    {/* <div className="mt-16 text-center">
-            <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
-              <span>Daha Fazla Yazı</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div> */}
                 </div>
             </main>
-
-            {/* Newsletter Section */}
-            <section className="py-20 bg-muted/30">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                            <BookOpen className="w-8 h-8 text-primary" />
-                        </div>
-                        <h2 className="text-3xl font-bold text-foreground mb-4">
-                            Yeni yazılardan haberdar olun
-                        </h2>
-                        <p className="text-muted-foreground mb-8">
-                            E-posta listemize katılın, en son içerikler doğrudan gelen kutunuza gelsin.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                            <input
-                                type="email"
-                                placeholder="E-posta adresiniz"
-                                className="flex-1 px-5 py-3.5 rounded-full bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                            />
-                            <button className="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
-                                Abone Ol
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <SiteFooter />
         </div>
