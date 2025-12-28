@@ -2,8 +2,17 @@ export const dynamic = "force-dynamic"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, TrendingUp, Award } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+    FileText,
+    Award,
+    Target,
+    BarChart3,
+    CalendarDays,
+    LayoutGrid,
+    TrendingUp,
+    BookX
+} from "lucide-react"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 
@@ -23,22 +32,6 @@ async function getStudentStats(userId: string) {
         : 0
 
     return { totalExams, averageScore, averageNet, recentResults: results.slice(0, 5) }
-}
-
-async function getAllExamsWithPDFs() {
-    return await prisma.exam.findMany({
-        where: {
-            pdfName: { not: null }
-        },
-        orderBy: { date: "desc" },
-        select: {
-            id: true,
-            name: true,
-            date: true,
-            type: true,
-            pdfName: true,
-        }
-    })
 }
 
 async function getAssignedExams(userId: string) {
@@ -69,107 +62,155 @@ export default async function StudentDashboard() {
     const assignedExams = await getAssignedExams(session.user.id)
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Merhaba, {session.user.name}</h1>
+        <div className="space-y-8">
+            {/* Welcome Header */}
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-800">
+                    Merhaba, <span className="text-blue-600">{session.user.name}</span>
+                </h2>
+                <p className="text-slate-500 mt-1">Bugün nasıl çalışmak istersin?</p>
+            </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Katıldığın Sınavlar</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalExams}</div>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-slate-500 text-sm font-medium mb-1">Katıldığın Sınavlar</p>
+                                <p className="text-4xl font-bold text-slate-800">{stats.totalExams}</p>
+                            </div>
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-blue-600" />
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Ortalama Puan</CardTitle>
-                        <Award className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.averageScore.toFixed(2)}</div>
+
+                <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-slate-500 text-sm font-medium mb-1">Ortalama Puan</p>
+                                <p className="text-4xl font-bold text-slate-800">{stats.averageScore.toFixed(2)}</p>
+                            </div>
+                            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
+                                <Award className="w-6 h-6 text-emerald-600" />
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Ortalama Net</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.averageNet.toFixed(2)}</div>
+
+                <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <p className="text-slate-500 text-sm font-medium mb-1">Ortalama Net</p>
+                                <p className="text-4xl font-bold text-slate-800">{stats.averageNet.toFixed(2)}</p>
+                            </div>
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center">
+                                <Target className="w-6 h-6 text-purple-600" />
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
 
-            <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Son Sınav Sonuçların</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {stats.recentResults.map((result) => (
-                        <Card key={result.id} className="hover:shadow-md transition-shadow">
-                            <CardHeader>
-                                <CardTitle className="text-lg">{result.exam.name}</CardTitle>
-                                <p className="text-sm text-muted-foreground">
-                                    {format(new Date(result.exam.date), "d MMMM yyyy", { locale: tr })}
-                                </p>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium text-gray-500">Puan</span>
-                                    <span className="text-lg font-bold text-blue-600">{result.totalScore.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-gray-500">Net</span>
-                                    <span className="text-lg font-bold text-green-600">{result.totalNet.toFixed(2)}</span>
-                                </div>
-                                {result.exam.pdfName && (
-                                    <div className="mt-4 pt-4 border-t">
-                                        <a href={`/api/exam/${result.exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
-                                            <FileText className="w-4 h-4 mr-1" /> Sınav PDF'ini İndir
-                                        </a>
+            {/* Recent Exam Results */}
+            <section className="mb-10">
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Son Sınav Sonuçların</h3>
+                {stats.recentResults.length === 0 ? (
+                    <Card className="border-0 shadow-lg shadow-slate-200/50">
+                        <CardContent className="p-8">
+                            <div className="text-center text-slate-400">
+                                <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                <p>Henüz sınav sonucu bulunmuyor</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {stats.recentResults.map((result) => (
+                            <Card key={result.id} className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-shadow duration-300">
+                                <CardContent className="p-6">
+                                    <div className="mb-4">
+                                        <h4 className="text-lg font-semibold text-slate-800 line-clamp-1">{result.exam.name}</h4>
+                                        <p className="text-sm text-slate-500">
+                                            {format(new Date(result.exam.date), "d MMMM yyyy", { locale: tr })}
+                                        </p>
                                     </div>
-                                )}
-                                {result.resultPdfName && (
-                                    <div className="mt-2 pt-2 border-t border-dashed">
-                                        <a href={`/api/result/${result.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-green-600 hover:underline flex items-center">
-                                            <FileText className="w-4 h-4 mr-1" /> Sonuç Karnesi İndir
-                                        </a>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-sm font-medium text-slate-500">Puan</span>
+                                        <span className="text-lg font-bold text-blue-600">{result.totalScore.toFixed(2)}</span>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-sm font-medium text-slate-500">Net</span>
+                                        <span className="text-lg font-bold text-emerald-600">{result.totalNet.toFixed(2)}</span>
+                                    </div>
+                                    <div className="space-y-2 pt-4 border-t border-slate-100">
+                                        {result.exam.pdfName && (
+                                            <a href={`/api/exam/${result.exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors">
+                                                <FileText className="w-4 h-4 mr-2" />
+                                                <span>Sınav PDF'ini İndir</span>
+                                            </a>
+                                        )}
+                                        {result.resultPdfName && (
+                                            <a href={`/api/result/${result.id}/pdf`} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-emerald-600 hover:text-emerald-700 transition-colors">
+                                                <FileText className="w-4 h-4 mr-2" />
+                                                <span>Sonuç Karnesi İndir</span>
+                                            </a>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+            </section>
 
-            <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Sınavlarım</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {assignedExams.map((exam) => (
-                        <Card key={exam.id} className="hover:shadow-md transition-shadow">
-                            <CardHeader>
-                                <CardTitle className="text-lg">{exam.name}</CardTitle>
-                                <p className="text-sm text-muted-foreground">
-                                    {format(new Date(exam.date), "d MMMM yyyy", { locale: tr })}
-                                </p>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium text-gray-500">Tür</span>
-                                    <span className="text-sm font-bold">{exam.type}</span>
-                                </div>
-                                {exam.pdfName && (
-                                    <div className="mt-4 pt-4 border-t">
-                                        <a href={`/api/exam/${exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center">
-                                            <FileText className="w-4 h-4 mr-1" /> Sınav PDF'ini İndir
-                                        </a>
+            {/* My Exams */}
+            <section>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Sınavlarım</h3>
+                {assignedExams.length === 0 ? (
+                    <Card className="border-0 shadow-lg shadow-slate-200/50">
+                        <CardContent className="p-8">
+                            <div className="text-center text-slate-400">
+                                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                <p>Henüz atanmış sınav bulunmuyor</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {assignedExams.map((exam) => (
+                            <Card key={exam.id} className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl transition-shadow duration-300">
+                                <CardContent className="p-6">
+                                    <div className="mb-4">
+                                        <h4 className="text-lg font-semibold text-slate-800 line-clamp-1">{exam.name}</h4>
+                                        <p className="text-sm text-slate-500">
+                                            {format(new Date(exam.date), "d MMMM yyyy", { locale: tr })}
+                                        </p>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-sm font-medium text-slate-500">Tür</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full">
+                                            {exam.type}
+                                        </span>
+                                    </div>
+                                    {exam.pdfName && (
+                                        <div className="pt-4 border-t border-slate-100">
+                                            <a href={`/api/exam/${exam.id}/pdf`} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors">
+                                                <FileText className="w-4 h-4 mr-2" />
+                                                <span>Sınav PDF'ini İndir</span>
+                                            </a>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+            </section>
         </div>
     )
 }

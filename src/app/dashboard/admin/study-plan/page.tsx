@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils"
 import { CURRICULUM_BY_GRADE, SUBJECTS, GRADES } from "@/lib/constants/curriculum-index"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { parseStudyPlanMarkdown } from "@/lib/utils/study-plan-parser"
+import { Upload } from "lucide-react"
 
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
@@ -131,6 +133,45 @@ export default function AdminStudyPlanPage() {
         })
     }
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        if (!file.name.endsWith('.md') && !file.name.endsWith('.txt')) {
+            toast.error("Lütfen .md veya .txt uzantılı bir dosya yükleyin.")
+            return
+        }
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            const content = event.target?.result as string
+            if (content) {
+                try {
+                    const parsedPlan = parseStudyPlanMarkdown(content)
+                    const newPlan: WeeklyPlan = {}
+                    
+                    Object.entries(parsedPlan).forEach(([day, lessons]) => {
+                        newPlan[day] = lessons.map(l => ({
+                            id: Math.random().toString(36).substr(2, 9),
+                            subject: l.subject,
+                            classLevel: l.classLevel,
+                            duration: l.duration,
+                            outcomes: l.outcomes
+                        }))
+                    })
+
+                    setPlan(newPlan)
+                    toast.success("Çalışma planı dosyadan yüklendi.")
+                } catch (error) {
+                    toast.error("Dosya okunurken bir hata oluştu.")
+                }
+            }
+        }
+        reader.readAsText(file)
+        // Reset input value to allow uploading the same file again if needed
+        e.target.value = ''
+    }
+
     const handleSave = async () => {
         if (!selectedStudentId) {
             toast.error("Lütfen bir öğrenci seçin")
@@ -208,10 +249,28 @@ export default function AdminStudyPlanPage() {
                         </PopoverContent>
                     </Popover>
 
-                    <Button onClick={handleSave} disabled={saving || !selectedStudentId}>
-                        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                        Kaydet
-                    </Button>
+                    <div className="flex gap-2">
+                         <label htmlFor="plan-upload">
+                            <Button variant="outline" className="cursor-pointer" asChild>
+                                <span>
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Plan Yükle
+                                </span>
+                            </Button>
+                        </label>
+                        <Input
+                            id="plan-upload"
+                            type="file"
+                            accept=".md,.txt"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                        />
+
+                        <Button onClick={handleSave} disabled={saving || !selectedStudentId}>
+                            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            Kaydet
+                        </Button>
+                    </div>
                 </div>
             </div>
 
