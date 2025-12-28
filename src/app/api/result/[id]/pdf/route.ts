@@ -23,6 +23,7 @@ export async function GET(
         const headers = new Headers()
         headers.set("Content-Type", result.resultPdfMimeType || "application/pdf")
         headers.set("Content-Disposition", `inline; filename="${result.resultPdfName || 'sonuc.pdf'}"`)
+        headers.set("Cache-Control", "public, max-age=31536000, immutable")
 
         return new NextResponse(result.resultPdfData, {
             status: 200,

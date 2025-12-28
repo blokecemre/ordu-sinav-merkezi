@@ -23,6 +23,7 @@ export async function GET(
         const headers = new Headers()
         headers.set("Content-Type", exam.pdfMimeType || "application/pdf")
         headers.set("Content-Disposition", `attachment; filename="${exam.pdfName || 'exam.pdf'}"`)
+        headers.set("Cache-Control", "public, max-age=31536000, immutable")
 
         return new NextResponse(exam.pdfData, {
             status: 200,
