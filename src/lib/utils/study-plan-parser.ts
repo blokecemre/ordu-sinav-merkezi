@@ -16,7 +16,92 @@ const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
 ]
 
-export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
+// Normalize subjects for matching (remove spaces, lowercase)
+const normalizedSubjects = SUBJECTS.map(s => ({ original: s, normalized: s.toLowerCase().replace(/\s/g, '') }))
+
+function matchSubject(input: string): string {
+    const normalized = input.toLowerCase().replace(/\s/g, '')
+    const match = normalizedSubjects.find(s => s.normalized === normalized)
+    return match ? match.original : input
+}
+
+function matchDay(input: string): string | null {
+    const normalized = input.toLowerCase().trim()
+    const day = DAYS.find(d => d.toLowerCase() === normalized)
+    return day || null
+}
+
+// Parse table format: | Gün | Ders | Kazanımlar | Süre (dk) |
+function parseTableFormat(content: string): WeeklyPlan {
+    const lines = content.split('\n')
+    const plan: WeeklyPlan = {}
+
+    // Initialize empty days
+    DAYS.forEach(day => plan[day] = [])
+
+    // Find header row and determine column indices
+    let headerIndex = -1
+    let columnIndices: { day: number; subject: number; outcomes: number; duration: number } | null = null
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (line.startsWith('|') && line.includes('Gün')) {
+            headerIndex = i
+            const columns = line.split('|').map(c => c.trim().toLowerCase())
+
+            columnIndices = {
+                day: columns.findIndex(c => c.includes('gün')),
+                subject: columns.findIndex(c => c.includes('ders')),
+                outcomes: columns.findIndex(c => c.includes('kazanım')),
+                duration: columns.findIndex(c => c.includes('süre'))
+            }
+            break
+        }
+    }
+
+    if (headerIndex === -1 || !columnIndices) {
+        return plan // No table header found, return empty plan
+    }
+
+    // Parse data rows (skip header and separator row)
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+        const line = lines[i].trim()
+
+        // Skip separator rows (e.g., |---|---|---|---|)
+        if (!line.startsWith('|') || line.includes('---')) continue
+
+        const columns = line.split('|').map(c => c.trim())
+
+        if (columns.length < 4) continue
+
+        const dayValue = columns[columnIndices.day] || ''
+        const subjectValue = columns[columnIndices.subject] || ''
+        const outcomesValue = columns[columnIndices.outcomes] || ''
+        const durationValue = columns[columnIndices.duration] || ''
+
+        const day = matchDay(dayValue)
+        if (!day) continue
+
+        const subject = matchSubject(subjectValue)
+        const duration = parseInt(durationValue) || 40
+        const outcomes = outcomesValue ? [outcomesValue] : []
+
+        // Add lesson to the day (max 5 per day)
+        if (plan[day].length < 5) {
+            plan[day].push({
+                subject,
+                classLevel: "7", // Default to 7 based on user's data
+                duration,
+                outcomes
+            })
+        }
+    }
+
+    return plan
+}
+
+// Parse list format: # Pazartesi, ## Ders 1, - Ders: Matematik, etc.
+function parseListFormat(content: string): WeeklyPlan {
     const lines = content.split('\n')
     const plan: WeeklyPlan = {}
 
@@ -24,9 +109,6 @@ export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
     let currentLesson: Partial<ParsedLesson> | null = null
     let currentOutcomes: string[] = []
     let inOutcomes = false
-
-    // Normalize subjects for matching (remove spaces, lowercase)
-    const normalizedSubjects = SUBJECTS.map(s => ({ original: s, normalized: s.toLowerCase().replace(/\s/g, '') }))
 
     const saveCurrentLesson = () => {
         if (currentDay && currentLesson && currentLesson.subject) {
@@ -38,8 +120,8 @@ export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
             if (plan[currentDay].length < 5) {
                 plan[currentDay].push({
                     subject: currentLesson.subject,
-                    classLevel: currentLesson.classLevel || "8", // Default to 8 if missing
-                    duration: currentLesson.duration || 40,      // Default to 40 if missing
+                    classLevel: currentLesson.classLevel || "8",
+                    duration: currentLesson.duration || 40,
                     outcomes: [...currentOutcomes]
                 })
             }
@@ -56,22 +138,19 @@ export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
 
         // Check for Day Header (e.g., # Pazartesi)
         if (line.startsWith('# ')) {
-            // Save previous lesson if exists
             saveCurrentLesson()
 
             const dayName = line.replace('#', '').trim()
-            // Validate day name
             const validDay = DAYS.find(d => d.toLowerCase() === dayName.toLowerCase())
             if (validDay) {
                 currentDay = validDay
             } else {
-                currentDay = null // Reset if invalid day
+                currentDay = null
             }
             continue
         }
 
-        // Check for Lesson Header (e.g., ## Ders 1 or ## Matematik)
-        // Actually, we can just treat any '##' as a new lesson separator if we are inside a day
+        // Check for Lesson Header (e.g., ## Ders 1)
         if (line.startsWith('##')) {
             saveCurrentLesson()
             if (currentDay) {
@@ -83,19 +162,12 @@ export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
         // Parse Fields
         if (currentDay) {
             if (!currentLesson) {
-                // If we encounter fields but no lesson header, assume implicit new lesson
                 currentLesson = {}
             }
 
             if (line.startsWith('- Ders:')) {
                 const subjectVal = line.replace('- Ders:', '').trim()
-                // basic fuzzy match
-                const match = normalizedSubjects.find(s => s.normalized === subjectVal.toLowerCase().replace(/\s/g, ''))
-                if (match) {
-                    currentLesson.subject = match.original
-                } else {
-                    currentLesson.subject = subjectVal // keeping original if no match found, though specific validation might be better
-                }
+                currentLesson.subject = matchSubject(subjectVal)
                 inOutcomes = false
             } else if (line.startsWith('- Sınıf:')) {
                 const classVal = line.replace('- Sınıf:', '').trim()
@@ -121,8 +193,17 @@ export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
         }
     }
 
-    // Save list item
     saveCurrentLesson()
-
     return plan
+}
+
+// Detect format and parse accordingly
+export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
+    // Check if content contains table format indicators
+    if (content.includes('|') && (content.includes('Gün') || content.includes('gün'))) {
+        return parseTableFormat(content)
+    }
+
+    // Default to list format
+    return parseListFormat(content)
 }

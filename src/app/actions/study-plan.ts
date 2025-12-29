@@ -55,6 +55,7 @@ export async function updateStudyPlan(studentId: string, items: { day: string; s
         revalidatePath("/")
         revalidatePath("/calisma-plani")
         revalidatePath("/dashboard/admin/study-plan")
+        revalidatePath("/dashboard/student/study-plan")
         return { success: true }
     } catch (error) {
         console.error("Error updating study plan:", error)
