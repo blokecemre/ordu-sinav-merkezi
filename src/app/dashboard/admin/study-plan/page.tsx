@@ -134,8 +134,14 @@ export default function AdminStudyPlanPage() {
     }
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("[StudyPlan] handleFileUpload called")
         const file = e.target.files?.[0]
-        if (!file) return
+        if (!file) {
+            console.log("[StudyPlan] No file selected")
+            return
+        }
+
+        console.log("[StudyPlan] File selected:", file.name, file.type)
 
         if (!file.name.endsWith('.md') && !file.name.endsWith('.txt')) {
             toast.error("Lütfen .md veya .txt uzantılı bir dosya yükleyin.")
@@ -145,11 +151,23 @@ export default function AdminStudyPlanPage() {
         const reader = new FileReader()
         reader.onload = (event) => {
             const content = event.target?.result as string
+            console.log("[StudyPlan] File content length:", content?.length)
+            console.log("[StudyPlan] File content preview:", content?.substring(0, 200))
+
             if (content) {
                 try {
                     const parsedPlan = parseStudyPlanMarkdown(content)
+                    console.log("[StudyPlan] Parsed plan:", JSON.stringify(parsedPlan, null, 2))
+
+                    // Count total lessons
+                    let totalLessons = 0
+                    Object.values(parsedPlan).forEach(lessons => {
+                        totalLessons += lessons.length
+                    })
+                    console.log("[StudyPlan] Total parsed lessons:", totalLessons)
+
                     const newPlan: WeeklyPlan = {}
-                    
+
                     Object.entries(parsedPlan).forEach(([day, lessons]) => {
                         newPlan[day] = lessons.map(l => ({
                             id: Math.random().toString(36).substr(2, 9),
@@ -160,12 +178,18 @@ export default function AdminStudyPlanPage() {
                         }))
                     })
 
+                    console.log("[StudyPlan] Setting plan state with", Object.keys(newPlan).length, "days")
                     setPlan(newPlan)
-                    toast.success("Çalışma planı dosyadan yüklendi.")
+                    toast.success(`Çalışma planı yüklendi: ${totalLessons} ders bulundu.`)
                 } catch (error) {
+                    console.error("[StudyPlan] Parse error:", error)
                     toast.error("Dosya okunurken bir hata oluştu.")
                 }
             }
+        }
+        reader.onerror = (error) => {
+            console.error("[StudyPlan] FileReader error:", error)
+            toast.error("Dosya okunamadı.")
         }
         reader.readAsText(file)
         // Reset input value to allow uploading the same file again if needed
@@ -250,7 +274,7 @@ export default function AdminStudyPlanPage() {
                     </Popover>
 
                     <div className="flex gap-2">
-                         <label htmlFor="plan-upload">
+                        <label htmlFor="plan-upload">
                             <Button variant="outline" className="cursor-pointer" asChild>
                                 <span>
                                     <Upload className="mr-2 h-4 w-4" />

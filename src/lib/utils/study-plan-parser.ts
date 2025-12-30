@@ -1,5 +1,5 @@
 
-import { SUBJECTS, GRADES } from "../constants/curriculum-index"
+import { SUBJECTS, GRADES } from "@/lib/constants/curriculum-index"
 
 export type ParsedLesson = {
     subject: string
