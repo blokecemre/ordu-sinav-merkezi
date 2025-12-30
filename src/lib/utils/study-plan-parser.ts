@@ -32,6 +32,34 @@ function matchDay(input: string): string | null {
     return day || null
 }
 
+// Extract class level from outcome code (e.g., MAT.6.1.1 -> "6", FB.7.2.1 -> "7", T.O.6.1 -> "6")
+function extractClassLevel(outcomeCode: string): string {
+    // Pattern matches: letter(s).number or letter(s).letter(s).number
+    // Examples: MAT.6, FB.6, T.O.6, DKAB.6, M.6, SB.6
+    const patterns = [
+        /^[A-Za-z]+\.([5-8])\./,           // MAT.6. FB.7. M.6.
+        /^[A-Za-z]+\.[A-Za-z]+\.([5-8])\./  // T.O.6. DKAB.6.
+    ]
+
+    for (const pattern of patterns) {
+        const match = outcomeCode.match(pattern)
+        if (match && match[1]) {
+            console.log("[Parser] Extracted class level:", match[1], "from", outcomeCode)
+            return match[1]
+        }
+    }
+
+    // Fallback: look for any digit 5-8 in the string
+    const fallbackMatch = outcomeCode.match(/[^0-9]([5-8])[^0-9]/)
+    if (fallbackMatch && fallbackMatch[1]) {
+        console.log("[Parser] Fallback class level:", fallbackMatch[1], "from", outcomeCode)
+        return fallbackMatch[1]
+    }
+
+    console.log("[Parser] Could not extract class level from:", outcomeCode, "defaulting to 7")
+    return "7" // Default if no match found
+}
+
 // Parse table format: | Gün | Ders | Kazanımlar | Süre (dk) |
 // Also supports tables without leading |
 function parseTableFormat(content: string): WeeklyPlan {
@@ -102,11 +130,14 @@ function parseTableFormat(content: string): WeeklyPlan {
 
         console.log("[Parser] Adding lesson:", day, subject, duration)
 
+        // Extract class level from the outcome code
+        const classLevel = extractClassLevel(outcomesValue)
+
         // Add lesson to the day (max 5 per day)
         if (plan[day].length < 5) {
             plan[day].push({
                 subject,
-                classLevel: "7", // Default to 7 based on user's data
+                classLevel,
                 duration,
                 outcomes
             })
