@@ -26,8 +26,9 @@ function matchSubject(input: string): string {
 }
 
 function matchDay(input: string): string | null {
-    const normalized = input.toLowerCase().trim()
-    const day = DAYS.find(d => d.toLowerCase() === normalized)
+    // Strip markdown bold/italic formatting: **text**, *text*, __text__, _text_
+    const cleanInput = input.replace(/\*\*/g, '').replace(/\*/g, '').replace(/__/g, '').replace(/_/g, '').toLowerCase().trim()
+    const day = DAYS.find(d => d.toLowerCase() === cleanInput)
     return day || null
 }
 
