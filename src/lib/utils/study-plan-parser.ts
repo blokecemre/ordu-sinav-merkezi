@@ -32,6 +32,7 @@ function matchDay(input: string): string | null {
 }
 
 // Parse table format: | Gün | Ders | Kazanımlar | Süre (dk) |
+// Also supports tables without leading |
 function parseTableFormat(content: string): WeeklyPlan {
     const lines = content.split('\n')
     const plan: WeeklyPlan = {}
@@ -39,40 +40,49 @@ function parseTableFormat(content: string): WeeklyPlan {
     // Initialize empty days
     DAYS.forEach(day => plan[day] = [])
 
+    console.log("[Parser] Trying table format, lines:", lines.length)
+
     // Find header row and determine column indices
     let headerIndex = -1
     let columnIndices: { day: number; subject: number; outcomes: number; duration: number } | null = null
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim()
-        if (line.startsWith('|') && line.includes('Gün')) {
+
+        // Check for table header - either starts with | or contains | and has Gün
+        if (line.includes('|') && (line.toLowerCase().includes('gün') || line.toLowerCase().includes('gun'))) {
             headerIndex = i
             const columns = line.split('|').map(c => c.trim().toLowerCase())
 
+            console.log("[Parser] Found header at line", i, "columns:", columns)
+
             columnIndices = {
-                day: columns.findIndex(c => c.includes('gün')),
+                day: columns.findIndex(c => c.includes('gün') || c.includes('gun')),
                 subject: columns.findIndex(c => c.includes('ders')),
-                outcomes: columns.findIndex(c => c.includes('kazanım')),
-                duration: columns.findIndex(c => c.includes('süre'))
+                outcomes: columns.findIndex(c => c.includes('kazanım') || c.includes('kazanim')),
+                duration: columns.findIndex(c => c.includes('süre') || c.includes('sure'))
             }
+            console.log("[Parser] Column indices:", columnIndices)
             break
         }
     }
 
     if (headerIndex === -1 || !columnIndices) {
-        return plan // No table header found, return empty plan
+        console.log("[Parser] No table header found")
+        return plan
     }
 
     // Parse data rows (skip header and separator row)
     for (let i = headerIndex + 1; i < lines.length; i++) {
         const line = lines[i].trim()
 
-        // Skip separator rows (e.g., |---|---|---|---|)
-        if (!line.startsWith('|') || line.includes('---')) continue
+        // Skip empty lines and separator rows (e.g., |---|---|---|---|)
+        if (!line || line.includes('---') || !line.includes('|')) continue
 
         const columns = line.split('|').map(c => c.trim())
 
-        if (columns.length < 4) continue
+        // Skip if not enough columns
+        if (columns.filter(c => c.length > 0).length < 3) continue
 
         const dayValue = columns[columnIndices.day] || ''
         const subjectValue = columns[columnIndices.subject] || ''
@@ -80,11 +90,16 @@ function parseTableFormat(content: string): WeeklyPlan {
         const durationValue = columns[columnIndices.duration] || ''
 
         const day = matchDay(dayValue)
-        if (!day) continue
+        if (!day) {
+            console.log("[Parser] Invalid day:", dayValue)
+            continue
+        }
 
         const subject = matchSubject(subjectValue)
         const duration = parseInt(durationValue) || 40
         const outcomes = outcomesValue ? [outcomesValue] : []
+
+        console.log("[Parser] Adding lesson:", day, subject, duration)
 
         // Add lesson to the day (max 5 per day)
         if (plan[day].length < 5) {
@@ -93,6 +108,63 @@ function parseTableFormat(content: string): WeeklyPlan {
                 classLevel: "7", // Default to 7 based on user's data
                 duration,
                 outcomes
+            })
+        }
+    }
+
+    return plan
+}
+
+// Parse simple row format: each row is "Day Subject Outcome Duration"
+// This handles cases where file is tab/space separated
+function parseSimpleFormat(content: string): WeeklyPlan {
+    const lines = content.split('\n')
+    const plan: WeeklyPlan = {}
+
+    // Initialize empty days
+    DAYS.forEach(day => plan[day] = [])
+
+    console.log("[Parser] Trying simple format")
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (!line) continue
+
+        // Check if line starts with a day name
+        const dayMatch = DAYS.find(d => line.toLowerCase().startsWith(d.toLowerCase()))
+        if (!dayMatch) continue
+
+        // Try to extract subject after day name
+        const afterDay = line.substring(dayMatch.length).trim()
+
+        // Try to find a known subject
+        let foundSubject = ''
+        for (const subj of SUBJECTS) {
+            if (afterDay.toLowerCase().includes(subj.toLowerCase())) {
+                foundSubject = subj
+                break
+            }
+        }
+
+        if (!foundSubject) continue
+
+        // Extract remaining as outcome
+        const afterSubject = afterDay.replace(new RegExp(foundSubject, 'i'), '').trim()
+
+        // Try to find duration (number followed by optional 'dk' or just a number at end)
+        const durationMatch = afterSubject.match(/(\d+)\s*(dk)?/i)
+        const duration = durationMatch ? parseInt(durationMatch[1]) : 40
+
+        const outcome = afterSubject.replace(/\d+\s*(dk)?/i, '').trim()
+
+        console.log("[Parser] Simple format found:", dayMatch, foundSubject, duration)
+
+        if (plan[dayMatch].length < 5) {
+            plan[dayMatch].push({
+                subject: foundSubject,
+                classLevel: "7",
+                duration,
+                outcomes: outcome ? [outcome] : []
             })
         }
     }
@@ -116,7 +188,6 @@ function parseListFormat(content: string): WeeklyPlan {
                 plan[currentDay] = []
             }
 
-            // Limit to 5 lessons per day as per UI constraint
             if (plan[currentDay].length < 5) {
                 plan[currentDay].push({
                     subject: currentLesson.subject,
@@ -136,21 +207,14 @@ function parseListFormat(content: string): WeeklyPlan {
 
         if (!line) continue
 
-        // Check for Day Header (e.g., # Pazartesi)
         if (line.startsWith('# ')) {
             saveCurrentLesson()
-
             const dayName = line.replace('#', '').trim()
             const validDay = DAYS.find(d => d.toLowerCase() === dayName.toLowerCase())
-            if (validDay) {
-                currentDay = validDay
-            } else {
-                currentDay = null
-            }
+            currentDay = validDay || null
             continue
         }
 
-        // Check for Lesson Header (e.g., ## Ders 1)
         if (line.startsWith('##')) {
             saveCurrentLesson()
             if (currentDay) {
@@ -159,7 +223,6 @@ function parseListFormat(content: string): WeeklyPlan {
             continue
         }
 
-        // Parse Fields
         if (currentDay) {
             if (!currentLesson) {
                 currentLesson = {}
@@ -199,11 +262,36 @@ function parseListFormat(content: string): WeeklyPlan {
 
 // Detect format and parse accordingly
 export function parseStudyPlanMarkdown(content: string): WeeklyPlan {
-    // Check if content contains table format indicators
-    if (content.includes('|') && (content.includes('Gün') || content.includes('gün'))) {
-        return parseTableFormat(content)
+    console.log("[Parser] Starting parse, content length:", content.length)
+    console.log("[Parser] First 300 chars:", content.substring(0, 300))
+
+    // Try table format first (has | characters)
+    if (content.includes('|')) {
+        console.log("[Parser] Detected table format (has | character)")
+        const result = parseTableFormat(content)
+        const totalLessons = Object.values(result).reduce((sum, arr) => sum + arr.length, 0)
+        if (totalLessons > 0) {
+            console.log("[Parser] Table format succeeded, lessons:", totalLessons)
+            return result
+        }
+        console.log("[Parser] Table format returned 0 lessons, trying other formats")
     }
 
-    // Default to list format
-    return parseListFormat(content)
+    // Try list format (has # headers)
+    if (content.includes('# ')) {
+        console.log("[Parser] Detected list format (has # headers)")
+        const result = parseListFormat(content)
+        const totalLessons = Object.values(result).reduce((sum, arr) => sum + arr.length, 0)
+        if (totalLessons > 0) {
+            console.log("[Parser] List format succeeded, lessons:", totalLessons)
+            return result
+        }
+        console.log("[Parser] List format returned 0 lessons, trying simple format")
+    }
+
+    // Try simple row format as fallback
+    console.log("[Parser] Trying simple row format as fallback")
+    const result = parseSimpleFormat(content)
+    console.log("[Parser] Simple format result, lessons:", Object.values(result).reduce((sum, arr) => sum + arr.length, 0))
+    return result
 }
