@@ -101,11 +101,14 @@ function parseTableFormat(content: string): WeeklyPlan {
         return plan
     }
 
-    // Parse data rows (skip header and separator row)
+    // FIRST PASS: Collect all class levels from coded outcomes to find the most common one
+    const classLevelCounts: Record<string, number> = {}
+    const rawLessons: Array<{ day: string, subject: string, outcomes: string[], duration: number, outcomeCode: string }> = []
+
     for (let i = headerIndex + 1; i < lines.length; i++) {
         const line = lines[i].trim()
 
-        // Skip empty lines and separator rows (e.g., |---|---|---|---|)
+        // Skip empty lines and separator rows
         if (!line || line.includes('---') || !line.includes('|')) continue
 
         const columns = line.split('|').map(c => c.trim())
@@ -128,20 +131,50 @@ function parseTableFormat(content: string): WeeklyPlan {
         const duration = parseInt(durationValue) || 40
         const outcomes = outcomesValue ? [outcomesValue] : []
 
-        console.log("[Parser] Adding lesson:", day, subject, duration)
-
-        // Extract class level from the outcome code
-        const classLevel = extractClassLevel(outcomesValue)
-
-        // Add lesson to the day (max 5 per day)
-        if (plan[day].length < 5) {
-            plan[day].push({
-                subject,
-                classLevel,
-                duration,
-                outcomes
-            })
+        // Try to extract class level from this outcome
+        const extractedLevel = extractClassLevel(outcomesValue)
+        if (extractedLevel !== "7" || outcomesValue.match(/\.[5-8]\./)) {
+            // Only count if we actually found a code (not defaulted to 7)
+            classLevelCounts[extractedLevel] = (classLevelCounts[extractedLevel] || 0) + 1
         }
+
+        rawLessons.push({ day, subject, outcomes, duration, outcomeCode: outcomesValue })
+    }
+
+    // Find the most common class level (fallback for lessons without codes)
+    let mostCommonLevel = "7"
+    let maxCount = 0
+    for (const [level, count] of Object.entries(classLevelCounts)) {
+        if (count > maxCount) {
+            maxCount = count
+            mostCommonLevel = level
+        }
+    }
+    console.log("[Parser] Most common class level:", mostCommonLevel, "counts:", classLevelCounts)
+
+    // SECOND PASS: Create lessons with proper class levels
+    for (const lesson of rawLessons) {
+        if (plan[lesson.day].length >= 5) continue
+
+        // Try to extract class level, use most common as fallback
+        let classLevel = extractClassLevel(lesson.outcomeCode)
+
+        // If extraction returned default "7" but we have a different most common level,
+        // and the outcome doesn't have a clear code pattern, use the most common
+        const hasCodePattern = lesson.outcomeCode.match(/^[A-Za-z]+\.[5-8]\./) || lesson.outcomeCode.match(/^[A-Za-z]+\.[A-Za-z]+\.[5-8]\./)
+        if (!hasCodePattern && maxCount > 0) {
+            console.log("[Parser] Using fallback class level", mostCommonLevel, "for:", lesson.subject, "(no code pattern)")
+            classLevel = mostCommonLevel
+        }
+
+        console.log("[Parser] Adding lesson:", lesson.day, lesson.subject, lesson.duration, "class:", classLevel)
+
+        plan[lesson.day].push({
+            subject: lesson.subject,
+            classLevel,
+            duration: lesson.duration,
+            outcomes: lesson.outcomes
+        })
     }
 
     return plan
