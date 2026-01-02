@@ -12,12 +12,23 @@ export async function GET(
             select: {
                 pdfData: true,
                 pdfName: true,
-                pdfMimeType: true
+                pdfMimeType: true,
+                pdfUrl: true
             }
         })
 
-        if (!exam || !exam.pdfData) {
+        if (!exam) {
             return new NextResponse("PDF not found", { status: 404 })
+        }
+
+        // If stored in R2 (or other external storage), redirect to it
+        if (exam.pdfUrl) {
+            return NextResponse.redirect(exam.pdfUrl)
+        }
+
+        // Fallback to DB stored data
+        if (!exam.pdfData) {
+            return new NextResponse("PDF content not found", { status: 404 })
         }
 
         const headers = new Headers()

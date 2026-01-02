@@ -69,6 +69,7 @@ model Exam {
   pdfData     Bytes?
   pdfMimeType String?
   pdfName     String?
+  pdfUrl      String?     // URL for R2/External storage
   assignments ExamAssignment[]
   results     Result[]
 }

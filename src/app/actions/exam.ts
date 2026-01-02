@@ -32,12 +32,39 @@ export async function createExamWithAssignments(
         let pdfData: Uint8Array | null = null
         let pdfName: string | null = null
         let pdfMimeType: string | null = null
+        let pdfUrl: string | null = null
 
         if (pdfFile && pdfFile.size > 0) {
             const bytes = await pdfFile.arrayBuffer()
-            pdfData = new Uint8Array(bytes)
+            const buffer = new Uint8Array(bytes)
+
             pdfName = pdfFile.name
             pdfMimeType = pdfFile.type
+
+            // Try R2 Upload
+            try {
+                // Import dynamically to avoid issues if dependency missing (though we installed it)
+                const { uploadToR2 } = await import("@/lib/storage")
+                const url = await uploadToR2(buffer, pdfName, pdfMimeType, "exams")
+
+                if (url) {
+                    pdfUrl = url
+                    // IF R2 upload is successful, DO NOT same binary data to DB to save space
+                    // pdfData = null 
+                    // BUT: User asked for "don't break things".
+                    // Safest approach: If we have URL, we don't need data. 
+                    // But if user didn't set up R2 yet, uploadToR2 returns null, so we fallback to DB.
+                    console.log("Uploaded to R2:", url)
+                } else {
+                    // Fallback to DB storage
+                    console.log("R2 upload skipped/failed, using DB storage")
+                    pdfData = buffer
+                }
+            } catch (err) {
+                console.error("R2 Upload Error:", err)
+                // Fallback to DB
+                pdfData = buffer
+            }
         }
 
         const validatedData = ExamSchema.parse(rawData)
@@ -53,6 +80,7 @@ export async function createExamWithAssignments(
                     pdfData: pdfData as any,
                     pdfName: pdfName,
                     pdfMimeType: pdfMimeType,
+                    pdfUrl: pdfUrl,
                 }
             })
 

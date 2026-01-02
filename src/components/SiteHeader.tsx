@@ -28,7 +28,14 @@ function MobileMenuOverlay({ isOpen, onClose, session }: { isOpen: boolean; onCl
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-[#0088cc] text-white flex flex-col md:hidden" style={{ minHeight: '100vh', height: '100%' }}>
             <div className="flex items-center justify-between p-4 border-b border-white/20">
-                <span className="font-extrabold text-2xl tracking-tight text-white">Ordu Sınav Merkezi</span>
+                <div className="flex items-center gap-2">
+                    <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="h-8 w-auto object-contain brightness-0 invert"
+                    />
+                    <span className="font-extrabold text-2xl tracking-tight text-white">Ordu Sınav Merkezi</span>
+                </div>
                 <Button
                     variant="ghost"
                     size="icon"
@@ -115,7 +122,12 @@ export function SiteHeader() {
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-16 items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 ml-4">
-                        <span className="font-extrabold text-2xl text-foreground tracking-tight">Ordu Sınav Merkezi</span>
+                        <img
+                            src="/logo.png"
+                            alt="Ordu Sınav Merkezi Logo"
+                            className="h-12 w-auto object-contain"
+                        />
+                        <span className="font-extrabold text-xl text-foreground tracking-tight hidden sm:inline-block">Ordu Sınav Merkezi</span>
                     </Link>
 
                     {/* Desktop Navigation */}
