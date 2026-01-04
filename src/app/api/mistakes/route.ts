@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: Request) {
     try {
         const session = await getServerSession(authOptions)
@@ -59,11 +61,33 @@ export async function POST(request: Request) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer())
+        let finalImageData: Buffer | null = buffer
+        let finalImageUrl: string | null = null
+
+        try {
+            // Import dynamically to ensure no bundling issues if unused elsewhere
+            const { uploadToR2 } = await import("@/lib/storage")
+
+            // Generate a unique filename: mistake-{timestamp}-{random}.{ext}
+            // or just use original name sanitized
+            const fileName = `mistake-${Date.now()}-${file.name}`
+            const url = await uploadToR2(buffer, fileName, file.type, "mistakes")
+
+            if (url) {
+                finalImageUrl = url
+                finalImageData = null // Don't save to DB if R2 success
+                console.log("Mistake uploaded to R2:", url)
+            }
+        } catch (e) {
+            console.error("R2 upload failed, falling back to DB:", e)
+            // finaImageData is already buffer, so it will save to DB
+        }
 
         const mistake = await prisma.mistake.create({
             data: {
                 studentId: studentId,
-                imageData: buffer,
+                imageData: finalImageData as any, // Cast to any to bypass strict type if needed, or Buffer
+                imageUrl: finalImageUrl,
                 imageMimeType: file.type,
                 description: description || null,
                 lesson: lesson
@@ -94,10 +118,13 @@ export async function GET(request: Request) {
                 orderBy: { createdAt: "desc" }
             })
 
-            // Convert buffer to base64 for frontend
+            // Return URL or fallback to base64
             const mistakesWithImages = mistakes.map(m => ({
                 ...m,
-                imageData: `data:${m.imageMimeType};base64,${Buffer.from(m.imageData).toString('base64')}`
+                imageData: m.imageUrl
+                    ? null // Don't send bytes if we have URL
+                    : (m.imageData ? `data:${m.imageMimeType};base64,${Buffer.from(m.imageData).toString('base64')}` : null),
+                imageUrl: m.imageUrl
             }))
 
             return NextResponse.json(mistakesWithImages)
@@ -112,7 +139,10 @@ export async function GET(request: Request) {
 
             const mistakesWithImages = mistakes.map(m => ({
                 ...m,
-                imageData: `data:${m.imageMimeType};base64,${Buffer.from(m.imageData).toString('base64')}`
+                imageData: m.imageUrl
+                    ? null
+                    : (m.imageData ? `data:${m.imageMimeType};base64,${Buffer.from(m.imageData).toString('base64')}` : null),
+                imageUrl: m.imageUrl
             }))
 
             return NextResponse.json(mistakesWithImages)

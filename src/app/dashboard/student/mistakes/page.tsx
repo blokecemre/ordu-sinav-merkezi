@@ -24,12 +24,14 @@ import {
 
 interface Mistake {
     id: string
-    imageData: string
+    imageData: string | null
+    imageUrl: string | null
     description: string | null
     lesson: string
     adminNote: string | null
     createdAt: string
 }
+
 
 const LESSONS = [
     "Matematik",
@@ -264,10 +266,13 @@ export default function MistakeNotebookPage() {
                                     <Card key={mistake.id} className="overflow-hidden group">
                                         <div className="aspect-[3/4] relative bg-gray-100">
                                             <img
-                                                src={mistake.imageData}
+                                                src={(mistake.imageUrl || mistake.imageData) as string}
                                                 alt="Mistake"
                                                 className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105 cursor-pointer"
-                                                onClick={() => window.open(mistake.imageData, '_blank')}
+                                                onClick={() => {
+                                                    const url = mistake.imageUrl || mistake.imageData
+                                                    if (url) window.open(url, '_blank')
+                                                }}
                                             />
                                         </div>
                                         <CardContent className="p-4">

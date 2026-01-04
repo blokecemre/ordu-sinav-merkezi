@@ -39,7 +39,8 @@ model User {
 model Mistake {
   id            String   @id @default(cuid())
   studentId     String
-  imageData     Bytes
+  imageData     Bytes?
+  imageUrl      String?
   imageMimeType String
   description   String?
   adminNote     String?

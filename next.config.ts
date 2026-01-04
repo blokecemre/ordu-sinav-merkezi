@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+      },
     ],
   },
   async headers() {
@@ -31,4 +35,4 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
-// Trigger deployment: 2025-11-30
+// Trigger deployment/restart: 2026-01-04 (R2 Migration Complete)
