@@ -52,14 +52,8 @@ export async function uploadToR2(
         await s3Client.send(command);
 
         // Return public URL if configured, otherwise construct it
-        if (R2_PUBLIC_URL) {
-            return `${R2_PUBLIC_URL}/${key}`;
-        }
-
-        // Construct default public URL (assuming bucket is public)
-        // Note: R2 dev domains are like pub-xxx.r2.dev, user must provide this usually
-        // Returning key effectively if no public URL is set, so implementation must handle
-        return key;
+        // Use local proxy to bypass R2 public access issues
+        return `/api/images?key=${key}`;
     } catch (error) {
         console.error("Error uploading to R2:", error);
         return null;
