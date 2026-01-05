@@ -61,23 +61,23 @@ export default function DashboardLayout({
     ]
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-muted/40 flex">
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-200 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out
         md:relative md:translate-x-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
-                <div className="h-16 flex items-center justify-between px-6 border-b">
-                    <Link href="/" className="text-xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                <div className="h-16 flex items-center justify-between px-6 border-b border-border">
+                    <Link href="/" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
                         Sınav Merkezi
                     </Link>
                     <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
@@ -95,9 +95,12 @@ export default function DashboardLayout({
                                 <Link key={item.href} href={item.href} onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={isActive ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${isActive ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                        className={`w-full justify-start transition-all duration-200 ${isActive
+                                            ? "bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            }`}
                                     >
-                                        <Icon className="mr-2 w-5 h-5" />
+                                        <Icon className={`mr-2 w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
                                         {item.label}
                                     </Button>
                                 </Link>
@@ -105,10 +108,17 @@ export default function DashboardLayout({
                         })}
                         {session?.user?.role === "ADMIN" && (
                             <>
+                                <div className="my-4 px-4">
+                                    <div className="h-px bg-border" />
+                                    <p className="text-xs font-semibold text-muted-foreground mt-4 mb-2">YÖNETİM</p>
+                                </div>
                                 <Link href="/dashboard/admin/settings" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/settings" ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${pathname === "/dashboard/admin/settings" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                        className={`w-full justify-start transition-all duration-200 ${pathname === "/dashboard/admin/settings"
+                                            ? "bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            }`}
                                     >
                                         <Settings className="mr-2 w-5 h-5" />
                                         Ayarlar
@@ -117,7 +127,10 @@ export default function DashboardLayout({
                                 <Link href="/dashboard/admin/packages" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/packages" ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${pathname === "/dashboard/admin/packages" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                        className={`w-full justify-start transition-all duration-200 ${pathname === "/dashboard/admin/packages"
+                                            ? "bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            }`}
                                     >
                                         <Package className="mr-2 w-5 h-5" />
                                         Paketler
@@ -126,7 +139,10 @@ export default function DashboardLayout({
                                 <Link href="/dashboard/admin/slider" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname === "/dashboard/admin/slider" ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${pathname === "/dashboard/admin/slider" ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                        className={`w-full justify-start transition-all duration-200 ${pathname === "/dashboard/admin/slider"
+                                            ? "bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            }`}
                                     >
                                         <ImageIcon className="mr-2 w-5 h-5" />
                                         Slider
@@ -136,7 +152,10 @@ export default function DashboardLayout({
                                 <Link href="/dashboard/admin/mistakes" onClick={() => setIsSidebarOpen(false)}>
                                     <Button
                                         variant={pathname.startsWith("/dashboard/admin/mistakes") ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${pathname.startsWith("/dashboard/admin/mistakes") ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                                        className={`w-full justify-start transition-all duration-200 ${pathname.startsWith("/dashboard/admin/mistakes")
+                                            ? "bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            }`}
                                     >
                                         <ImageIcon className="mr-2 w-5 h-5" />
                                         Yanlış Soru Defteri
@@ -146,14 +165,14 @@ export default function DashboardLayout({
                         )}
                     </nav>
 
-                    <div className="p-4 border-t bg-white">
+                    <div className="p-4 border-t border-border bg-card">
                         <div className="px-4 py-2 mb-2">
-                            <p className="text-sm font-medium text-gray-900">{session?.user?.name || "Kullanıcı"}</p>
-                            <p className="text-xs text-gray-500 capitalize">{session?.user?.role?.toLowerCase() || "Rol"}</p>
+                            <p className="text-sm font-medium text-foreground">{session?.user?.name || "Kullanıcı"}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{session?.user?.role?.toLowerCase() || "Rol"}</p>
                         </div>
                         <Button
                             variant="ghost"
-                            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50/10"
                             onClick={() => signOut({ callbackUrl: "/login" })}
                         >
                             <LogOut className="mr-2 w-5 h-5" />
@@ -165,7 +184,7 @@ export default function DashboardLayout({
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
-                <header className="h-16 bg-white border-b flex items-center justify-between px-4 md:px-6">
+                <header className="h-16 bg-background/80 backdrop-blur-md border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-all duration-200">
                     <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
                         <Menu className="w-5 h-5" />
                     </Button>
@@ -174,7 +193,7 @@ export default function DashboardLayout({
                     </div>
                 </header>
 
-                <main className="flex-1 p-4 pb-24 md:p-6 overflow-y-auto">
+                <main className="flex-1 p-4 pb-24 md:p-6 overflow-y-auto bg-muted/20">
                     {children}
                 </main>
             </div>
