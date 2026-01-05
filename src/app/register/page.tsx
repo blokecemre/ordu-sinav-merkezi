@@ -157,8 +157,8 @@ export default function RegisterPage() {
                                 <button
                                     onClick={() => setSelectedRole("STUDENT")}
                                     className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${selectedRole === "STUDENT"
-                                            ? "border-primary bg-primary/10 shadow-lg"
-                                            : "border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5"
+                                        ? "border-primary bg-primary/10 shadow-lg"
+                                        : "border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5"
                                         }`}
                                 >
                                     <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 transition-colors ${selectedRole === "STUDENT" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
@@ -177,8 +177,8 @@ export default function RegisterPage() {
                                 <button
                                     onClick={() => setSelectedRole("TEACHER")}
                                     className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${selectedRole === "TEACHER"
-                                            ? "border-primary bg-primary/10 shadow-lg"
-                                            : "border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5"
+                                        ? "border-primary bg-primary/10 shadow-lg"
+                                        : "border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5"
                                         }`}
                                 >
                                     <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 transition-colors ${selectedRole === "TEACHER" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
@@ -289,6 +289,11 @@ export default function RegisterPage() {
                                     <div className="space-y-2">
                                         <Label htmlFor="username">Kullanıcı Adı <span className="text-red-500">*</span></Label>
                                         <Input id="username" name="username" required disabled={loading} className="bg-background/50" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email">E-posta <span className="text-red-500">*</span></Label>
+                                        <Input id="email" name="email" type="email" required disabled={loading} className="bg-background/50" />
                                     </div>
 
                                     <div className="space-y-2">

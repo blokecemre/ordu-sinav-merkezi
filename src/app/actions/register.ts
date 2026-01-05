@@ -6,6 +6,7 @@ import { z } from "zod"
 
 const RegisterSchema = z.object({
     username: z.string().min(3, "Kullanıcı adı en az 3 karakter olmalıdır"),
+    email: z.string().email("Geçerli bir e-posta adresi giriniz"),
     password: z.string().min(6, "Şifre en az 6 karakter olmalıdır"),
     name: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
     surname: z.string().min(2, "Soyad en az 2 karakter olmalıdır"),
@@ -29,6 +30,7 @@ const RegisterSchema = z.object({
 export async function registerUser(formData: FormData) {
     const rawData = {
         username: formData.get("username"),
+        email: formData.get("email"),
         password: formData.get("password"),
         name: formData.get("name"),
         surname: formData.get("surname"),
@@ -59,12 +61,22 @@ export async function registerUser(formData: FormData) {
 
     try {
         // Check if username already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { username: validatedData.username }
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { username: validatedData.username },
+                    { email: validatedData.email }
+                ]
+            }
         })
 
         if (existingUser) {
-            return { message: "Bu kullanıcı adı zaten kullanılıyor.", success: false }
+            if (existingUser.username === validatedData.username) {
+                return { message: "Bu kullanıcı adı zaten kullanılıyor.", success: false }
+            }
+            if (existingUser.email === validatedData.email) {
+                return { message: "Bu e-posta adresi zaten kullanılıyor.", success: false }
+            }
         }
 
         // Hash password
@@ -74,6 +86,7 @@ export async function registerUser(formData: FormData) {
         await prisma.user.create({
             data: {
                 username: validatedData.username,
+                email: validatedData.email,
                 password: hashedPassword,
                 name: validatedData.name,
                 surname: validatedData.surname,
