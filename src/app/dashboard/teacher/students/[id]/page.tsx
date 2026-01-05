@@ -3,6 +3,9 @@ import { StudentDetailCharts } from "@/components/teacher/StudentDetailCharts"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 import { notFound } from "next/navigation"
+
+export const dynamic = "force-dynamic"
+
 import {
     Table,
     TableBody,
