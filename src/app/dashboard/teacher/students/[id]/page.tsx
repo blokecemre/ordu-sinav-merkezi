@@ -93,6 +93,13 @@ export default async function StudentDetailPage({ params }: PageProps) {
                             </p>
                         </div>
                     </div>
+               
+                    <Link href={`/dashboard/teacher/students/${id}/mistakes`}>
+                        <Button className="bg-orange-500 hover:bg-orange-600 text-white shadow-md transition-all hover:scale-105">
+                            <BookOpen className="w-4 h-4 mr-2" />
+                            Yanlış Soru Defteri
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
