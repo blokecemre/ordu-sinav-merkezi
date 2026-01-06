@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader"
 import { SiteFooter } from "@/components/SiteFooter"
 import { getSettings } from "@/app/actions/settings"
 
-import { CountdownHero } from "@/components/CountdownHero"
+import { HomepageSlider } from "@/components/HomepageSlider"
 import { Features } from "@/components/Features"
 import { WhyUs } from "@/components/WhyUs"
 
@@ -19,7 +19,7 @@ export default async function Home() {
       <SiteHeader />
 
       <main className="flex-1">
-        <CountdownHero />
+        <HomepageSlider />
 
         {/* Bölüm 2: Sistemimiz Nasıl İşliyor? - YENİ TASARIM */}
         <Features />
