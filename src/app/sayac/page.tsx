@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
+import { SiteHeader } from "@/components/SiteHeader"
+
 export default function ExamTimerPage() {
     const [endTime, setEndTime] = useState("")
     const [isRunning, setIsRunning] = useState(false)
@@ -14,13 +16,16 @@ export default function ExamTimerPage() {
     const [isMuted, setIsMuted] = useState(false)
     const [isFullscreen, setIsFullscreen] = useState(false)
     const [isFinished, setIsFinished] = useState(false)
+    const [hasPlayedWarning, setHasPlayedWarning] = useState(false) // New state for 10 min warning
 
     const containerRef = useRef<HTMLDivElement>(null)
     const audioRef = useRef<HTMLAudioElement | null>(null)
+    const warningAudioRef = useRef<HTMLAudioElement | null>(null) // Ref for warning sound
 
     // Initialize audio
     useEffect(() => {
         audioRef.current = new Audio("/sounds/alarm.mp3")
+        warningAudioRef.current = new Audio("/sounds/alarm.mp3") // Using alarm sound for warning too, or distinct if available
         // Note: You might need to add an actual sound file or use a base64 string for a simple beep
     }, [])
 
@@ -39,12 +44,30 @@ export default function ExamTimerPage() {
 
         setIsRunning(true)
         setIsFinished(false)
+        setHasPlayedWarning(false) // Reset warning flag
     }
 
     const stopTimer = () => {
         setIsRunning(false)
         setEndTime("")
         setTimeLeft(null)
+    }
+
+    const playSound = (type: 'alarm' | 'warning') => {
+        if (isMuted) return
+
+        // Simple base64 beep if file fails/missing
+        const beepBase64 = "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"
+
+        try {
+            if (type === 'alarm') {
+                audioRef.current?.play().catch(() => new Audio(beepBase64).play().catch(e => console.log(e)))
+            } else {
+                warningAudioRef.current?.play().catch(() => new Audio(beepBase64).play().catch(e => console.log(e)))
+            }
+        } catch (error) {
+            console.error("Audio playback error", error)
+        }
     }
 
     useEffect(() => {
@@ -67,16 +90,18 @@ export default function ExamTimerPage() {
 
                 const diff = target.getTime() - now.getTime()
 
+                // Warning Logic: 10 Minutes left (600,000 ms)
+                // We assume default tolerance, e.g., trigger between 9m:59s and 10m:00s
+                if (diff <= 600000 && diff > 0 && !hasPlayedWarning) {
+                    setHasPlayedWarning(true)
+                    playSound('warning')
+                }
+
                 if (diff <= 0) {
                     setIsRunning(false)
                     setIsFinished(true)
                     setTimeLeft("00:00:00")
-                    if (!isMuted) {
-                        // Play beep
-                        // simple beep fallback if file not found
-                        const beep = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU") // short fallback
-                        beep.play().catch(e => console.log("Audio play failed", e))
-                    }
+                    playSound('alarm')
                 } else {
                     const hours = Math.floor(diff / (1000 * 60 * 60))
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
@@ -92,12 +117,18 @@ export default function ExamTimerPage() {
         }
 
         return () => clearInterval(interval)
-    }, [isRunning, endTime, isMuted])
+    }, [isRunning, endTime, isMuted, hasPlayedWarning])
 
     return (
         <div ref={containerRef} className="min-h-screen bg-white flex flex-col relative transition-colors duration-300">
-            {/* Top Controls */}
-            <div className="absolute top-6 right-6 flex items-center gap-4 z-50">
+            {/* Header - Hidden in Fullscreen Mode */}
+            {!isFullscreen && <SiteHeader />}
+
+            {/* Top Controls - Absolute positioned relative to viewport in fullscreen, or container */}
+            <div className={cn(
+                "flex items-center gap-4 z-50",
+                isFullscreen ? "fixed top-6 right-6" : "absolute top-24 right-6 md:top-28"
+            )}>
                 <Button
                     variant="ghost"
                     size="icon"
@@ -117,8 +148,8 @@ export default function ExamTimerPage() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-4">
-                <div className="w-full max-w-md text-center space-y-12">
+            <div className="flex-1 flex items-center justify-center p-4 mt-8 md:mt-0">
+                <div className="w-full max-w-4xl text-center space-y-12">
 
                     {/* Title */}
                     {!isRunning && !isFinished && (
@@ -134,7 +165,7 @@ export default function ExamTimerPage() {
 
                     {/* Input Mode */}
                     {!isRunning && !isFinished && (
-                        <div className="space-y-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+                        <div className="space-y-8 animate-fade-in-up max-w-md mx-auto" style={{ animationDelay: "0.1s" }}>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                                     <Clock className="h-6 w-6 text-slate-400 group-focus-within:text-slate-600 transition-colors" />
@@ -164,7 +195,9 @@ export default function ExamTimerPage() {
                                 <h2 className="text-slate-400 text-xl font-medium mb-4 uppercase tracking-widest">Kalan Süre</h2>
                                 <div className={cn(
                                     "text-8xl md:text-[12rem] font-bold tracking-tighter tabular-nums transition-colors duration-300 leading-none",
-                                    isFinished ? "text-red-500 animate-pulse" : "text-slate-800"
+                                    isFinished ? "text-red-500 animate-pulse" : "text-slate-800",
+                                    // Add a subtle yellow pulse/color if warning zone? Optional. 
+                                    // Let's keep it simple as requested: just sound for now.
                                 )}>
                                     {timeLeft || "Hesaplanıyor..."}
                                 </div>
