@@ -163,7 +163,7 @@ export default function ExamTimerPage() {
                             <div>
                                 <h2 className="text-slate-400 text-xl font-medium mb-4 uppercase tracking-widest">Kalan Süre</h2>
                                 <div className={cn(
-                                    "text-7xl md:text-9xl font-bold tracking-tighter tabular-nums transition-colors duration-300",
+                                    "text-8xl md:text-[12rem] font-bold tracking-tighter tabular-nums transition-colors duration-300 leading-none",
                                     isFinished ? "text-red-500 animate-pulse" : "text-slate-800"
                                 )}>
                                     {timeLeft || "Hesaplanıyor..."}
@@ -183,8 +183,8 @@ export default function ExamTimerPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-8 text-center">
-                <p className="text-slate-300 font-medium text-lg">
+            <div className="p-8 text-center bg-white">
+                <p className="text-slate-400 font-bold text-xl tracking-wide uppercase">
                     Ordu Sınav Merkezi
                 </p>
             </div>
