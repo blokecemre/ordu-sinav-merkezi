@@ -367,11 +367,17 @@
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
   /* Hide UI elements */
-  aside, 
-  header, 
+  aside,
+  header,
   .print-hidden,
-  button {
+  button,
+  footer {
     display: none !important;
   }
 
@@ -379,55 +385,90 @@
   body {
     background: white !important;
     color: black !important;
+    font-size: 10pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Dashboard layout overrides */
   div[class*="flex-col"] {
     display: block !important;
   }
-  
+
   main {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    overflow: visible !important;
+    max-width: none !important;
   }
 
   /* Typography */
   h1 {
-    font-size: 24pt !important;
-    margin-bottom: 20px !important;
+    font-size: 18pt !important;
+    margin-bottom: 10px !important;
+    text-align: center !important;
     color: black !important;
   }
 
-  p {
-    color: #444 !important;
+  p.text-muted-foreground {
+    display: none !important;
   }
 
-  /* Grid Layout Fix */
+  /* Grid Layout - 4 Columns for Landscape */
   .grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Force 2 columns for paper */
-    gap: 1rem !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
   }
 
-  /* Card Styles */
-  .border-t-4 {
-    border-top-width: 4px !important;
-    border-color: #2563eb !important; /* blue-600 */
-  }
-
-  .bg-blue-50, .bg-gray-50, .bg-gray-100 {
-    background-color: #f3f4f6 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Break avoidance */
-  .card, div[class*="rounded"] {
+  /* Card Styles - Compact */
+  .card,
+  div[class*="rounded"] {
     break-inside: avoid;
     page-break-inside: avoid;
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+  }
+
+  .card-header {
+    padding: 0.5rem !important;
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .card-title {
+    font-size: 12pt !important;
+    font-weight: bold !important;
+  }
+
+  .card-content {
+    padding: 0 !important;
+  }
+
+  /* Content Compactness */
+  .p-4 {
+    padding: 0.5rem !important;
+  }
+
+  .gap-3 {
+    gap: 0.25rem !important;
+  }
+
+  /* Colors */
+  .bg-blue-50,
+  .bg-gray-50,
+  .bg-gray-100 {
+    background-color: #f8f9fa !important;
+  }
+
+  .text-blue-600 {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+
+  .border-t-4 {
+    border-top-width: 2px !important;
+    border-color: #000 !important;
   }
 }
