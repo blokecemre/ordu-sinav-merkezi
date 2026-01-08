@@ -4,6 +4,7 @@ import { Clock } from "lucide-react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
+import { PrintStudyPlanButton } from "@/components/PrintStudyPlanButton"
 
 const DAYS = [
     "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"
@@ -31,11 +32,14 @@ export default async function StudentStudyPlanPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Ders Çalışma Programı</h1>
-                <p className="text-muted-foreground">
-                    Haftalık ders çalışma programınızı buradan takip edebilirsiniz.
-                </p>
+            <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold tracking-tight">Ders Çalışma Programı</h1>
+                    <p className="text-muted-foreground">
+                        Haftalık ders çalışma programınızı buradan takip edebilirsiniz.
+                    </p>
+                </div>
+                <PrintStudyPlanButton />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -51,7 +55,7 @@ export default async function StudentStudyPlanPage() {
                                 </div>
                             ) : (
                                 <div className="divide-y divide-gray-100">
-                                    {plan[day]?.map((lesson, index) => (
+                                    {plan[day]?.map((lesson: any, index: number) => (
                                         <div key={index} className="border-b last:border-0 hover:bg-blue-50 transition-colors">
                                             <div className="p-4 flex items-center justify-between">
                                                 <div className="flex items-center gap-3">

@@ -365,3 +365,69 @@
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out forwards;
 }
+
+@media print {
+  /* Hide UI elements */
+  aside, 
+  header, 
+  .print-hidden,
+  button {
+    display: none !important;
+  }
+
+  /* Reset layout */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Dashboard layout overrides */
+  div[class*="flex-col"] {
+    display: block !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 24pt !important;
+    margin-bottom: 20px !important;
+    color: black !important;
+  }
+
+  p {
+    color: #444 !important;
+  }
+
+  /* Grid Layout Fix */
+  .grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Force 2 columns for paper */
+    gap: 1rem !important;
+  }
+
+  /* Card Styles */
+  .border-t-4 {
+    border-top-width: 4px !important;
+    border-color: #2563eb !important; /* blue-600 */
+  }
+
+  .bg-blue-50, .bg-gray-50, .bg-gray-100 {
+    background-color: #f3f4f6 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Break avoidance */
+  .card, div[class*="rounded"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
