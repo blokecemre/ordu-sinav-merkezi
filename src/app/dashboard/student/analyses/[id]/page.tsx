@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
+import { PrintButton } from "@/components/PrintButton"
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -27,11 +28,14 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
 
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="border-b pb-4">
-                <h1 className="text-3xl font-bold tracking-tight mb-2">{analysis.title}</h1>
-                <p className="text-muted-foreground">
-                    {format(new Date(analysis.createdAt), "d MMMM yyyy", { locale: tr })}
-                </p>
+            <div className="border-b pb-4 flex items-start justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight mb-2">{analysis.title}</h1>
+                    <p className="text-muted-foreground">
+                        {format(new Date(analysis.createdAt), "d MMMM yyyy", { locale: tr })}
+                    </p>
+                </div>
+                <PrintButton />
             </div>
 
             <article className="max-w-none">
