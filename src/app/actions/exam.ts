@@ -49,11 +49,8 @@ export async function createExamWithAssignments(
 
                 if (url) {
                     pdfUrl = url
-                    // IF R2 upload is successful, DO NOT same binary data to DB to save space
-                    // pdfData = null 
-                    // BUT: User asked for "don't break things".
-                    // Safest approach: If we have URL, we don't need data. 
-                    // But if user didn't set up R2 yet, uploadToR2 returns null, so we fallback to DB.
+                    // R2 upload successful, clear binary data to save DB space
+                    pdfData = null
                     console.log("Uploaded to R2:", url)
                 } else {
                     // Fallback to DB storage
