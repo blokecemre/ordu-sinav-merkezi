@@ -125,16 +125,21 @@ export async function getStats(studentId: string) {
 
         const dailyStats = Array.from(dailyStatsMap.values())
 
-        // Doughnut: Subject Distribution
-        const subjectStatsMap = new Map<string, number>()
+        // Stacked Bar: Subject Performance
+        const subjectStatsMap = new Map<string, { correct: number, wrong: number }>()
         logs.forEach(log => {
-            const current = subjectStatsMap.get(log.subject.name) || 0
-            subjectStatsMap.set(log.subject.name, current + log.correctCount + log.wrongCount)
+            const current = subjectStatsMap.get(log.subject.name) || { correct: 0, wrong: 0 }
+            subjectStatsMap.set(log.subject.name, {
+                correct: current.correct + log.correctCount,
+                wrong: current.wrong + log.wrongCount
+            })
         })
 
-        const subjectStats = Array.from(subjectStatsMap.entries()).map(([name, count]) => ({
+        const subjectStats = Array.from(subjectStatsMap.entries()).map(([name, counts]) => ({
             name,
-            value: count
+            correct: counts.correct,
+            wrong: counts.wrong,
+            total: counts.correct + counts.wrong
         }))
 
         // Line: Success Percentage Trend
