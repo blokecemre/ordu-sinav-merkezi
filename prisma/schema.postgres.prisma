@@ -35,6 +35,7 @@ model User {
   teachers        TeacherStudent[] @relation("StudentToTeacher")
   students        TeacherStudent[] @relation("TeacherToStudent")
   mistakes        Mistake[]
+  dailyLogs       DailyLog[]
 }
 
 model Mistake {
@@ -195,10 +196,33 @@ enum Role {
   ADMIN
 }
 
+
 model VerificationCode {
   id        String   @id @default(cuid())
   phone     String   @unique
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model Subject {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  dailyLogs DailyLog[]
+}
+
+model DailyLog {
+  id           String   @id @default(cuid())
+  studentId    String
+  subjectId    String
+  correctCount Int      @default(0)
+  wrongCount   Int      @default(0)
+  readingPage  Int      @default(0)
+  date         DateTime @default(now())
+  
+  student      User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([date])
 }
