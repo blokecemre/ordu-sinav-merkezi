@@ -152,3 +152,15 @@ export async function getStats(studentId: string) {
         return { success: false, message: "İstatistikler alınamadı." }
     }
 }
+
+export async function deleteActivity(logId: string) {
+    try {
+        await prisma.dailyLog.delete({
+            where: { id: logId }
+        })
+        revalidatePath("/dashboard/admin/users")
+        return { success: true, message: "Kayıt silindi." }
+    } catch (error) {
+        return { success: false, message: "Silme işlemi başarısız." }
+    }
+}
