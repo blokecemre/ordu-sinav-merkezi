@@ -178,9 +178,6 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
                         </CardHeader>
                         <CardContent className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">
-
-                                // ... inside the component
-                                // ...
                                 <BarChart data={subjectStats} layout="vertical" margin={{ left: 20, right: 30 }}>
                                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                                     <XAxis type="number" hide />

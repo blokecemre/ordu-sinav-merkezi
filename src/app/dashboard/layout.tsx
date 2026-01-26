@@ -39,6 +39,7 @@ export default function DashboardLayout({
         // Admin items
         ...(session?.user?.role === "ADMIN" ? [
             { href: "/dashboard/admin/users", label: "Kullanıcılar", icon: Users }, // Kept original Users item
+            { href: "/dashboard/admin/performance", label: "Performans & Disiplin", icon: BarChart2 }, // Added Performance
             { href: "/dashboard/admin/exams", label: "Sınavlar", icon: FileText },
             { href: "/dashboard/admin/analyses", label: "Analiz", icon: TrendingUp }, // Added Analiz for Admin
             { href: "/dashboard/admin/assignments", label: "Atamalar", icon: Users }, // Added Atamalar for Admin
@@ -49,6 +50,7 @@ export default function DashboardLayout({
         // Teacher items
         ...(session?.user?.role === "TEACHER" ? [
             { href: "/dashboard/teacher/students", label: "Öğrencilerim", icon: Users },
+            { href: "/dashboard/teacher/performance", label: "Performans & Disiplin", icon: BarChart2 }, // Added Performance
             { href: "/dashboard/teacher/analysis", label: "Analiz", icon: BookOpen },
         ] : []),
         // Student items
