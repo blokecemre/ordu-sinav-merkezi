@@ -21,6 +21,8 @@ export default async function PerformancePage() {
         return <div>Veriler yüklenemedi.</div>
     }
 
+    const daysAgo = stats.daysSinceLastActivity ?? 999
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -71,10 +73,10 @@ export default async function PerformancePage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {stats.daysSinceLastActivity === 0 ? "Bugün" :
-                                stats.daysSinceLastActivity === 1 ? "Dün" :
-                                    stats.daysSinceLastActivity > 30 ? "Uzun Süredir Yok" :
-                                        `${stats.daysSinceLastActivity} Gün Önce`}
+                            {daysAgo === 0 ? "Bugün" :
+                                daysAgo === 1 ? "Dün" :
+                                    daysAgo > 30 ? "Uzun Süredir Yok" :
+                                        `${daysAgo} Gün Önce`}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             {stats.disciplineWarning ? "Disiplini geri kazanmalısın!" : "Harika gidiyorsun!"}
