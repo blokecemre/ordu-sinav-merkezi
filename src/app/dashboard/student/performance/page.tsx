@@ -104,9 +104,9 @@ export default async function PerformancePage() {
 
             <PerformanceClientPage
                 subjects={subjects || []}
-                dailyStats={stats.dailyStats}
-                subjectStats={stats.subjectStats}
-                successTrend={stats.successTrend}
+                dailyStats={stats.dailyStats || []}
+                subjectStats={stats.subjectStats || []}
+                successTrend={stats.successTrend || []}
                 studentId={session.user.id}
             />
         </div>
