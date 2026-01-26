@@ -37,6 +37,27 @@ interface Props {
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c']
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-white p-3 border border-slate-200 shadow-lg rounded-lg z-50">
+                <p className="font-bold text-slate-800 mb-2">{label}</p>
+                {payload.map((entry: any, index: number) => (
+                    <div key={index} className="flex items-center gap-2 text-sm">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.fill }} />
+                        <span className="text-slate-600">{entry.name}:</span>
+                        <span className="font-bold">{entry.value}</span>
+                    </div>
+                ))}
+                <div className="border-t border-slate-100 mt-2 pt-2 text-xs text-slate-500 font-medium">
+                    Toplam: {payload.reduce((acc: number, curr: any) => acc + curr.value, 0)} Soru
+                </div>
+            </div>
+        )
+    }
+    return null
+}
+
 export function PerformanceClientPage({ subjects, dailyStats, subjectStats, successTrend, studentId, readOnly = false }: Props) {
     const [loading, setLoading] = useState(false)
     const [subjectId, setSubjectId] = useState("")
@@ -157,13 +178,43 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
                         </CardHeader>
                         <CardContent className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={subjectStats} layout="vertical" margin={{ left: 20 }}>
+                                const CustomTooltip = ({active, payload, label}: any) => {
+    if (active && payload && payload.length) {
+        return (
+                                <div className="bg-white p-3 border border-slate-200 shadow-lg rounded-lg">
+                                    <p className="font-bold text-slate-800 mb-2">{label}</p>
+                                    {payload.map((entry: any, index: number) => (
+                                        <div key={index} className="flex items-center gap-2 text-sm">
+                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                            <span className="text-slate-600">{entry.name}:</span>
+                                            <span className="font-bold">{entry.value}</span>
+                                        </div>
+                                    ))}
+                                    <div className="border-t border-slate-100 mt-2 pt-2 text-xs text-slate-500 font-medium">
+                                        Toplam: {payload.reduce((acc: any, curr: any) => acc + curr.value, 0)} Soru
+                                    </div>
+                                </div>
+                                )
+    }
+                                return null
+}
+
+                                // ... inside the component
+                                // ...
+                                <BarChart data={subjectStats} layout="vertical" margin={{ left: 20, right: 30 }}>
                                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                    <XAxis type="number" />
-                                    <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
-                                    <Tooltip cursor={{ fill: 'transparent' }} />
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12, fontWeight: 500 }} />
+                                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                                     <Legend />
-                                    <Bar dataKey="correct" name="Doğru" stackId="a" fill="#16a34a" radius={[0, 4, 4, 0]} />
+                                    <Bar dataKey="correct" name="Doğru" stackId="a" fill="#16a34a" radius={[0, 0, 0, 0]}>
+                                        {/* Try to show total count on the right? Difficult in stacked. 
+                                         Let's just rely on tooltips for exact numbers to keep it clean, 
+                                         but format the axis to show range? 
+                                         User said "soru sayısı gözükmüyor". 
+                                         Let's add a label to the end of the bar?
+                                     */}
+                                    </Bar>
                                     <Bar dataKey="wrong" name="Yanlış" stackId="a" fill="#dc2626" radius={[0, 4, 4, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
