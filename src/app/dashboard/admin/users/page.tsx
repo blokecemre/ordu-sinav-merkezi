@@ -18,6 +18,9 @@ import { tr } from "date-fns/locale"
 
 import { UserFilters } from "@/components/admin/UserFilters"
 import { Prisma } from "@prisma/client"
+import Link from "next/link"
+import { TrendingUp } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default async function UsersPage(props: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -114,6 +117,13 @@ export default async function UsersPage(props: {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
+                                            {user.role === "STUDENT" && (
+                                                <Link href={`/dashboard/admin/users/${user.id}`}>
+                                                    <Button variant="ghost" size="icon" title="Detaylı Görünüm">
+                                                        <TrendingUp className="w-4 h-4 text-indigo-600" />
+                                                    </Button>
+                                                </Link>
+                                            )}
                                             <UserDetailDialog user={user} />
                                             <EditUserDialog user={user} />
                                             <DeleteUserButton userId={user.id} username={user.username} />
