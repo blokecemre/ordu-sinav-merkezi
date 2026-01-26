@@ -170,9 +170,10 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
                         </CardContent>
                     </Card>
                 </div>
+            )}
 
-            {/* Right Column: Charts (8 cols) */}
-            <div className="md:col-span-8 space-y-6">
+            {/* Right Column: Charts */}
+            <div className={`${readOnly ? "md:col-span-12" : "md:col-span-8"} space-y-6`}>
                 {/* Daily Correct/Wrong Bar Chart */}
                 <Card>
                     <CardHeader>
