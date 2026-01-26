@@ -96,6 +96,7 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
     return (
         <div className="grid gap-6 md:grid-cols-12">
             {/* Left Column: Input Form (4 cols) - Hide if readOnly */}
+            {/* Left Column: Input Form (4 cols) - Hide if readOnly */}
             {!readOnly && (
                 <div className="md:col-span-4 space-y-6">
                     <Card className="border-l-4 border-l-blue-500 shadow-md">
@@ -170,38 +171,31 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
                             </Button>
                         </CardContent>
                     </Card>
-
-                    {/* Subject Performance Stacked Bar Chart */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm">Ders Bazlı Performans (Son 30 Gün)</CardTitle>
-                        </CardHeader>
-                        <CardContent className="h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={subjectStats} layout="vertical" margin={{ left: 20, right: 30 }}>
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12, fontWeight: 500 }} />
-                                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                                    <Legend />
-                                    <Bar dataKey="correct" name="Doğru" stackId="a" fill="#16a34a" radius={[0, 0, 0, 0]}>
-                                        {/* Try to show total count on the right? Difficult in stacked. 
-                                         Let's just rely on tooltips for exact numbers to keep it clean, 
-                                         but format the axis to show range? 
-                                         User said "soru sayısı gözükmüyor". 
-                                         Let's add a label to the end of the bar?
-                                     */}
-                                    </Bar>
-                                    <Bar dataKey="wrong" name="Yanlış" stackId="a" fill="#dc2626" radius={[0, 4, 4, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
                 </div>
             )}
 
             {/* Right Column: Charts */}
             <div className={`${readOnly ? "md:col-span-12" : "md:col-span-8"} space-y-6`}>
+                {/* Subject Performance Stacked Bar Chart - MOVED HERE */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm">Ders Bazlı Performans (Son 30 Gün)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={subjectStats} layout="vertical" margin={{ left: 20, right: 30 }}>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                <XAxis type="number" hide />
+                                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12, fontWeight: 500 }} />
+                                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                                <Legend />
+                                <Bar dataKey="correct" name="Doğru" stackId="a" fill="#16a34a" radius={[0, 0, 0, 0]} />
+                                <Bar dataKey="wrong" name="Yanlış" stackId="a" fill="#dc2626" radius={[0, 4, 4, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
                 {/* Daily Correct/Wrong Bar Chart */}
                 <Card>
                     <CardHeader>
