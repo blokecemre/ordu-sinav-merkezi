@@ -178,26 +178,6 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
                         </CardHeader>
                         <CardContent className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                const CustomTooltip = ({active, payload, label}: any) => {
-    if (active && payload && payload.length) {
-        return (
-                                <div className="bg-white p-3 border border-slate-200 shadow-lg rounded-lg">
-                                    <p className="font-bold text-slate-800 mb-2">{label}</p>
-                                    {payload.map((entry: any, index: number) => (
-                                        <div key={index} className="flex items-center gap-2 text-sm">
-                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.fill }} />
-                                            <span className="text-slate-600">{entry.name}:</span>
-                                            <span className="font-bold">{entry.value}</span>
-                                        </div>
-                                    ))}
-                                    <div className="border-t border-slate-100 mt-2 pt-2 text-xs text-slate-500 font-medium">
-                                        Toplam: {payload.reduce((acc: any, curr: any) => acc + curr.value, 0)} Soru
-                                    </div>
-                                </div>
-                                )
-    }
-                                return null
-}
 
                                 // ... inside the component
                                 // ...
