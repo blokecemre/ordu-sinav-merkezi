@@ -52,6 +52,7 @@ export default function DashboardLayout({
             { href: "/dashboard/teacher/students", label: "Öğrencilerim", icon: Users },
             { href: "/dashboard/teacher/performance", label: "Performans & Disiplin", icon: BarChart2 }, // Added Performance
             { href: "/dashboard/teacher/analysis", label: "Analiz", icon: BookOpen },
+            { href: "/dashboard/teacher/study-plan", label: "Ders Programı", icon: Calendar },
         ] : []),
         // Student items
         ...(session?.user?.role === "STUDENT" ? [
