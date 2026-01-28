@@ -3,9 +3,7 @@ import { StudentDetailCharts } from "@/components/teacher/StudentDetailCharts"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 import { notFound } from "next/navigation"
-import { getStats, getSubjects } from "@/app/actions/performance"
-import { PerformanceClientPage } from "@/components/student/PerformanceClientPage"
-import { GraduationCap, AlertTriangle, TrendingUp, BookOpen, Clock } from "lucide-react"
+import { BookOpen } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -48,11 +46,6 @@ export default async function StudentDetailPage({ params }: PageProps) {
         where: { studentId: id },
         orderBy: { createdAt: "desc" }
     })
-
-    // Fetch Performance Data
-    const { subjects } = await getSubjects()
-    const stats = await getStats(id)
-
 
     const chartData = results.map(result => ({
         examName: result.exam.name,
@@ -111,87 +104,7 @@ export default async function StudentDetailPage({ params }: PageProps) {
                 </div>
             </div>
 
-            {/* Performance & Discipline Section Integration */}
-            {stats.success && (
-                <div className="space-y-6 bg-slate-50/50 p-6 rounded-2xl border border-slate-200/50">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-indigo-600" />
-                            Performans ve Disiplin Takibi
-                        </h2>
-                        {stats.disciplineWarning && (
-                            <div className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-md border border-red-200 animate-pulse">
-                                <AlertTriangle className="h-5 w-5" />
-                                <span className="font-semibold text-sm">Dikkat: Süreklilik Sorunu</span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Toplam Çalışma</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {stats.dailyStats?.reduce((acc: number, curr: any) => acc + curr.correct + curr.wrong, 0) || 0} Soru
-                                </div>
-                                <p className="text-xs text-muted-foreground">Son 7 gün</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Toplam Okuma</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {stats.totalReading || 0} Sayfa
-                                </div>
-                                <p className="text-xs text-muted-foreground">Son 7 gün</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Son Aktivite</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {(() => {
-                                        const d = stats.daysSinceLastActivity ?? 999;
-                                        return d === 0 ? "Bugün" : d === 1 ? "Dün" : d > 30 ? "Uzun Süre" : `${d} Gün`
-                                    })()}
-                                </div>
-                                <p className="text-xs text-muted-foreground">Önce</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Başarı %</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {(() => {
-                                        const totalCorrect = stats.dailyStats?.reduce((acc: number, curr: any) => acc + curr.correct, 0) || 0
-                                        const totalQuestions = stats.dailyStats?.reduce((acc: number, curr: any) => acc + curr.correct + curr.wrong, 0) || 0
-                                        return totalQuestions > 0 ? `%${Math.round((totalCorrect / totalQuestions) * 100)}` : "-"
-                                    })()}
-                                </div>
-                                <p className="text-xs text-muted-foreground">Genel Ort.</p>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <PerformanceClientPage
-                        subjects={subjects || []}
-                        dailyStats={stats.dailyStats || []}
-                        subjectStats={stats.subjectStats || []}
-                        successTrend={stats.successTrend || []}
-                        studentId={id}
-                        readOnly={true}
-                    />
-                </div>
-            )}
-
+            {/* Performance & Discipline Section Removed as per request */}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
