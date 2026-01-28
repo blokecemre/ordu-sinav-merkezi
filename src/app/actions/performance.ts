@@ -177,3 +177,25 @@ export async function deleteActivity(logId: string) {
         return { success: false, message: "Silme işlemi başarısız." }
     }
 }
+
+export async function updateActivity(data: {
+    id: string
+    correctCount: number
+    wrongCount: number
+    readingPage: number
+}) {
+    try {
+        await prisma.dailyLog.update({
+            where: { id: data.id },
+            data: {
+                correctCount: data.correctCount,
+                wrongCount: data.wrongCount,
+                readingPage: data.readingPage
+            }
+        })
+        revalidatePath("/dashboard/admin/users")
+        return { success: true, message: "Kayıt güncellendi." }
+    } catch (error) {
+        return { success: false, message: "Güncelleme başarısız." }
+    }
+}

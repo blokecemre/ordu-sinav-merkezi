@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { format } from "date-fns"
 import { tr } from "date-fns/locale"
@@ -12,10 +10,21 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Trash2, Loader2, Download } from "lucide-react"
-import { deleteActivity } from "@/app/actions/performance"
+import { Trash2, Loader2, Download, Pencil, Save } from "lucide-react"
+import { deleteActivity, updateActivity } from "@/app/actions/performance"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface Props {
     logs: any[]
@@ -23,6 +32,9 @@ interface Props {
 
 export function AdminPerformanceTable({ logs }: Props) {
     const [loading, setLoading] = useState<string | null>(null)
+    const [editingLog, setEditingLog] = useState<any | null>(null)
+    const [editValues, setEditValues] = useState({ correct: 0, wrong: 0, reading: 0 })
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     const handleDelete = async (id: string) => {
         if (!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return
@@ -33,7 +45,37 @@ export function AdminPerformanceTable({ logs }: Props) {
 
         if (result.success) {
             toast.success("Kayıt silindi.")
-            // Ideally we should refresh the page here
+            window.location.reload()
+        } else {
+            toast.error(result.message)
+        }
+    }
+
+    const handleEditClick = (log: any) => {
+        setEditingLog(log)
+        setEditValues({
+            correct: log.correctCount,
+            wrong: log.wrongCount,
+            reading: log.readingPage
+        })
+        setIsDialogOpen(true)
+    }
+
+    const handleUpdate = async () => {
+        if (!editingLog) return
+
+        setLoading("update")
+        const result = await updateActivity({
+            id: editingLog.id,
+            correctCount: editValues.correct,
+            wrongCount: editValues.wrong,
+            readingPage: editValues.reading
+        })
+        setLoading(null)
+
+        if (result.success) {
+            toast.success("Kayıt güncellendi.")
+            setIsDialogOpen(false)
             window.location.reload()
         } else {
             toast.error(result.message)
@@ -94,15 +136,25 @@ export function AdminPerformanceTable({ logs }: Props) {
                                     <TableCell className="text-center text-red-600 font-bold">{log.wrongCount}</TableCell>
                                     <TableCell className="text-center text-blue-600 font-bold">{log.readingPage}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                            onClick={() => handleDelete(log.id)}
-                                            disabled={loading === log.id}
-                                        >
-                                            {loading === log.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                                        </Button>
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                                                onClick={() => handleEditClick(log)}
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                onClick={() => handleDelete(log.id)}
+                                                disabled={loading === log.id}
+                                            >
+                                                {loading === log.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -110,6 +162,64 @@ export function AdminPerformanceTable({ logs }: Props) {
                     </TableBody>
                 </Table>
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Kayıt Düzenle</DialogTitle>
+                        <DialogDescription>
+                            {editingLog && `${format(new Date(editingLog.date), "d MMM HH:mm", { locale: tr })} - ${editingLog.subject.name}`}
+                        </DialogDescription>
+                    </DialogHeader>
+                    {editingLog && (
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="correct" className="text-right text-green-600 font-bold">
+                                    Doğru
+                                </Label>
+                                <Input
+                                    id="correct"
+                                    type="number"
+                                    value={editValues.correct}
+                                    onChange={(e) => setEditValues({ ...editValues, correct: parseInt(e.target.value) || 0 })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="wrong" className="text-right text-red-600 font-bold">
+                                    Yanlış
+                                </Label>
+                                <Input
+                                    id="wrong"
+                                    type="number"
+                                    value={editValues.wrong}
+                                    onChange={(e) => setEditValues({ ...editValues, wrong: parseInt(e.target.value) || 0 })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="reading" className="text-right text-blue-600 font-bold">
+                                    Okuma
+                                </Label>
+                                <Input
+                                    id="reading"
+                                    type="number"
+                                    value={editValues.reading}
+                                    onChange={(e) => setEditValues({ ...editValues, reading: parseInt(e.target.value) || 0 })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>İptal</Button>
+                        <Button onClick={handleUpdate} disabled={loading === "update"}>
+                            {loading === "update" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Güncelle
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
