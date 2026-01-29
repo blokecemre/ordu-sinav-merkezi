@@ -21,6 +21,7 @@ model User {
   name      String
   surname   String
   role      Role     @default(STUDENT)
+  classLevel String?  // e.g. "8. Sınıf", "7-A"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

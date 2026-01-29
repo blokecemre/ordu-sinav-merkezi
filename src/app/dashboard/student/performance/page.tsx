@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
 import { getStats, getSubjects } from "@/app/actions/performance"
 import { PerformanceClientPage } from "@/components/student/PerformanceClientPage"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -14,7 +15,32 @@ export default async function PerformancePage() {
         redirect("/")
     }
 
-    const { subjects } = await getSubjects()
+    // Fetch user details to get class
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { classLevel: true }
+    })
+
+    const userClass = user?.classLevel || ""
+    const grade = parseInt(userClass.replace(/[^0-9]/g, "")) || 8 // Default to 8 if parse fails
+
+    const { subjects: allSubjects } = await getSubjects()
+
+    // Filter subjects based on grade
+    let subjects = allSubjects || []
+
+    if (grade >= 5 && grade <= 7) {
+        // 5, 6, 7. Grades: Core + Sosyal Bilgiler + Kitap Okuma - İnkılap No
+        const allowed = ["Matematik", "Türkçe", "Fen Bilimleri", "Din Kültürü ve Ahlak Bilgisi", "Sosyal Bilgiler", "İngilizce", "Kitap Okuma"]
+        subjects = subjects.filter(s => allowed.includes(s.name))
+    } else if (grade === 8) {
+        // 8. Grade: Core + İnkılap + Kitap Okuma - Sosyal No
+        const allowed = ["Matematik", "Türkçe", "Fen Bilimleri", "Din Kültürü ve Ahlak Bilgisi", "İnkılap Tarihi ve Atatürkçülük", "İngilizce", "Kitap Okuma"]
+        subjects = subjects.filter(s => allowed.includes(s.name))
+    }
+    // For other grades (or if undefined), show all or default set?
+    // Let's keep it safe and show core + reading if completely unknown, but 8th grade default handles most.
+
     const stats = await getStats(session.user.id)
 
     if (!stats.success) {

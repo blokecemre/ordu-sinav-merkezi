@@ -71,10 +71,35 @@ export function PerformanceClientPage({ subjects, dailyStats, subjectStats, succ
             return
         }
 
+        let finalSubjectId = subjectId
+
+        // If reading pages are entered, ensure we associate it with "Kitap Okuma" subject
+        // unless a specific subject was already selected (though reading is usually standalone)
+        if (readingPage > 0) {
+            const readingSubject = subjects.find(s => s.name === "Kitap Okuma")
+            if (readingSubject) {
+                // If the user didn't select a subject, OR they selected a different subject but are ONLY entering reading data (no questions),
+                // we might want to force Kitap Okuma.
+                // However, user might want to log "Reading for History".
+                // The user request says: "Herhangi bir öğrenci kitap okuma sayfası girdiğinde biyoloji dersi olarak gözüküyor".
+                // This implies they probably aren't selecting a subject effectively or the default is wrong.
+                // If correct/wrong are 0, we can safely assume this is a pure reading entry.
+                if (correctCount === 0 && wrongCount === 0) {
+                    finalSubjectId = readingSubject.id
+                }
+            }
+        }
+
+        // If still no subject ID (and not reading w/ auto-select), default to first or error?
+        // Original code defaulted to subjects[0]?.id. We should be careful.
+        if (!finalSubjectId && subjects.length > 0) {
+            finalSubjectId = subjects[0].id
+        }
+
         setLoading(true)
         const result = await logActivity({
             studentId,
-            subjectId: subjectId || subjects[0]?.id, // Default to first if reading only
+            subjectId: finalSubjectId,
             correctCount,
             wrongCount,
             readingPage

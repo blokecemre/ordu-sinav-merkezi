@@ -11,19 +11,26 @@ export async function getSubjects() {
             orderBy: { name: 'asc' }
         })
 
-        // Check for Fen Bilimleri specifically and add if missing (per user request)
-        const fenBilimleri = subjects.find(s => s.name === "Fen Bilimleri")
-        if (!fenBilimleri) {
-            await prisma.subject.create({ data: { name: "Fen Bilimleri" } })
-            // Refresh list
-            subjects = await prisma.subject.findMany({ orderBy: { name: 'asc' } })
-        }
+        // Check for required subjects and add if missing
+        const requiredSubjects = [
+            "Fen Bilimleri",
+            "Kitap Okuma",
+            "Sosyal Bilgiler",
+            "İnkılap Tarihi ve Atatürkçülük",
+            "Matematik",
+            "Türkçe",
+            "Din Kültürü ve Ahlak Bilgisi",
+            "İngilizce"
+        ]
 
-        if (subjects.length === 0) {
-            const defaultSubjects = ["Matematik", "Türkçe", "Fizik", "Kimya", "Biyoloji", "Tarih", "Coğrafya", "Felsefe", "Din Kültürü", "İngilizce", "Geometri", "Fen Bilimleri"]
+        const existingNames = subjects.map(s => s.name)
+        const missingSubjects = requiredSubjects.filter(name => !existingNames.includes(name))
+
+        if (missingSubjects.length > 0) {
             await prisma.subject.createMany({
-                data: defaultSubjects.map(name => ({ name }))
+                data: missingSubjects.map(name => ({ name }))
             })
+            // Refresh list
             subjects = await prisma.subject.findMany({ orderBy: { name: 'asc' } })
         }
 

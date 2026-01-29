@@ -11,6 +11,7 @@ const UserSchema = z.object({
     name: z.string().min(2, "İsim en az 2 karakter olmalıdır"),
     surname: z.string().min(2, "Soyisim en az 2 karakter olmalıdır"),
     role: z.enum(["STUDENT", "TEACHER", "ADMIN"]),
+    classLevel: z.string().optional(),
 })
 
 export async function createUser(prevState: any, formData: FormData) {
@@ -21,6 +22,7 @@ export async function createUser(prevState: any, formData: FormData) {
             name: formData.get("name"),
             surname: formData.get("surname"),
             role: formData.get("role"),
+            classLevel: formData.get("classLevel"),
         }
 
         const validatedData = UserSchema.parse(rawData)
@@ -86,6 +88,7 @@ const UpdateUserSchema = z.object({
     name: z.string().min(2, "İsim en az 2 karakter olmalıdır"),
     surname: z.string().min(2, "Soyisim en az 2 karakter olmalıdır"),
     role: z.enum(["STUDENT", "TEACHER", "ADMIN"]),
+    classLevel: z.string().optional(),
     password: z.string().optional(),
 })
 
@@ -97,6 +100,7 @@ export async function updateUser(prevState: any, formData: FormData) {
             name: formData.get("name"),
             surname: formData.get("surname"),
             role: formData.get("role"),
+            classLevel: formData.get("classLevel"),
             password: formData.get("password") || undefined,
         }
 
@@ -107,6 +111,7 @@ export async function updateUser(prevState: any, formData: FormData) {
             name: validatedData.name,
             surname: validatedData.surname,
             role: validatedData.role,
+            classLevel: validatedData.classLevel,
         }
 
         if (validatedData.password && validatedData.password.length >= 6) {
