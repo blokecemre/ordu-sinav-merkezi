@@ -2,14 +2,14 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, CheckCircle2, BarChart2, Calendar, Target } from "lucide-react"
-import SiteHeader from "@/components/SiteHeader"
+import { SiteHeader } from "@/components/SiteHeader"
 import { SiteFooter } from "@/components/SiteFooter"
 
 export default function HakkimizdaPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            
+
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="relative py-20 md:py-32 overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
@@ -21,11 +21,11 @@ export default function HakkimizdaPage() {
                             Eğitimde Yeni Bir Dönem
                         </h1>
                         <p className="mx-auto max-w-[700px] text-muted-foreground text-lg md:text-xl mb-8 leading-relaxed">
-                            Öğrencilerimizin başarısını şansa bırakmıyoruz. Veri odaklı analizler ve kişiselleştirilmiş 
+                            Öğrencilerimizin başarısını şansa bırakmıyoruz. Veri odaklı analizler ve kişiselleştirilmiş
                             çalışma planlarıyla geleceği birlikte inşa ediyoruz.
                         </p>
                     </div>
-                    
+
                     {/* Abstract Background Shapes */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
                 </section>
@@ -53,8 +53,8 @@ export default function HakkimizdaPage() {
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-bold">Gelişimi Adım Adım İzleyin</h2>
                                 <p className="text-muted-foreground text-lg leading-relaxed">
-                                    Önceki denemelerle kıyaslamalı analizler sayesinde öğrencimin gelişimini 
-                                    sayısal verilerle takip ediyoruz. Sadece net sayılarına değil, soru türü 
+                                    Önceki denemelerle kıyaslamalı analizler sayesinde öğrencimin gelişimini
+                                    sayısal verilerle takip ediyoruz. Sadece net sayılarına değil, soru türü
                                     dağılımına (Yeni Nesil, Bilgi, Dikkat vb.) odaklanarak nokta atışı tespitler yapıyoruz.
                                 </p>
                                 <ul className="space-y-3">
@@ -81,8 +81,8 @@ export default function HakkimizdaPage() {
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-bold">Nokta Atışı Eksik Tespiti</h2>
                                 <p className="text-muted-foreground text-lg leading-relaxed">
-                                    Hangi konuda eksiğimiz var? "Paragrafta Anlam" mı, "Sözel Mantık" mı? 
-                                    Tüm denemelerin kümülatif analizi ile konu bazlı başarı oranlarını çıkarıyor, 
+                                    Hangi konuda eksiğimiz var? "Paragrafta Anlam" mı, "Sözel Mantık" mı?
+                                    Tüm denemelerin kümülatif analizi ile konu bazlı başarı oranlarını çıkarıyor,
                                     çalışma programını bu verilere göre şekillendiriyoruz.
                                 </p>
                                 <ul className="space-y-3">
@@ -133,8 +133,8 @@ export default function HakkimizdaPage() {
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-bold">Verilerle Konuşan Başarı</h2>
                                 <p className="text-muted-foreground text-lg leading-relaxed">
-                                    Karmaşık sayıları anlaşılır grafiklere döküyoruz. Velilerimiz ve öğrencilerimiz, 
-                                    ders bazlı başarı oranlarını, doğru/yanlış dağılımlarını ve haftalık değişimleri 
+                                    Karmaşık sayıları anlaşılır grafiklere döküyoruz. Velilerimiz ve öğrencilerimiz,
+                                    ders bazlı başarı oranlarını, doğru/yanlış dağılımlarını ve haftalık değişimleri
                                     tek bir bakışta görebiliyor.
                                 </p>
                                 <Button size="lg" className="mt-4" asChild>
@@ -158,8 +158,8 @@ export default function HakkimizdaPage() {
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-bold">Dinamik Ders Programı</h2>
                                 <p className="text-muted-foreground text-lg leading-relaxed">
-                                    Analiz sonuçlarına göre şekillenen, dinamik bir ders çalışma programı. 
-                                    Hangi gün, hangi derse, hangi kazanıma çalışılacağı sistem tarafından belirleniyor 
+                                    Analiz sonuçlarına göre şekillenen, dinamik bir ders çalışma programı.
+                                    Hangi gün, hangi derse, hangi kazanıma çalışılacağı sistem tarafından belirleniyor
                                     ve öğrencinin gelişimine göre sürekli güncelleniyor.
                                 </p>
                                 <ul className="space-y-3">
