@@ -109,14 +109,22 @@ export default async function PackagesPage() {
                                                         })}
                                                     </div>
 
-                                                    {/* CTA */}
-                                                    <div className="mt-8 flex justify-center md:justify-end pt-6 border-t border-border/50">
+                                                    {/* CTA / Price */}
+                                                    <div className="mt-8 flex flex-col md:flex-row items-center justify-between pt-6 border-t border-border/50 gap-4">
+                                                        {pkg.price ? (
+                                                            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
+                                                                {pkg.price}
+                                                            </div>
+                                                        ) : (
+                                                            <div /> /* Spacer */
+                                                        )}
+
                                                         <Link href="/register">
                                                             <Button
                                                                 className={`h-11 px-8 text-sm font-bold rounded-lg bg-gradient-to-r ${style.gradient} text-white hover:opacity-90 transition-all hover:scale-105 shadow-md`}
                                                             >
                                                                 <ShoppingCart className="w-4 h-4 mr-2" />
-                                                                Ön Kayıt
+                                                                {pkg.price ? "Satın Al" : "Ön Kayıt"}
                                                             </Button>
                                                         </Link>
                                                     </div>

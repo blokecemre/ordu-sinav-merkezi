@@ -17,6 +17,7 @@ interface PackageFormProps {
         title: string
         description: string
         theme?: string
+        price?: string | null
     }
     onSubmit: (formData: FormData) => Promise<{ success: boolean; error?: string }>
 }
@@ -27,7 +28,8 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
     const [formData, setFormData] = useState({
         title: initialData?.title || "",
         description: initialData?.description || "",
-        theme: initialData?.theme || "blue"
+        theme: initialData?.theme || "blue",
+        price: initialData?.price || ""
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +41,7 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
             data.append("title", formData.title)
             data.append("description", formData.description)
             data.append("theme", formData.theme)
+            data.append("price", formData.price)
 
             const result = await onSubmit(data)
 

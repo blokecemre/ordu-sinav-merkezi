@@ -15,7 +15,8 @@ export async function getPackages() {
                 updatedAt: true,
                 imageData: false, // Don't fetch heavy image data
                 imageMimeType: true,
-                theme: true
+                theme: true,
+                price: true
             }
         })
         return { success: true, data: packages }
@@ -34,7 +35,8 @@ export async function getPackage(id: string) {
                 title: true,
                 description: true,
                 imageMimeType: true,
-                theme: true
+                theme: true,
+                price: true
             }
         })
         return { success: true, data: pkg }
@@ -49,6 +51,7 @@ export async function createPackage(formData: FormData) {
         const title = formData.get("title") as string
         const description = formData.get("description") as string
         const theme = formData.get("theme") as string || "blue"
+        const price = formData.get("price") as string
         // Image is now optional
         const imageFile = formData.get("image") as File | null
 
@@ -59,7 +62,8 @@ export async function createPackage(formData: FormData) {
         const data: any = {
             title,
             description,
-            theme
+            theme,
+            price
         }
 
         if (imageFile && imageFile.size > 0) {
@@ -85,12 +89,14 @@ export async function updatePackage(id: string, formData: FormData) {
         const title = formData.get("title") as string
         const description = formData.get("description") as string
         const theme = formData.get("theme") as string
+        const price = formData.get("price") as string
         const imageFile = formData.get("image") as File | null
 
         const data: any = {
             title,
             description,
-            theme
+            theme,
+            price
         }
 
         if (imageFile && imageFile.size > 0) {
