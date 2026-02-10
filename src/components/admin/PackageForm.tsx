@@ -93,6 +93,16 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
                         </div>
 
                         <div className="space-y-2">
+                            <Label htmlFor="price">Fiyat (Opsiyonel)</Label>
+                            <Input
+                                id="price"
+                                value={formData.price}
+                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                placeholder="Örn: 1.500 TL"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
                             <Label htmlFor="description">Paket Detayları</Label>
                             <Textarea
                                 id="description"
