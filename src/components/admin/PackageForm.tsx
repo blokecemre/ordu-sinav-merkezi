@@ -42,7 +42,6 @@ export function PackageForm({ initialData, onSubmit }: PackageFormProps) {
             data.append("description", formData.description)
             data.append("theme", formData.theme)
             data.append("price", formData.price)
-            data.append("price", formData.price)
 
             const result = await onSubmit(data)
 
