@@ -23,7 +23,7 @@ export async function GET(
 
         // If stored in R2 (or other external storage), redirect to it
         if (exam.pdfUrl) {
-            return NextResponse.redirect(exam.pdfUrl)
+            return NextResponse.redirect(new URL(exam.pdfUrl, request.url))
         }
 
         // Fallback to DB stored data
