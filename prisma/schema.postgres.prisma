@@ -89,6 +89,7 @@ model Result {
   resultPdfData     Bytes?
   resultPdfMimeType String?
   resultPdfName     String?
+  resultPdfUrl      String?  // URL for R2/External storage
   exam              Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
   student           User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -121,9 +122,10 @@ model AnswerKey {
   id          String   @id @default(cuid())
   title       String
   description String?
-  pdfData     Bytes
+  pdfData     Bytes?
   pdfName     String
   pdfMimeType String
+  pdfUrl      String?  // URL for R2/External storage
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

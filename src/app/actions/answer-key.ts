@@ -38,6 +38,8 @@ export async function getAnswerKeys(query?: string) {
     }
 }
 
+import { uploadToR2 } from "@/lib/storage"
+
 export async function uploadAnswerKey(formData: FormData) {
     try {
         const title = formData.get("title") as string
@@ -56,10 +58,22 @@ export async function uploadAnswerKey(formData: FormData) {
 
         const buffer = Buffer.from(await file.arrayBuffer())
 
+        // Upload to Cloudflare R2
+        let pdfData: Buffer | null = buffer
+        const url = await uploadToR2(buffer, file.name, file.type, "answer-keys")
+
+        if (url) {
+            console.log("Answer key uploaded to R2:", url)
+            pdfData = null // Do not save to DB
+        } else {
+            console.warn("R2 upload failed, saving answer key to DB")
+        }
+
         await prisma.answerKey.create({
             data: {
                 title,
-                pdfData: buffer,
+                pdfData: pdfData as any,
+                pdfUrl: url,
                 pdfName: file.name,
                 pdfMimeType: file.type,
             }
@@ -94,6 +108,7 @@ export async function getAnswerKeyFile(id: string) {
             where: { id },
             select: {
                 pdfData: true,
+                pdfUrl: true,
                 pdfMimeType: true,
                 pdfName: true
             }

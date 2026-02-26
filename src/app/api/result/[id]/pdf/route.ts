@@ -11,12 +11,21 @@ export async function GET(
             where: { id },
             select: {
                 resultPdfData: true,
+                resultPdfUrl: true,
                 resultPdfName: true,
                 resultPdfMimeType: true
             }
         })
 
-        if (!result || !result.resultPdfData) {
+        if (!result) {
+            return new NextResponse("Result not found", { status: 404 })
+        }
+
+        if (result.resultPdfUrl) {
+            return NextResponse.redirect(new URL(result.resultPdfUrl, request.url))
+        }
+
+        if (!result.resultPdfData) {
             return new NextResponse("PDF not found", { status: 404 })
         }
 

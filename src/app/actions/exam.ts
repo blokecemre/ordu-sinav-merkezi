@@ -165,12 +165,27 @@ export async function updateStudentResult(
         let pdfData: Uint8Array | null = null
         let pdfName: string | null = null
         let pdfMimeType: string | null = null
+        let pdfUrl: string | null = null
 
         if (pdfFile && pdfFile.size > 0) {
             const bytes = await pdfFile.arrayBuffer()
-            pdfData = new Uint8Array(bytes)
+            const buffer = new Uint8Array(bytes)
+            pdfData = buffer
             pdfName = pdfFile.name
             pdfMimeType = pdfFile.type
+
+            try {
+                const { uploadToR2 } = await import("@/lib/storage")
+                const url = await uploadToR2(buffer, pdfName, pdfMimeType, "results")
+
+                if (url) {
+                    pdfUrl = url
+                    pdfData = null // Do not save to DB if R2 upload successful
+                    console.log("Result PDF uploaded to R2:", url)
+                }
+            } catch (error) {
+                console.error("Failed to upload Result PDF to R2:", error)
+            }
         }
 
         // Check if result exists
@@ -188,8 +203,13 @@ export async function updateStudentResult(
             totalNet,
         }
 
+        if (pdfUrl) {
+            data.resultPdfUrl = pdfUrl
+        }
         if (pdfData) {
-            data.resultPdfData = pdfData
+            data.resultPdfData = pdfData as any
+        }
+        if (pdfName) {
             data.resultPdfName = pdfName
             data.resultPdfMimeType = pdfMimeType
         }

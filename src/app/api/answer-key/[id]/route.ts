@@ -8,8 +8,16 @@ export async function GET(
     const { id } = await params
     const file = await getAnswerKeyFile(id)
 
-    if (!file || !file.pdfData) {
+    if (!file) {
         return new NextResponse("File not found", { status: 404 })
+    }
+
+    if (file.pdfUrl) {
+        return NextResponse.redirect(new URL(file.pdfUrl, request.url))
+    }
+
+    if (!file.pdfData) {
+        return new NextResponse("File content not found", { status: 404 })
     }
 
     const headers = new Headers()
