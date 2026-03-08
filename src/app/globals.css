@@ -368,8 +368,8 @@
 
 @media print {
   @page {
-    size: landscape;
-    margin: 10mm;
+    size: A4 portrait;
+    margin: 15mm;
   }
 
   /* Hide UI elements */
@@ -385,7 +385,7 @@
   body {
     background: white !important;
     color: black !important;
-    font-size: 10pt !important;
+    font-size: 11pt !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -403,22 +403,31 @@
   }
 
   /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
   h1 {
     font-size: 18pt !important;
     margin-bottom: 10px !important;
-    text-align: center !important;
-    color: black !important;
   }
 
+  p {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Prevent elements from hiding during print */
   p.text-muted-foreground {
-    display: none !important;
+    display: block !important;
+    color: #4a5568 !important;
   }
 
-  /* Grid Layout - 4 Columns for Landscape */
+  /* Grid Layout - Disable forced grids for text reports if not needed, but keep generic classes ok */
   .grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 0.5rem !important;
+    display: block !important;
     width: 100% !important;
   }
 
@@ -430,6 +439,7 @@
     box-shadow: none !important;
     border: 1px solid #ccc !important;
     border-radius: 4px !important;
+    margin-bottom: 10px !important;
   }
 
   .card-header {
@@ -443,7 +453,7 @@
   }
 
   .card-content {
-    padding: 0 !important;
+    padding: 0.5rem !important;
   }
 
   /* Content Compactness */
@@ -459,7 +469,7 @@
   .bg-blue-50,
   .bg-gray-50,
   .bg-gray-100 {
-    background-color: #f8f9fa !important;
+    background-color: transparent !important;
   }
 
   .text-blue-600 {
@@ -470,5 +480,34 @@
   .border-t-4 {
     border-top-width: 2px !important;
     border-color: #000 !important;
+  }
+
+  /* Tables */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  th, td {
+    border: 1px solid #000 !important;
+    padding: 4px !important;
+    text-align: left !important;
+  }
+
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: bold !important;
+  }
+
+  /* Markdown specific fixes */
+  .analyses-print-content {
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+  
+  .analyses-print-content p {
+    margin-bottom: 10px !important;
   }
 }

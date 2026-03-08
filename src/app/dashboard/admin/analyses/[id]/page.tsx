@@ -12,17 +12,18 @@ interface PageProps {
     params: Promise<{ id: string }>
 }
 
-export default async function AnalysisDetailPage({ params }: PageProps) {
+export default async function AdminAnalysisDetailPage({ params }: PageProps) {
     const session = await getServerSession(authOptions)
-    if (!session) return null
+    if (!session || session.user.role !== "ADMIN") return null
 
     const { id } = await params
 
     const analysis = await prisma.analysis.findUnique({
         where: { id },
+        include: { student: true }
     })
 
-    if (!analysis || analysis.studentId !== session.user.id) {
+    if (!analysis) {
         notFound()
     }
 
@@ -31,6 +32,9 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
             <div className="border-b pb-4 flex items-start justify-between print:border-b-2 print:border-black">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight mb-2 print:text-black">{analysis.title}</h1>
+                    <p className="text-muted-foreground print:text-black font-semibold">
+                        Öğrenci: {analysis.student.name} {analysis.student.surname}
+                    </p>
                     <p className="text-muted-foreground print:text-gray-700">
                         {format(new Date(analysis.createdAt), "d MMMM yyyy", { locale: tr })}
                     </p>
@@ -62,13 +66,11 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
                             <tr className="odd:bg-white even:bg-slate-50 hover:bg-slate-100 transition-colors print:bg-white" {...props} />
                         ),
                         td: ({ node, children, ...props }) => {
-                            // Check if content is numeric (score/percentage) to apply colors
                             const value = String(children).trim()
                             const num = parseFloat(value)
 
                             let className = "p-1.5 border border-slate-300 text-center align-middle text-slate-700 font-medium print:border-black print:text-black"
 
-                            // Simple heuristic: if it looks like a 0-100 score/rate
                             if (!isNaN(num) && num >= 0 && num <= 100 && (value.length <= 3 || value.includes('.'))) {
                                 if (num < 50) className += " bg-red-100 text-red-700 print:bg-transparent"
                                 else if (num < 70) className += " bg-yellow-100 text-yellow-800 print:bg-transparent"
