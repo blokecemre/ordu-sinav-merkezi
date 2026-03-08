@@ -403,7 +403,12 @@
   }
 
   /* Typography */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: black !important;
     page-break-after: avoid;
     break-after: avoid;
@@ -489,8 +494,9 @@
     page-break-inside: avoid;
     break-inside: avoid;
   }
-  
-  th, td {
+
+  th,
+  td {
     border: 1px solid #000 !important;
     padding: 4px !important;
     text-align: left !important;
@@ -506,8 +512,27 @@
     font-size: 11pt !important;
     line-height: 1.5 !important;
   }
-  
+
   .analyses-print-content p {
     margin-bottom: 10px !important;
+  }
+
+  /* Prevent elements from breaking across pages */
+  table,
+  tr,
+  img,
+  svg,
+  canvas,
+  [class*="chart"],
+  .recharts-wrapper {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .analyses-print-content>div,
+  .analyses-print-content>ul,
+  .analyses-print-content>ol {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
