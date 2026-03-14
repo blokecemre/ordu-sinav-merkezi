@@ -78,6 +78,39 @@ export default async function AdminAnalysisDetailPage({ params }: PageProps) {
                             }
 
                             return <td className={className} {...props}>{children}</td>
+                        },
+                        code: ({ node, inline, className, children, ...props }: any) => {
+                            const text = String(children);
+                            if (!inline && text.includes('█')) {
+                                const lines = text.split('\n').map((line, i) => {
+                                    const coloredLine = line.split(/([█★˅]+)/).map((part, j) => {
+                                        if (part.includes('█')) return <span key={j} className="text-primary drop-shadow-[0_0_8px_rgba(56,189,248,0.5)] print:text-black print:drop-shadow-none">{part}</span>;
+                                        if (part.includes('★')) return <span key={j} className="text-yellow-500 animate-pulse drop-shadow-[0_0_5px_rgba(234,179,8,0.8)] print:text-black print:animate-none print:drop-shadow-none">{part}</span>;
+                                        if (part.includes('˅')) return <span key={j} className="text-red-500 font-bold print:text-black">{part}</span>;
+                                        return part;
+                                    });
+                                    return <div key={i}>{coloredLine}</div>;
+                                });
+
+                                return (
+                                    <div className="relative my-6 glass-card p-6 overflow-x-auto rounded-xl print:shadow-none print:border-none print:p-0 print:bg-transparent">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none rounded-xl print:hidden" />
+                                        <pre className="relative font-mono text-sm leading-tight text-foreground/80 print:text-black" {...props}>
+                                            {lines}
+                                        </pre>
+                                    </div>
+                                );
+                            }
+
+                            return inline ? (
+                                <code className="bg-muted px-1.5 py-0.5 rounded text-sm text-primary font-mono print:bg-transparent print:text-black" {...props}>
+                                    {children}
+                                </code>
+                            ) : (
+                                <pre className="bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto text-sm my-4 font-mono shadow-md print:bg-white print:text-black print:border print:border-black print:shadow-none" {...props}>
+                                    <code {...props}>{children}</code>
+                                </pre>
+                            );
                         }
                     }}
                 >

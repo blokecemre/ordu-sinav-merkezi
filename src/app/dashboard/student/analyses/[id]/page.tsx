@@ -62,13 +62,11 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
                             <tr className="odd:bg-white even:bg-slate-50 hover:bg-slate-100 transition-colors print:bg-white" {...props} />
                         ),
                         td: ({ node, children, ...props }) => {
-                            // Check if content is numeric (score/percentage) to apply colors
                             const value = String(children).trim()
                             const num = parseFloat(value)
 
                             let className = "p-1.5 border border-slate-300 text-center align-middle text-slate-700 font-medium print:border-black print:text-black"
 
-                            // Simple heuristic: if it looks like a 0-100 score/rate
                             if (!isNaN(num) && num >= 0 && num <= 100 && (value.length <= 3 || value.includes('.'))) {
                                 if (num < 50) className += " bg-red-100 text-red-700 print:bg-transparent"
                                 else if (num < 70) className += " bg-yellow-100 text-yellow-800 print:bg-transparent"
@@ -76,6 +74,39 @@ export default async function AnalysisDetailPage({ params }: PageProps) {
                             }
 
                             return <td className={className} {...props}>{children}</td>
+                        },
+                        code: ({ node, inline, className, children, ...props }: any) => {
+                            const text = String(children);
+                            if (!inline && text.includes('█')) {
+                                const lines = text.split('\n').map((line, i) => {
+                                    const coloredLine = line.split(/([█★˅]+)/).map((part, j) => {
+                                        if (part.includes('█')) return <span key={j} className="text-primary drop-shadow-[0_0_8px_rgba(56,189,248,0.5)] print:text-black print:drop-shadow-none">{part}</span>;
+                                        if (part.includes('★')) return <span key={j} className="text-yellow-500 animate-pulse drop-shadow-[0_0_5px_rgba(234,179,8,0.8)] print:text-black print:animate-none print:drop-shadow-none">{part}</span>;
+                                        if (part.includes('˅')) return <span key={j} className="text-red-500 font-bold print:text-black">{part}</span>;
+                                        return part;
+                                    });
+                                    return <div key={i}>{coloredLine}</div>;
+                                });
+
+                                return (
+                                    <div className="relative my-6 glass-card p-6 overflow-x-auto rounded-xl print:shadow-none print:border-none print:p-0 print:bg-transparent">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none rounded-xl print:hidden" />
+                                        <pre className="relative font-mono text-sm leading-tight text-foreground/80 print:text-black" {...props}>
+                                            {lines}
+                                        </pre>
+                                    </div>
+                                );
+                            }
+
+                            return inline ? (
+                                <code className="bg-muted px-1.5 py-0.5 rounded text-sm text-primary font-mono print:bg-transparent print:text-black" {...props}>
+                                    {children}
+                                </code>
+                            ) : (
+                                <pre className="bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto text-sm my-4 font-mono shadow-md print:bg-white print:text-black print:border print:border-black print:shadow-none" {...props}>
+                                    <code {...props}>{children}</code>
+                                </pre>
+                            );
                         }
                     }}
                 >
